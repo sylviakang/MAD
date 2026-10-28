@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 5 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, Dart always teal, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--dart)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .dh{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.kt code{color:var(--kotlin)} td.dt code{color:var(--dart);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--dart-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--dart);font-size:13px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+</style><style>
+.quiz{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;counter-reset:q;padding:0;margin:0}
+.quiz li{list-style:none;background:var(--surface);border:2px solid var(--sky);border-radius:14px;padding:12px 14px;font-size:15px;min-width:0}
+.quiz li::before{counter-increment:q;content:"Q" counter(q);display:block;font-family:var(--f-display);color:var(--sky);font-size:18px}
+.quiz code{font-size:13px;color:var(--dart)}
+.note{font-size:14.5px;background:var(--cs);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.io pre{white-space:pre-wrap}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.score div{background:var(--surface);border-radius:14px;padding:14px;border-left:6px solid var(--coral);min-width:0}
+.score b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--coral)}
+.score span{font-size:14px;color:var(--muted)}
+</style><style>
+.nmap{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:28px;align-items:center}
+.shell{border:3px solid var(--ink);border-radius:28px;padding:28px 14px 14px;position:relative;display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--surface)}
+.shl{position:absolute;top:8px;left:16px;font-family:var(--f-mono);font-size:12px;font-weight:700;color:var(--dart)}
+.tab{border-radius:16px;padding:18px 10px;text-align:center;color:#fff}
+.tab b{display:block;font-size:17px} .tab small{font-size:12px;opacity:.85}
+.t-home{background:var(--dart)} .t-ach{background:var(--kotlin)}
+.bnav{grid-column:1/-1;border:2px dashed var(--pink);border-radius:12px;padding:8px;font-size:13px;text-align:center;color:var(--ink)}
+.routes{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.routes li{display:grid;grid-template-columns:5.5em minmax(0,1fr) 9.5em;align-items:center;gap:10px;background:var(--surface);border-radius:14px;padding:10px 14px;border-left:6px solid var(--rc)}
+.r-push{--rc:var(--sky)} .r-dlg{--rc:var(--coral)}
+.routes .from,.routes .to{font-weight:700;font-size:15px}
+.routes .to{color:var(--rc)}
+.routes .how{font-size:13.5px;color:var(--muted);text-align:center;border-bottom:2px solid var(--rc);padding-bottom:3px;position:relative}
+.routes .how::after{content:"";position:absolute;right:-2px;bottom:-6px;border:5px solid transparent;border-left:8px solid var(--rc)}
+.routes em{font-style:normal;font-family:var(--f-mono);font-size:12px;color:var(--rc);margin-left:6px;font-weight:700}
+@media (max-width:760px){.nmap{grid-template-columns:minmax(0,1fr)} .routes li{grid-template-columns:minmax(0,1fr);text-align:left} .routes .how{text-align:left}}
+</style>
+</head><body>
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#quiz">小測</a><a href="#map">頁面地圖</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#drills">實作 10 項</a><a href="#check">自評</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0 / 10</span>
+</div></nav>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 5 堂</b>Flutter手機程式設計</span>
+    <h1>App 骨架與 <span class="d">導覽</span></h1>
+    <p class="lead">把 MoveGo 的四個頁面和兩個 Dialog 全部接起來：底部導覽列切換分頁、按鈕 push 新頁面、FAB 打開 Dialog。內容先放空殼，下課時每個按鈕都要能點、每一頁都要回得來。</p>
+  </div>
+  <div class="swap" aria-label="今天學會">
+    <div class="ln dd"><span class="tag">換頁</span><span>Navigator.push／pop</span></div>
+    <div class="ln sk"><span class="tag">分頁</span><span>BottomNavigationBar</span></div>
+    <div class="ln co"><span class="tag">彈窗</span><span>showDialog</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1" style="flex:15"><b>小測</b><small>0–15 分</small></div>
+    <div class="t2" style="flex:25"><b>頁面地圖與講解</b><small>15–40 分</small></div>
+    <div class="t3" style="flex:60"><b>實作 10 項</b><small>40–100 分</small></div>
+    <div class="t4" style="flex:20"><b>對照評分表自評</b><small>100–120 分</small></div>
+  </div>
+  <p class="tl-note">骨架一次接好，之後每堂只要往空殼裡填內容，比賽時也照這個順序做。</p>
+</div>
+
+<section id="quiz">
+  <div class="sh"><h2>第 4 堂小測</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">15 分鐘・不看筆記</span>
+  <p>口頭回答或寫在紙上，第 5 題直接在 theme.dart 裡寫。</p></div>
+  <ol class="quiz"><li>Row 裡文字太長出現黃黑條紋，怎麼改？</li><li>兩張卡片各佔一半，要用哪個 Widget？</li><li>Container 同時寫 color 和 decoration 會怎樣？</li><li>圓形進度條中間疊上數字，用哪個 Widget？</li><li>寫出 AppColors.primary 的宣告</li></ol>
+</section>
+
+<section id="map">
+  <div class="sh"><h2>MoveGo 頁面地圖</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">先畫地圖再寫</span>
+  <p>題本的每一個「點擊…前往…」都畫成一條線。分頁用底部導覽列切換，其他頁面用 push，彈窗用 showDialog。</p></div>
+  <div class="nmap" aria-label="MoveGo 頁面地圖">
+  <div class="shell">
+    <span class="shl">MainShell（IndexedStack）</span>
+    <div class="tab t-home"><b>首頁</b><small>分頁 0</small></div>
+    <div class="tab t-ach"><b>成就總覽</b><small>分頁 1</small></div>
+    <div class="bnav">BottomNavigationBar：點選切換＋Highlight</div>
+  </div>
+  <ul class="routes">
+    <li class="r-push"><span class="from">首頁</span><span class="how">數據分析按鈕<em>push</em></span><span class="to">趨勢分析頁</span></li>
+    <li class="r-push"><span class="from">首頁</span><span class="how">長按儀表板<em>push</em></span><span class="to">步數檢測頁</span></li>
+    <li class="r-dlg"><span class="from">首頁</span><span class="how">FAB<em>showDialog</em></span><span class="to">新增步數 Dialog</span></li>
+    <li class="r-dlg"><span class="from">成就總覽</span><span class="how">點已解鎖項目<em>showDialog</em></span><span class="to">徽章檢視</span></li>
+  </ul>
+</div>
+  <div class="score" style="margin-top:22px"><div><b>4.4 分</b><span>功能：Highlight、push／pop、長按、FAB、Dialog 三種關閉、檢測按鈕切換</span></div><div><b>3.1 分</b><span>UI：導覽圖示、各頁標題、返回按鈕、TabBar、Dialog 按鈕</span></div><div><b>7.5 分</b><span>今天做完就先拿下的分數，之後每堂只要往骨架裡填內容</span></div></div>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>Android 與 Flutter 導覽對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 15 分鐘</span>
+  <p>左欄是學過的 Android 寫法，右欄是 Flutter。黃底的幾行最容易寫錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="kh">Android</th><th scope="col" class="dh">Flutter</th></tr></thead>
+    <tbody><tr class="hot"><th scope="row">開新畫面<span class="star">★</span></th><td class="kt"><code>startActivity(Intent(this, TrendActivity::class.java))</code></td><td class="dt"><code>Navigator.push(context, MaterialPageRoute(builder: (_) =&gt; const TrendPage()))</code></td></tr><tr><th scope="row">關閉目前畫面</th><td class="kt"><code>finish()</code></td><td class="dt"><code>Navigator.pop(context)</code></td></tr><tr><th scope="row">傳資料進去</th><td class="kt"><code>intent.putExtra(&quot;title&quot;, &quot;1K Steps&quot;)</code></td><td class="dt"><code>BadgeDialog(title: &#x27;1K Steps&#x27;)（建構子參數）</code></td></tr><tr class="hot"><th scope="row">帶結果回來<span class="star">★</span></th><td class="kt"><code>registerForActivityResult＋setResult(RESULT_OK, data)</code></td><td class="dt"><code>final n = await Navigator.push&lt;int&gt;(…)；對方 Navigator.pop(context, 3)</code></td></tr><tr><th scope="row">底部導覽列</th><td class="kt"><code>BottomNavigationView＋menu.xml</code></td><td class="dt"><code>BottomNavigationBar(items: […])</code></td></tr><tr class="hot"><th scope="row">切換分頁<span class="star">★</span></th><td class="kt"><code>Fragment replace</code></td><td class="dt"><code>IndexedStack(index: _index, children: […])</code></td></tr><tr class="hot"><th scope="row">目前選取的分頁<span class="star">★</span></th><td class="kt"><code>selectedItemId</code></td><td class="dt"><code>currentIndex＋onTap＋setState</code></td></tr><tr><th scope="row">標題列</th><td class="kt"><code>Toolbar／ActionBar</code></td><td class="dt"><code>AppBar(title: …, actions: […])</code></td></tr><tr><th scope="row">返回箭頭</th><td class="kt"><code>setDisplayHomeAsUpEnabled(true)</code></td><td class="dt"><code>push 進來的頁面 AppBar 自動出現</code></td></tr><tr><th scope="row">浮動按鈕</th><td class="kt"><code>FloatingActionButton（XML）</code></td><td class="dt"><code>Scaffold(floatingActionButton: …)</code></td></tr><tr><th scope="row">對話框</th><td class="kt"><code>AlertDialog.Builder(this).show()</code></td><td class="dt"><code>showDialog(context: context, builder: (_) =&gt; …)</code></td></tr><tr class="hot"><th scope="row">點外面關閉<span class="star">★</span></th><td class="kt"><code>setCanceledOnTouchOutside(true)</code></td><td class="dt"><code>showDialog 預設就會關（barrierDismissible: true）</code></td></tr><tr><th scope="row">長按</th><td class="kt"><code>setOnLongClickListener { }</code></td><td class="dt"><code>GestureDetector(onLongPress: …)</code></td></tr><tr><th scope="row">攔截返回鍵</th><td class="kt"><code>onBackPressedDispatcher.addCallback</code></td><td class="dt"><code>PopScope(canPop: false, onPopInvokedWithResult: …)</code></td></tr><tr><th scope="row">圖示跟著變色</th><td class="kt"><code>ImageView＋app:tint</code></td><td class="dt"><code>ImageIcon(AssetImage(&#x27;assets/icons/…&#x27;))</code></td></tr></tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">跟著教練一起做</span>
+  <p>範例取自教練版專案，已用 Flutter 3.47 通過 flutter analyze，並用 widget test 逐一驗證切換、返回與三種關閉方式。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>Navigator 是一疊卡片</h3></header><p class="note">push 把新頁面疊在最上面，pop 拿掉最上面那張。首頁永遠在最底下，所以按返回一定回得去。</p><pre class="code"><code data-lang="dart">// 前往趨勢分析頁
+Navigator.push(
+  context,
+  MaterialPageRoute(builder: (_) =&gt; const TrendPage()),
+);
+
+// 在趨勢分析頁按返回
+Navigator.pop(context);</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>外殼 MainShell</h3></header><p class="note">首頁和成就是「分頁」，不是 push。用一個 StatefulWidget 記住目前分頁，BottomNavigationBar 的 currentIndex 就是 Highlight。</p><pre class="code"><code data-lang="dart">class _MainShellState extends State&lt;MainShell&gt; {
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _index,
+        children: const [HomePage(), AchievementPage()],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _index,                         // Highlight
+        onTap: (i) =&gt; setState(() =&gt; _index = i),
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.subText,
+        items: const [ /* 見下一張卡 */ ],
+      ),
+    );
+  }
+}</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>題目附的導覽圖示</h3></header><p class="note">評分寫明要用 ic_nav_home.png、ic_nav_ach.png。用 ImageIcon 包起來，選取時會自動換成 selectedItemColor。圖檔要先在 pubspec.yaml 登記 assets/icons/。</p><pre class="code"><code data-lang="dart">items: const [
+  BottomNavigationBarItem(
+    icon: ImageIcon(AssetImage(&#x27;assets/icons/ic_nav_home.png&#x27;)),
+    label: &#x27;首頁&#x27;,
+  ),
+  BottomNavigationBarItem(
+    icon: ImageIcon(AssetImage(&#x27;assets/icons/ic_nav_ach.png&#x27;)),
+    label: &#x27;成就&#x27;,
+  ),
+],</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>帶結果回來</h3></header><p class="note">push 會回傳一個 Future，對方 pop 時帶的值就是結果。沒帶值（按返回、點空白）拿到的是 null，一定要先檢查。</p><pre class="code"><code data-lang="dart">// 首頁：等對方關掉
+final steps = await showDialog&lt;int&gt;(
+  context: context,
+  builder: (_) =&gt; const AddStepsDialog(),
+);
+if (steps == null) return;   // 取消、關閉、點空白
+debugPrint(&#x27;新增 $steps 步&#x27;);  // 第 9 堂改成存檔
+
+// Dialog：按「新增」帶值回去
+Navigator.pop(context, 100);</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>Dialog 的三種關閉</h3></header><p class="note">題目要求取消、關閉、點空白三種都能關（共 1 分）。點空白是 showDialog 的預設行為，不要自己把 barrierDismissible 改成 false。</p><pre class="code"><code data-lang="dart">AlertDialog(
+  title: Row(
+    children: [
+      const Expanded(child: Text(&#x27;輸入步數&#x27;)),
+      IconButton(                                    // 關閉
+        onPressed: () =&gt; Navigator.pop(context),
+        icon: const Icon(Icons.close),
+      ),
+    ],
+  ),
+  actions: [
+    TextButton(                                      // 取消
+      onPressed: () =&gt; Navigator.pop(context),
+      child: const Text(&#x27;取消&#x27;),
+    ),
+    FilledButton(                                    // 新增
+      onPressed: () =&gt; Navigator.pop(context, 100),
+      child: const Text(&#x27;新增&#x27;),
+    ),
+  ],
+)</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>長按進入步數檢測</h3></header><p class="note">沒有 onLongPress 的 Widget，外面包一層 GestureDetector 就能接長按。</p><pre class="code"><code data-lang="dart">GestureDetector(
+  onLongPress: () =&gt; Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) =&gt; const StepDetectPage()),
+  ),
+  child: const ProgressDial(steps: &#x27;8,542&#x27;, percent: 0.85),
+)</code></pre></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>實作 10 項</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">60 分鐘</span>
+  <p>沿用第 4 堂的 movego 專案。依序完成，每項做完照「驗收標準」實際點一次再打勾。</p></div>
+  <div class="exs"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>一頁一個檔案</h3><span class="use">對應：程式結構</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>把頁面拆到各自的檔案：home_page、achievement_page、trend_page、step_detect_page、add_steps_dialog、badge_dialog</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>每個檔案開頭 import &#x27;theme.dart&#x27;</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">main.dart 只剩 MoveGoApp 和 MainShell</pre></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 驗收通過</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>MainShell 外殼</h3><span class="use">對應：一般：程式開啟時顯示首頁</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>建立 MainShell，用 IndexedStack 放首頁和成就頁</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>StatefulWidget＋int _index</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">App 開啟時顯示首頁</pre></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 驗收通過</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>底部導覽 Highlight</h3><span class="use">對應：首頁：底部導覽列（UI 1 分＋功能 0.5 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>BottomNavigationBar 換成題目附的兩個圖示，點選後切換並變色</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>ImageIcon(AssetImage(…))
+selectedItemColor</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">點「成就」顯示成就總覽，圖示和文字變主色</pre></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 驗收通過</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>數據分析按鈕</h3><span class="use">對應：首頁：數據分析按鈕（0.7 分）</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>AppBar 右側換成 ic_analysis.png，點擊 push 到趨勢分析頁</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>IconButton(icon: Image.asset(…))</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">進入趨勢分析頁，左上角有返回箭頭</pre></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 驗收通過</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>趨勢分析頁骨架</h3><span class="use">對應：趨勢分析頁：標題、返回、TabBar（0.8 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>標題「趨勢分析」、TabBar 有「週」「月」兩個選項</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>DefaultTabController(length: 2)
+AppBar(bottom: TabBar(…))</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">點「月」可以切換，按返回回到首頁</pre></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 驗收通過</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>長按進入步數檢測</h3><span class="use">對應：首頁：長按跳轉（0.5 分）</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>長按進度儀表板 push 到步數檢測頁</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>GestureDetector(onLongPress: …)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">短按沒反應，長按才進入</pre></div></div>
+<label class="done"><input type="checkbox" id="ex6"> 驗收通過</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>步數檢測頁骨架</h3><span class="use">對應：步數檢測頁：按鈕文字（1 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>標題「步數檢測」、返回按鈕、開始／結束檢測按鈕</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>StatefulWidget＋bool _running</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">按鈕文字在「開始檢測」「結束檢測」之間切換</pre></div></div>
+<label class="done"><input type="checkbox" id="ex7"> 驗收通過</label>
+</article><article class="ex" data-ex="8">
+<div class="ex-top"><span class="exn">08</span><div class="ex-title"><h3>新增步數 Dialog</h3><span class="use">對應：Dialog：UI（0.7 分）＋FAB（0.5 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>FAB 打開 Dialog：標題「輸入步數」、關閉、取消、新增</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>showDialog＋AlertDialog</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">四個元素都看得到</pre></div></div>
+<label class="done"><input type="checkbox" id="ex8"> 驗收通過</label>
+</article><article class="ex" data-ex="9">
+<div class="ex-top"><span class="exn">09</span><div class="ex-title"><h3>三種關閉＋回傳值</h3><span class="use">對應：Dialog：關閉功能（1 分）</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>取消、關閉、點空白都能關；只有按「新增」才回傳步數</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>showDialog&lt;int&gt;
+Navigator.pop(context, 100)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">Debug Console 只在按新增時印出「新增 100 步」</pre></div></div>
+<label class="done"><input type="checkbox" id="ex9"> 驗收通過</label>
+</article><article class="ex" data-ex="10">
+<div class="ex-top"><span class="exn">10</span><div class="ex-title"><h3>徽章檢視</h3><span class="use">對應：徽章檢視：點擊空白關閉</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>點已解鎖的成就項目，用 showDialog 顯示大徽章，點空白關閉</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>GestureDetector(onTap: …)
+Dialog(backgroundColor: Colors.transparent)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">未解鎖的項目點了沒反應</pre></div></div>
+<label class="done"><input type="checkbox" id="ex10"> 驗收通過</label>
+</article></div>
+  <p class="tip">首頁和成就頁各有自己的 Scaffold，外面又包了 MainShell 的 Scaffold。這時用 SnackBar 會出現兩條、還會蓋住 FAB，所以今天先用 debugPrint 確認結果。</p>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">20 分鐘</span>
+  <p>在模擬器上把頁面地圖的每一條線都走一次，逐項勾選。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>App 開啟時顯示首頁，底部「首頁」是選取狀態</span></label></li><li><label><input type="checkbox" id="ck1"><span>切到成就頁再切回來，首頁捲動位置還在</span></label></li><li><label><input type="checkbox" id="ck2"><span>導覽圖示用的是題目附的 png</span></label></li><li><label><input type="checkbox" id="ck3"><span>數據分析按鈕進入趨勢分析頁並可返回</span></label></li><li><label><input type="checkbox" id="ck4"><span>長按儀表板進入步數檢測頁並可返回</span></label></li><li><label><input type="checkbox" id="ck5"><span>Dialog 的取消、關閉、點空白都能關閉</span></label></li><li><label><input type="checkbox" id="ck6"><span>只有按「新增」才印出步數</span></label></li><li><label><input type="checkbox" id="ck7"><span>flutter analyze 沒有任何問題</span></label></li></ul>
+</section>
+
+<section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p>第 1、2 題寫在步數檢測頁，第 19 堂會直接沿用。</p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><h3 style="font-size:19px">把檢測步數帶回首頁</h3><p>步數檢測頁加一個「+1」暫代搖晃，按返回時用 Navigator.pop(context, _steps) 把步數帶回首頁，首頁印出「檢測帶回 N 步」。</p><p class="hio"><b>提示</b> <code>final steps = await Navigator.push&lt;int&gt;(…)</code></p></article><article class="hw"><span class="hwn">作業 2</span><h3 style="font-size:19px">檢測中先確認再離開</h3><p>檢測中按返回箭頭或手機的返回鍵，先跳出「檢測中，確定要離開嗎？」；選「繼續檢測」留在原頁。</p><p class="hio"><b>提示</b> <code>PopScope(canPop: false, onPopInvokedWithResult: …)</code></p></article><article class="hw"><span class="hwn">作業 3</span><h3 style="font-size:19px">IndexedStack 做什麼用</h3><p>把 IndexedStack 換成 body: [HomePage(), AchievementPage()][_index] 再試一次：首頁捲到底、切到成就、再切回來，寫下兩種寫法的差別。</p><p class="hio"><b>提示</b> <code>觀察捲動位置有沒有回到最上面</code></p></article></div>
+</section>
+
+<footer>Flutter手機程式設計・第 5 堂 / 共 24 堂</footer>
+</div>
+<script>
+(function(){
+  // 簡易 Dart 語法上色
+  var KW=/^(void|var|final|const|return|if|else|for|in|switch|class|this|required|late|get|set|true|false|null|import|override|new|async|await|extends|super|return|if|null|true|false|fun|val|var)$/;
+  var TY=/^(int|double|bool|String|List|Map|DateTime|Iterable|StringBuffer|StepRecord|Badge|num|Widget|BuildContext|State|StatelessWidget|StatefulWidget|MaterialApp|Scaffold|AppBar|Text|Center|Column|Image|Padding|EdgeInsets|SizedBox|TextStyle|FloatingActionButton|Icon|Icons|ThemeData|Color|MainAxisSize|HomePage|MoveGoApp|Row|Expanded|Stack|Container|BoxDecoration|BorderRadius|Alignment|MainAxisAlignment|CrossAxisAlignment|FontWeight|Colors|AppColors|AppText|StatCard|DayChip|ListView|Axis|CircularProgressIndicator|LinearProgressIndicator|SingleChildScrollView|Positioned|Border|BoxShape|Navigator|MaterialPageRoute|IndexedStack|BottomNavigationBar|BottomNavigationBarItem|ImageIcon|AssetImage|AlertDialog|Dialog|GestureDetector|PopScope|TextButton|FilledButton|IconButton|DefaultTabController|TabBar|TabBarView|Tab|MainShell|TrendPage|StepDetectPage|AddStepsDialog|BadgeDialog|Future|ProgressDial|AchievementPage|Intent|AlertDialog)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='dart-l5-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 10';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
