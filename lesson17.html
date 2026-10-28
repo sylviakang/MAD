@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 17 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, Dart always teal, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--dart)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .dh{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.kt code{color:var(--kotlin)} td.dt code{color:var(--dart);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--dart-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--dart);font-size:13px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+</style><style>
+.quiz{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;counter-reset:q;padding:0;margin:0}
+.quiz li{list-style:none;background:var(--surface);border:2px solid var(--sky);border-radius:14px;padding:12px 14px;font-size:15px;min-width:0}
+.quiz li::before{counter-increment:q;content:"Q" counter(q);display:block;font-family:var(--f-display);color:var(--sky);font-size:18px}
+.quiz code{font-size:13px;color:var(--dart)}
+.note{font-size:14.5px;background:var(--cs);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.io pre{white-space:pre-wrap}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.score div{background:var(--surface);border-radius:14px;padding:14px;border-left:6px solid var(--coral);min-width:0}
+.score b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--coral)}
+.score span{font-size:14px;color:var(--muted)}
+</style><style>
+.flow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch}
+.fs{background:var(--surface);border-radius:16px;padding:14px;border-top:6px solid var(--fc);display:flex;flex-direction:column;gap:6px;min-width:0}
+.fs .side{font-size:12px;font-weight:700;color:var(--fc);letter-spacing:.04em}
+.fs b{font-size:16px} .fs code{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.f-d{--fc:var(--dart)} .f-c{--fc:var(--sun)} .f-k{--fc:var(--kotlin)} .f-r{--fc:var(--sky)}
+.fa{display:grid;place-items:center;font-size:24px;color:var(--muted)}
+@media (max-width:760px){.flow{grid-template-columns:minmax(0,1fr)} .fa{transform:rotate(90deg)}}
+</style>
+</head><body>
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#quiz">小測</a><a href="#map">資料流程</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#drills">實作 10 項</a><a href="#check">自評</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0 / 10</span>
+</div></nav>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 17 堂</b>Flutter手機程式設計</span>
+    <h1>EventChannel <span class="d">與加速度計</span></h1>
+    <p class="lead">步數檢測頁要「搖晃手機產生步數」，資料來自加速度計。不能用套件，所以要自己在 Kotlin 端讀感測器，再用 EventChannel 一筆一筆送給 Dart。今天先讓數字在畫面上跳起來，下一堂再把它變成步數。</p>
+  </div>
+  <div class="swap" aria-label="今天學會">
+    <div class="ln dd"><span class="tag">通道</span><span>EventChannel</span></div>
+    <div class="ln sk"><span class="tag">感測</span><span>SensorManager</span></div>
+    <div class="ln co"><span class="tag">訂閱</span><span>listen・cancel</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1" style="flex:15"><b>小測</b><small>0–15 分</small></div>
+    <div class="t2" style="flex:25"><b>通道與講解</b><small>15–40 分</small></div>
+    <div class="t3" style="flex:60"><b>實作 10 項</b><small>40–100 分</small></div>
+    <div class="t4" style="flex:20"><b>對照評分表自評</b><small>100–120 分</small></div>
+  </div>
+  <p class="tl-note">Kotlin 這段約 40 行，比賽時要能不看筆記寫出來，今天至少打三遍。</p>
+</div>
+
+<section id="quiz">
+  <div class="sh"><h2>第 16 堂小測</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">15 分鐘・不看筆記</span>
+  <p>口頭回答或寫在紙上，第 5 題直接在專案裡寫。</p></div>
+  <ol class="quiz"><li>Paint 預設的 style 是什麼？畫折線忘了改會怎樣？</li><li>Path 的第一個點用哪個方法？其他點呢？</li><li>xIn 為什麼要 i + 0.5？</li><li>超過 yMax 的值怎麼處理，線才不會畫出框外？</li><li>重構成 chart_common.dart 之後，怎麼確認長條圖沒有壞？</li></ol>
+</section>
+
+<section id="map">
+  <div class="sh"><h2>感測器資料怎麼走到畫面</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">Kotlin 送、Dart 收</span>
+  <p>Dart 一 listen，Kotlin 就註冊感測器；Dart 一 cancel，Kotlin 就取消註冊。兩邊的開關要對得起來。</p></div>
+  <div class="flow" aria-label="感測器資料流程">
+  <div class="fs f-k"><span class="side">Kotlin</span><b>① SensorManager</b><code>onSensorChanged</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-c"><span class="side">通道</span><b>② EventChannel</b><code>events.success(listOf(x, y, z))</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-d"><span class="side">Dart</span><b>③ Stream</b><code>Stream&lt;AccelSample&gt;</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-r"><span class="side">畫面</span><b>④ listen／cancel</b><code>開始檢測・結束檢測</code></div>
+</div>
+  <div class="score" style="margin-top:22px"><div><b>5 分</b><span>搖晃產生 1～3 步。今天先把感測器資料接進來，下一堂算步數</span></div><div><b>2 個通道</b><span>movego/storage 問一次答一次，movego/accel 一直推送</span></div><div><b>0 個套件</b><span>不能用 sensors_plus，Kotlin 端自己寫</span></div></div>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>Kotlin Flow 與 Dart Stream 對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 15 分鐘</span>
+  <p>左欄是 Kotlin 的寫法，右欄是 Dart。黃底的幾行最容易寫錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="kh">Kotlin</th><th scope="col" class="dh">Dart</th></tr></thead>
+    <tbody><tr><th scope="row">持續的資料</th><td class="kt"><code>Flow&lt;T&gt;</code></td><td class="dt"><code>Stream&lt;T&gt;</code></td></tr><tr><th scope="row">開始接收</th><td class="kt"><code>flow.collect { v -&gt; … }</code></td><td class="dt"><code>final sub = stream.listen((v) { … });</code></td></tr><tr class="hot"><th scope="row">停止接收<span class="star">★</span></th><td class="kt"><code>job.cancel()</code></td><td class="dt"><code>await sub.cancel();</code></td></tr><tr><th scope="row">轉換每一筆</th><td class="kt"><code>flow.map { … }</code></td><td class="dt"><code>stream.map((v) =&gt; …)</code></td></tr><tr><th scope="row">只拿前幾筆</th><td class="kt"><code>flow.take(3)</code></td><td class="dt"><code>stream.take(3)</code></td></tr><tr><th scope="row">拿第一筆</th><td class="kt"><code>flow.first()</code></td><td class="dt"><code>await stream.first</code></td></tr><tr><th scope="row">錯誤處理</th><td class="kt"><code>flow.catch { e -&gt; … }</code></td><td class="dt"><code>listen(…, onError: (e) { … })</code></td></tr><tr><th scope="row">問一次答一次</th><td class="kt"><code>MethodChannel</code></td><td class="dt"><code>MethodChannel・invokeMethod</code></td></tr><tr class="hot"><th scope="row">一直推送資料<span class="star">★</span></th><td class="kt"><code>EventChannel ＋ StreamHandler</code></td><td class="dt"><code>EventChannel・receiveBroadcastStream()</code></td></tr><tr><th scope="row">送一筆給 Dart</th><td class="kt"><code>events.success(listOf(x, y, z))</code></td><td class="dt"><code>收到 List&lt;Object?&gt;</code></td></tr><tr><th scope="row">送錯誤給 Dart</th><td class="kt"><code>events.error(&quot;CODE&quot;, &quot;訊息&quot;, null)</code></td><td class="dt"><code>PlatformException</code></td></tr><tr class="hot"><th scope="row">Float 轉 Double<span class="star">★</span></th><td class="kt"><code>e.values[0].toDouble()</code></td><td class="dt"><code>(v as num).toDouble()</code></td></tr></tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">跟著教練一起做</span>
+  <p>範例取自教練版專案，Dart 端已用 Flutter 3.47 通過 flutter analyze，並用 MockStreamHandler 測試資料轉換、結束檢測與離開頁面時的取消。Kotlin 端請在模擬器上實際執行確認。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>兩種通道</h3></header><p class="note">第 6 堂的 MethodChannel 是「問一次、答一次」。感測器每秒送幾十筆資料，要用 EventChannel，Dart 端拿到的是一個 Stream。</p><pre class="code"><code data-lang="text">MethodChannel   Dart 問 → Kotlin 答（一次）
+                invokeMethod(&#x27;getFilesDir&#x27;)
+
+EventChannel    Dart listen → Kotlin 一直送
+                events.success(…)  events.success(…)  …
+                Dart cancel → Kotlin 停止</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>Kotlin：onListen 開始感測</h3></header><p class="note">在 configureFlutterEngine 裡建立 EventChannel，名稱和 Dart 端一模一樣。Dart 開始 listen 時才註冊感測器，不要一開 App 就註冊。</p><pre class="code"><code data-lang="kotlin">EventChannel(messenger, &quot;movego/accel&quot;)
+    .setStreamHandler(object : EventChannel.StreamHandler {
+        override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+            val sm = getSystemService(SENSOR_SERVICE) as SensorManager
+            val sensor = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+            if (sensor == null) {
+                events.error(&quot;NO_SENSOR&quot;, &quot;這台裝置沒有加速度計&quot;, null)
+                return
+            }
+            val listener = object : SensorEventListener {
+                override fun onSensorChanged(e: SensorEvent) {
+                    events.success(listOf(
+                        e.values[0].toDouble(),
+                        e.values[1].toDouble(),
+                        e.values[2].toDouble()))
+                }
+                override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+            }
+            sm.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_GAME)
+            sensorManager = sm
+            accelListener = listener
+        }
+        override fun onCancel(arguments: Any?) { stopAccel() }
+    })</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>Kotlin：一定要取消註冊</h3></header><p class="note">忘了 unregisterListener，離開頁面後感測器還在跑，耗電又會送資料給已經不存在的畫面。onDestroy 再保險一次。</p><pre class="code"><code data-lang="kotlin">private var sensorManager: SensorManager? = null
+private var accelListener: SensorEventListener? = null
+
+private fun stopAccel() {
+    accelListener?.let { sensorManager?.unregisterListener(it) }
+    accelListener = null
+}
+
+override fun onDestroy() {
+    stopAccel()
+    super.onDestroy()
+}</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>Dart：把 List 包成類別</h3></header><p class="note">Kotlin 送來的是 List，裡面 3 個數字。包成 AccelSample 之後，畫面和下一堂的演算法都只看得到 x、y、z。</p><pre class="code"><code data-lang="dart">// lib/accel.dart
+class AccelSample {
+  const AccelSample(this.x, this.y, this.z);
+  final double x, y, z;
+
+  // 合力加速度：手機不動時約 9.8（地心引力）
+  double get magnitude =&gt; sqrt(x * x + y * y + z * z);
+
+  factory AccelSample.fromEvent(dynamic event) {
+    final v = (event as List).cast&lt;num&gt;();
+    return AccelSample(v[0].toDouble(), v[1].toDouble(), v[2].toDouble());
+  }
+}
+
+class Accel {
+  static const channel = EventChannel(&#x27;movego/accel&#x27;);
+  static Stream&lt;AccelSample&gt; stream() =&gt;
+      channel.receiveBroadcastStream().map(AccelSample.fromEvent);
+}</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>檢測頁：訂閱與取消</h3></header><p class="note">StreamSubscription 有值就代表正在檢測，按鈕文字直接看它。dispose 裡一定要 cancel，這也是 Kotlin 端 onCancel 會被呼叫的時機。</p><pre class="code"><code data-lang="dart">StreamSubscription&lt;AccelSample&gt;? _sub;
+bool get _running =&gt; _sub != null;
+
+void _start() {
+  setState(() {
+    _sub = Accel.stream().listen(
+      (s) =&gt; setState(() =&gt; _last = s),
+      onError: (Object e) =&gt; setState(() { _error = &#x27;$e&#x27;; _stop(); }),
+    );
+  });
+}
+
+void _stop() {
+  _sub?.cancel();
+  _sub = null;
+}
+
+@override
+void dispose() {
+  _stop();
+  super.dispose();
+}</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>不用手機也能測</h3></header><p class="note">模擬器右側 ⋯ → Virtual sensors 可以轉動、搖晃虛擬手機。單元測試則用 MockStreamHandler 假裝 Kotlin 端，確認 Dart 程式和取消的時機。</p><pre class="code"><code data-lang="dart">messenger.setMockStreamHandler(
+  Accel.channel,
+  MockStreamHandler.inline(
+    onListen: (args, events) {
+      events.success([0.0, 9.8, 0.0]);
+      events.success([3.0, 4.0, 0.0]);
+    },
+    onCancel: (args) =&gt; cancels++,
+  ),
+);
+
+final list = await Accel.stream().take(2).toList();
+expect(list.last.magnitude, 5);
+expect(cancels, 1);   // take 拿夠了會自動取消</code></pre></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>實作 10 項</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">60 分鐘</span>
+  <p>沿用第 16 堂的 movego 專案。第 1～3 項寫 Kotlin，改完要整個重新執行，熱重載不會載入 Kotlin 的修改。</p></div>
+  <div class="exs"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>宣告 EventChannel</h3><span class="use">對應：程式結構</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>在 MainActivity 裡加上 movego/accel 通道</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>和 movego/storage 共用同一個 messenger</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">Dart、Kotlin 兩邊的名稱一字不差</pre></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 驗收通過</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>onListen 註冊感測器</h3><span class="use">對應：步數檢測</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>取得 TYPE_ACCELEROMETER，註冊 SensorEventListener</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>SENSOR_DELAY_GAME
+沒有感測器回 events.error</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">Kotlin 端 Log 看得到 onSensorChanged</pre></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 驗收通過</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>取消註冊</h3><span class="use">對應：穩定度</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>onCancel 和 onDestroy 都呼叫 stopAccel()</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>unregisterListener</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">按結束檢測後 Log 不再出現</pre></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 驗收通過</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>AccelSample</h3><span class="use">對應：程式結構</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>新增 lib/accel.dart，寫 x、y、z 和 magnitude</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>fromEvent 用 cast&lt;num&gt;()</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">(3, 4, 0) 的 magnitude 是 5</pre></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 驗收通過</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>Accel.stream()</h3><span class="use">對應：步數檢測</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>用 receiveBroadcastStream 加 map 轉成 Stream&lt;AccelSample&gt;</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>static const channel</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">flutter analyze 沒有問題</pre></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 驗收通過</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>開始與結束</h3><span class="use">對應：按鈕文字切換</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>檢測頁按鈕改成真的訂閱、取消</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>_running 直接看 _sub 是否為 null</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">按鈕文字在開始檢測、結束檢測之間切換</pre></div></div>
+<label class="done"><input type="checkbox" id="ex6"> 驗收通過</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>即時顯示</h3><span class="use">對應：即時顯示</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>畫面顯示 x、y、z、合力和收到幾筆</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>toStringAsFixed(2)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">數字一直在跳，筆數一直增加</pre></div></div>
+<label class="done"><input type="checkbox" id="ex7"> 驗收通過</label>
+</article><article class="ex" data-ex="8">
+<div class="ex-top"><span class="exn">08</span><div class="ex-title"><h3>離開頁面</h3><span class="use">對應：穩定度</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>檢測中直接按返回</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>dispose 裡呼叫 _stop()</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">回到首頁後 Kotlin 端 Log 停止</pre></div></div>
+<label class="done"><input type="checkbox" id="ex8"> 驗收通過</label>
+</article><article class="ex" data-ex="9">
+<div class="ex-top"><span class="exn">09</span><div class="ex-title"><h3>模擬器觀察</h3><span class="use">對應：搖晃偵測（下一堂）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>用 Virtual sensors 轉動、搖晃，記錄合力的範圍</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>平放、直立、用力搖各記一次</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">寫下靜止和搖晃時合力大約多少，下一堂要用</pre></div></div>
+<label class="done"><input type="checkbox" id="ex9"> 驗收通過</label>
+</article><article class="ex" data-ex="10">
+<div class="ex-top"><span class="exn">10</span><div class="ex-title"><h3>單元測試</h3><span class="use">對應：穩定度</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>新增 test/accel_test.dart，用 MockStreamHandler</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>測轉換、take、cancel、error</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">flutter test 全部通過</pre></div></div>
+<label class="done"><input type="checkbox" id="ex10"> 驗收通過</label>
+</article></div>
+  <p class="tip">第 9 項記下的數字很重要：靜止時合力約 9.8，搖晃時會跳到 15 以上。下一堂的門檻值就從這裡決定。</p>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">20 分鐘</span>
+  <p>每一項都要在模擬器上實際看到結果才打勾。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>Kotlin、Dart 兩邊的通道名稱完全相同</span></label></li><li><label><input type="checkbox" id="ck1"><span>onListen 才註冊感測器</span></label></li><li><label><input type="checkbox" id="ck2"><span>onCancel 會取消註冊</span></label></li><li><label><input type="checkbox" id="ck3"><span>沒有感測器時回傳錯誤，App 不會閃退</span></label></li><li><label><input type="checkbox" id="ck4"><span>按鈕文字隨狀態切換</span></label></li><li><label><input type="checkbox" id="ck5"><span>畫面即時顯示三軸與合力</span></label></li><li><label><input type="checkbox" id="ck6"><span>檢測中返回首頁，感測器有停止</span></label></li><li><label><input type="checkbox" id="ck7"><span>flutter test 和 flutter analyze 都通過</span></label></li></ul>
+</section>
+
+<section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p>三題都寫在檢測頁，下一堂的搖晃偵測會用到第 1、3 題的想法。</p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><h3 style="font-size:19px">去掉地心引力</h3><p>手機不動時合力是 9.8，不是 0。用低通濾波估計重力，再算出「扣掉重力」的加速度並顯示出來。</p><p class="hio"><b>提示</b> <code>g = 0.8 × g + 0.2 × a（三軸各算一次），線性加速度 = a − g</code></p></article><article class="hw"><span class="hwn">作業 2</span><h3 style="font-size:19px">每秒幾筆</h3><p>在畫面上顯示每秒收到幾筆資料，再把 SENSOR_DELAY_GAME 換成 UI、FASTEST 比較看看。</p><p class="hio"><b>提示</b> <code>記下每一筆的 DateTime.now()，只留最近 1 秒的；或每秒用 Timer 歸零一次</code></p></article><article class="hw"><span class="hwn">作業 3</span><h3 style="font-size:19px">最大值紀錄</h3><p>顯示這次檢測到目前為止的最大合力，按開始檢測時歸零。</p><p class="hio"><b>提示</b> <code>max(_peak, s.magnitude)，_start() 裡把 _peak 設回 0</code></p></article></div>
+</section>
+
+<footer>Flutter手機程式設計・第 17 堂 / 共 24 堂</footer>
+</div>
+<script>
+(function(){
+  // 簡易 Dart 語法上色
+  var KW=/^(void|var|final|const|return|if|else|for|in|switch|class|this|required|late|get|set|true|false|null|import|override|new|async|await|extends|super|return|if|null|true|false|fun|val|var|package|when|else|try|catch|on|throw|static|switch|case|is|test|expect)$/;
+  var TY=/^(int|double|bool|String|List|Map|DateTime|Iterable|StringBuffer|StepRecord|Badge|num|Widget|BuildContext|State|StatelessWidget|StatefulWidget|MaterialApp|Scaffold|AppBar|Text|Center|Column|Image|Padding|EdgeInsets|SizedBox|TextStyle|FloatingActionButton|Icon|Icons|ThemeData|Color|MainAxisSize|HomePage|MoveGoApp|Row|Expanded|Stack|Container|BoxDecoration|BorderRadius|Alignment|MainAxisAlignment|CrossAxisAlignment|FontWeight|Colors|AppColors|AppText|StatCard|DayChip|ListView|Axis|CircularProgressIndicator|LinearProgressIndicator|SingleChildScrollView|Positioned|Border|BoxShape|Navigator|MaterialPageRoute|IndexedStack|BottomNavigationBar|BottomNavigationBarItem|ImageIcon|AssetImage|AlertDialog|Dialog|GestureDetector|PopScope|TextButton|FilledButton|IconButton|DefaultTabController|TabBar|TabBarView|Tab|MainShell|TrendPage|StepDetectPage|AddStepsDialog|BadgeDialog|Future|ProgressDial|AchievementPage|Intent|MethodChannel|FlutterActivity|FlutterEngine|File|String|Boolean|NativeStorage|PlatformException|MissingPluginException|WidgetsFlutterBinding|Directory|List|Map|bool|int|StepRecord|StepRepository|DateTime|Duration|Random|JSONArray|LocalDateTime|FormatException|LocalDate|ScrollController|VoidCallback|Badge|DayChip|StringBuffer|GridView|TextField|TextEditingController|OutlinedButton|InputDecoration|OutlineInputBorder|NeverScrollableScrollPhysics|TextAlign|EditText|GridLayout|CustomPainter|CustomPaint|Canvas|Size|Paint|PaintingStyle|StrokeCap|Offset|Rect|RingPainter|MiniBarPainter|GoalDialog|View|RectF|SweepGradient|double|AnimationController|Animation|CurvedAnimation|Curves|Tween|AnimatedBuilder|SingleTickerProviderStateMixin|TickerProviderStateMixin|AnimationStatus|ValueAnimator|DecelerateInterpolator|Interval|Cubic|AnimSpec|Curve|PathInterpolator|AnimatorSet|BarChartPainter|ChartCard|TextPainter|TextSpan|TextDirection|RRect|Radius|LayoutBuilder|RectF|StaticLayout|YAxis|Math|TrendData|TrendView|TrendPage|TabLayout|ViewPager2|YearMonth|ChronoUnit|DayOfWeek|Path|LineChartPainter|PathMeasure|LinearGradient|StrokeJoin|LabelAlign|EventChannel|StreamHandler|EventSink|SensorManager|Sensor|SensorEvent|SensorEventListener|Stream|StreamSubscription|AccelSample|Accel|MockStreamHandler|Flow|Job|FloatArray|Any|Unit|Object)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='dart-l17-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 10';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
