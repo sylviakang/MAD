@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Android Compose 第 24 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, C# always sky blue, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--kotlin)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .ch{background:var(--sky)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.ct code{color:var(--sky)} td.kt code{color:var(--kotlin);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--kotlin-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--kotlin);font-size:13px}
+
+/* skeleton cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kcard{background:var(--surface);border:2px solid var(--sun);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kcard h3{font-size:18px}
+.kcard pre.code{font-size:12.5px;padding:12px 14px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data,.cards{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.exs.one{grid-template-columns:minmax(0,1fr)}
+.pts{flex:none;font-size:12px;font-weight:700;color:var(--coral);background:var(--coral-soft);border-radius:999px;padding:2px 10px;max-width:45%;text-align:center}
+.see{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:14.5px}
+.see b{font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-right:6px}
+.ex pre.code{font-size:13px}
+.see code,.ex p code,.steps code,.tl-note code,.note code,.tip code{overflow-wrap:anywhere}
+.file{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin-bottom:-4px}
+.note{margin-top:14px;font-size:15px;background:var(--sky-soft);border-radius:12px;padding:10px 14px}
+.scorebar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.scorebar span{font-size:13px;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.scorebar span b{color:var(--coral)}
+.tl .t5{background:var(--pink)}
+table.plain{min-width:520px}
+table.plain thead th{background:var(--ink);color:var(--bg)}
+
+.sheet{display:grid;gap:14px}
+.sgrp{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.sgrp h3{font-size:18px;display:flex;justify-content:space-between;gap:8px}
+.sgrp h3 small{font-family:var(--f-body);font-size:13px;color:var(--muted)}
+.sgrp ul{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px}
+.sgrp label{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;cursor:pointer}
+.sgrp label b{margin-left:auto;flex:none;color:var(--coral);font-variant-numeric:tabular-nums}
+.sgrp input{margin-top:3px}
+.total{position:sticky;bottom:12px;margin-top:16px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;font-size:18px;font-family:var(--f-display)}
+.total b{font-size:26px;color:var(--sun);font-variant-numeric:tabular-nums}
+.total button{font:inherit;font-size:14px;background:transparent;color:var(--bg);border:1px solid var(--bg);border-radius:999px;padding:4px 12px;cursor:pointer}
+.spec{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:10px}
+.spec h3{font-size:19px}
+.spec ol,.spec ul{margin:0;padding-left:22px;display:grid;gap:4px;font-size:15px}
+.chg{background:var(--sun-soft);border-radius:14px;padding:12px 16px}
+.chg ol{margin:6px 0 0;padding-left:22px;display:grid;gap:4px}
+</style>
+</head><body>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#before">賽前一週</a><a href="#tasks">總演練</a><a href="#emergency">緊急處理</a><a href="#day">比賽當天</a><a href="#check">最後檢查</a>
+  <span class="prog" id="prog">完成 0</span>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 24 堂</b>Android Compose 手機程式設計</span>
+    <h1>比賽日<span class="d">總演練</span></h1>
+    <p class="lead">最後一堂不學新東西。先確認比賽環境（區網、Android Studio Otter 3 Feature Drop）不會出意外，再用 30 分鐘做一次骨架熱身，演練各種緊急狀況，最後寫出自己的比賽策略卡。</p>
+    
+  </div>
+  <div class="swap" aria-label="今天學會"><div class="ln k"><span class="tag">環境</span><span>離線也能 New Project → Run</span></div><div class="ln sk"><span class="tag">熱身</span><span>30 分鐘骨架</span></div><div class="ln co"><span class="tag">策略卡</span><span>自己的作答順序與放棄線</span></div></div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl"><div class="t1" style="flex:20"><b>環境檢查</b><small>0–20 分</small></div><div class="t2" style="flex:30"><b>骨架熱身</b><small>20–50 分</small></div><div class="t3" style="flex:20"><b>默寫測驗</b><small>50–70 分</small></div><div class="t5" style="flex:30"><b>緊急演練</b><small>70–100 分</small></div><div class="t4" style="flex:20"><b>策略卡</b><small>100–120 分</small></div></div>
+  <p class="tl-note">請帶上四次模擬賽的評分表與第 14 堂的 150 分鐘計畫。</p>
+</div>
+
+<section id="before">
+  <div class="sh"><h2>賽前一週檢查</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">20 分鐘</span>
+  <p>比賽只有區網，Gradle 不能下載任何東西。最常見的意外是「家裡能跑，比賽電腦不能跑」。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>比賽電腦（或同版本環境）的 Android Studio 是 Otter 3 Feature Drop 2025.2.3</span></label></li><li><label><input type="checkbox" id="ck1"><span>拔掉網路線後，New Project（Empty Activity）→ Run 可以成功（代表範本需要的套件都已快取）</span></label></li><li><label><input type="checkbox" id="ck2"><span>模擬器可以冷開機，Extended controls → Virtual sensors 可以拖動</span></label></li><li><label><input type="checkbox" id="ck3"><span>知道 Build → Generate App Bundles or APKs → Generate APKs 的位置，以及 APK 輸出在 app/build/outputs/apk/debug/</span></label></li><li><label><input type="checkbox" id="ck4"><span>手寫骨架卡全部更新到最新版本（第 3～22 堂）</span></label></li><li><label><input type="checkbox" id="ck5"><span>四次模擬賽的扣分項目都已經各重寫過一次</span></label></li></ul>
+</section><section id="tasks">
+  <div class="sh"><h2>總演練 5 項</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)"></span>
+  <p></p></div>
+  <div class="exs one"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>30 分鐘骨架熱身</h3><span class="use">只寫骨架，不寫細節</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>New Project 後，30 分鐘內完成：開場 4 件事、四頁 Screen 與 when、BackBar、退出 Dialog、Question 與 loadQuestions、RecordDb 的 insert 與 getAll、SensorEffect。</p><p>這就是任何題目都會用到的底座，比賽開始的前 30 分鐘就是寫它。</p><div class="see"><b>完成後</b>四頁可以互相切換，Logcat 印得出讀到的題數。</div>
+<label class="done"><input type="checkbox" id="ex1"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>骨架卡默寫測驗</h3><span class="use">教練隨機抽 6 張</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>教練從下表隨機抽 6 張，每張 2 分鐘默寫在紙上，互相批改。寫錯的那張今天回家再寫 5 次。</p><p><div class="tbl"><table class="plain"><thead><tr><th>主題</th><th>骨架卡</th></tr></thead><tbody>
+<tr><td>畫面</td><td>setContent、Column／Row、Button、Image(painterResource)、enum Screen＋when、BackHandler、AlertDialog</td></tr>
+<tr><td>資料</td><td>assets＋JSONArray、data class、shuffled().take()、SQLiteOpenHelper、insert、rawQuery＋Cursor、delete、stats</td></tr>
+<tr><td>時間</td><td>LaunchedEffect 計時、生命週期暫停、mm:ss、12m 11s、SimpleDateFormat＋Locale.US</td></tr>
+<tr><td>感測器</td><td>SensorEffect、陀螺儀積分、加速度計 lowPass、ShakeDetector、雙擊校正</td></tr>
+<tr><td>互動</td><td>onGloballyPositioned、clamp、hitIndex、停留計時、Phase 狀態機、drawArc</td></tr>
+<tr><td>遊戲</td><td>withFrameNanos 迴圈、格子地圖、分軸碰撞</td></tr>
+</tbody></table></div></p>
+<label class="done"><input type="checkbox" id="ex2"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>離線環境演練</h3><span class="use">拔網路線做一次</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>拔掉網路線（或關閉 Wi-Fi），開一個新專案並執行。如果 Gradle sync 失敗，照下面「緊急處理」排除，並把結果告訴教練，比賽前一定要解決。</p>
+<label class="done"><input type="checkbox" id="ex3"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>緊急狀況演練</h3><span class="use">教練故意弄壞，你來修</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>兩人一組，一人把對方的專案弄壞一個地方（從下面的緊急處理表挑），另一人限時 5 分鐘修好，再交換。每人至少修 3 種。</p>
+<label class="done"><input type="checkbox" id="ex4"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>寫出自己的比賽策略卡</h3><span class="use">一張 A5，比賽時放桌上</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>根據四次模擬賽的結果寫下：</p><p>1. 開場 30 分鐘的底座清單。2. 每 30 分鐘的檢查點與目標時間。3. 「放棄線」：幾點還沒做完哪一項就跳過。4. 自己最常犯的 3 個錯誤。5. 最後 10 分鐘的交件清單（第 14 堂）。</p>
+<label class="done"><input type="checkbox" id="ex5"> 做完並在模擬器確認，完成</label>
+</article></div>
+</section><section id="emergency">
+  <div class="sh"><h2>緊急處理</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)"></span>
+  <p>比賽時沒有人能問，背下這張表。</p></div>
+  <div class="tbl"><table class="plain"><thead><tr><th>狀況</th><th>先試</th><th>再試</th></tr></thead><tbody>
+<tr><td>Gradle sync 失敗</td><td>File → Settings → Build → Gradle → 勾選 Offline mode，再 Sync</td><td>File → Invalidate Caches → Restart</td></tr>
+<tr><td>紅字 Unresolved reference</td><td>Alt + Enter 加 import</td><td>檢查拼字與大小寫、package 名稱</td></tr>
+<tr><td>R 找不到、圖片找不到</td><td>檔名只能小寫英文、數字、底線；放在 res/drawable</td><td>Build → Clean Project，再 Rebuild</td></tr>
+<tr><td>App 一開就閃退</td><td>Logcat 搜尋 FATAL，點第一行自己的檔名</td><td>常見：Questions.json 檔名、assets 位置、getString 欄位名稱</td></tr>
+<tr><td>加了資料庫欄位後閃退</td><td>模擬器長按 App → 應用程式資訊 → 清除資料</td><td>RecordDb 版本號 +1</td></tr>
+<tr><td>模擬器開不起來或很卡</td><td>Device Manager → Cold Boot Now</td><td>Wipe Data，或換一個已建立的模擬器</td></tr>
+<tr><td>感測器在模擬器沒反應</td><td>⋯ → Extended controls → Virtual sensors 拖動手機模型</td><td>確認用的是 getDefaultSensor 回傳不是 null 的感測器</td></tr>
+<tr><td>畫面一直重畫、變很卡</td><td>onGloballyPositioned 裡有沒有用 contentEquals 判斷</td><td>LaunchedEffect 的 key 是否一直在變</td></tr>
+<tr><td>找不到 APK</td><td>Build → Generate App Bundles or APKs → Generate APKs，右下角通知點 locate</td><td>app/build/outputs/apk/debug/app-debug.apk</td></tr>
+</tbody></table></div>
+</section><section id="day">
+  <div class="sh"><h2>比賽當天流程</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)"></span>
+  <p></p></div>
+  <div class="tbl"><table class="plain"><thead><tr><th>時間</th><th>要做的事</th></tr></thead><tbody>
+<tr><td>開始前</td><td>確認 Android Studio 版本、模擬器開得起來、media 資料夾裡的檔案都在</td></tr>
+<tr><td>0:00–0:10</td><td>讀題，在題本上畫出差異與配分，填拆題五格</td></tr>
+<tr><td>0:10–0:40</td><td>開場 4 件事＋底座（換頁、Dialog、讀檔、資料庫）</td></tr>
+<tr><td>0:40–2:15</td><td>照策略卡的順序作答，每 30 分鐘看一次時間與放棄線</td></tr>
+<tr><td>2:15–2:20</td><td>照評分表自己測一次，補最容易拿的分</td></tr>
+<tr><td>2:20–2:30</td><td>交件清單：重新 Generate APKs、複製到專案根目錄、改檔名 XX_題目名稱.apk、存檔</td></tr>
+</tbody></table></div>
+<p class="note">卡住時記住：5 分鐘沒進展就跳下一項。一題做不出來只少那幾分，卡 30 分鐘會少掉後面所有的分。</p>
+</section><section id="check">
+  <div class="sh"><h2>最後檢查</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)"></span>
+  <p>全部打勾，就可以上場了。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>我能離線 New Project 並執行</span></label></li><li><label><input type="checkbox" id="ck1"><span>我能在 30 分鐘內寫完底座</span></label></li><li><label><input type="checkbox" id="ck2"><span>6 張骨架卡默寫全對（或已補寫 5 次）</span></label></li><li><label><input type="checkbox" id="ck3"><span>緊急處理表至少修過 3 種</span></label></li><li><label><input type="checkbox" id="ck4"><span>策略卡寫好了，放在筆袋裡</span></label></li><li><label><input type="checkbox" id="ck5"><span>我記得 App 名稱 QXX、Package name、APK 檔名的規則</span></label></li><li><label><input type="checkbox" id="ck6"><span>我記得 UI 不可以用截圖</span></label></li></ul>
+</section>
+
+<footer>Android Compose 手機程式設計・第 24 堂 / 共 24 堂</footer>
+</div>
+
+<script>
+(function(){
+  var KW=/^(fun|val|var|return|if|else|when|for|in|until|downTo|step|while|do|repeat|class|data|enum|object|true|false|null|is|as|import|package|override|private|set|get|const|it|by|super|this|try|catch|finally|throw|break|continue|lateinit)$/;
+  var TY=/^(Int|Long|Float|Double|Boolean|String|Char|Unit|List|Map|Set|Pair|Any|Modifier|Color|Composable|Screen|Phase|Question|GameResult|RecordDb|Context|Bundle|Offset|Size)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)')|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?[fL]?\b)/g;
+  document.querySelectorAll('code[data-lang]').forEach(function(el){
+    var lang=el.getAttribute('data-lang');
+    var src=el.textContent,out='',last=0,m;
+    re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]&&lang==='kotlin'){var w=t.replace('@','');if(t.charAt(0)==='@')cls='t';else if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+  var KEY='compose-l24-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var cardsEl=document.querySelectorAll('.ex');
+  function refresh(){
+    var n=0;
+    cardsEl.forEach(function(card){var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;});
+    if(prog){if(!cardsEl.length)prog.style.display='none';else prog.textContent='完成 '+n+' / '+cardsEl.length;}
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+<script>
+(function(){
+  var el=document.getElementById('score'); if(!el) return;
+  var total=el.textContent.split('/')[1].trim();
+  function sum(){var s=0;document.querySelectorAll('input.sc').forEach(function(c){if(c.checked)s+=parseFloat(c.getAttribute('data-pts'));});el.textContent=(Math.round(s*10)/10)+' / '+total;}
+  document.querySelectorAll('input.sc').forEach(function(c){c.addEventListener('change',sum);});
+  document.getElementById('resetScore').addEventListener('click',function(){document.querySelectorAll('input.sc').forEach(function(c){c.checked=false;c.dispatchEvent(new Event('change'));});sum();});
+  setTimeout(sum,0);
+})();
+</script>
+</body></html>

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Android Compose 第 21 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, C# always sky blue, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--kotlin)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .ch{background:var(--sky)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.ct code{color:var(--sky)} td.kt code{color:var(--kotlin);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--kotlin-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--kotlin);font-size:13px}
+
+/* skeleton cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kcard{background:var(--surface);border:2px solid var(--sun);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kcard h3{font-size:18px}
+.kcard pre.code{font-size:12.5px;padding:12px 14px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data,.cards{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.exs.one{grid-template-columns:minmax(0,1fr)}
+.pts{flex:none;font-size:12px;font-weight:700;color:var(--coral);background:var(--coral-soft);border-radius:999px;padding:2px 10px;max-width:45%;text-align:center}
+.see{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:14.5px}
+.see b{font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-right:6px}
+.ex pre.code{font-size:13px}
+.see code,.ex p code,.steps code,.tl-note code,.note code,.tip code{overflow-wrap:anywhere}
+.file{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin-bottom:-4px}
+.note{margin-top:14px;font-size:15px;background:var(--sky-soft);border-radius:12px;padding:10px 14px}
+.scorebar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.scorebar span{font-size:13px;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.scorebar span b{color:var(--coral)}
+.tl .t5{background:var(--pink)}
+table.plain{min-width:520px}
+table.plain thead th{background:var(--ink);color:var(--bg)}
+
+.sheet{display:grid;gap:14px}
+.sgrp{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.sgrp h3{font-size:18px;display:flex;justify-content:space-between;gap:8px}
+.sgrp h3 small{font-family:var(--f-body);font-size:13px;color:var(--muted)}
+.sgrp ul{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px}
+.sgrp label{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;cursor:pointer}
+.sgrp label b{margin-left:auto;flex:none;color:var(--coral);font-variant-numeric:tabular-nums}
+.sgrp input{margin-top:3px}
+.total{position:sticky;bottom:12px;margin-top:16px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;font-size:18px;font-family:var(--f-display)}
+.total b{font-size:26px;color:var(--sun);font-variant-numeric:tabular-nums}
+.total button{font:inherit;font-size:14px;background:transparent;color:var(--bg);border:1px solid var(--bg);border-radius:999px;padding:4px 12px;cursor:pointer}
+.spec{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:10px}
+.spec h3{font-size:19px}
+.spec ol,.spec ul{margin:0;padding-left:22px;display:grid;gap:4px;font-size:15px}
+.chg{background:var(--sun-soft);border-radius:14px;padding:12px 16px}
+.chg ol{margin:6px 0 0;padding-left:22px;display:grid;gap:4px}
+</style>
+</head><body>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#rules">規則</a><a href="#spec">題目</a><a href="#strategy">策略</a><a href="#sheet">評分表</a><a href="#review">檢討</a>
+  <span class="prog" id="prog">完成 0</span>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 21 堂</b>Android Compose 手機程式設計</span>
+    <h1>模擬賽三：<span class="d">GyroQuiz Plus</span> 資料變化題</h1>
+    <p class="lead">GyroQuiz 全部功能加上一整組資料功能：首頁最佳成績、紀錄統計、兩種排序、長按刪除、清除全部、詳細頁。資料功能佔 32 分，跟陀螺儀一樣重。這次要練的是取捨：150 分鐘內，哪些先做、哪些放棄。</p>
+    
+  </div>
+  <div class="swap" aria-label="今天學會"><div class="ln k"><span class="tag">新增</span><span>統計、排序、刪除、詳細頁</span></div><div class="ln sk"><span class="tag">配分</span><span>紀錄頁 32 分</span></div><div class="ln co"><span class="tag">練習</span><span>150 分鐘內的取捨</span></div></div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 190 分鐘</h2>
+  <div class="tl"><div class="t1" style="flex:10"><b>讀題</b><small>0–10 分</small></div><div class="t2" style="flex:150"><b>作答</b><small>10–160 分</small></div><div class="t3" style="flex:30"><b>互評</b><small>160–190 分</small></div></div>
+  <p class="tl-note">讀題時先在評分表上標出「確定拿得到」與「可能放棄」的項目。</p>
+</div>
+
+<section id="rules">
+  <div class="sh"><h2>比賽規則</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)"></span>
+  <p></p></div>
+  <ol class="steps"><li>App 名稱 <code class="ic">QXX</code>，Package name <code class="ic">tw.mad08.gyroquizXX</code>。</li><li>APK 放專案根目錄，檔名 <code class="ic">XX_GyroQuizPlus.apk</code>。</li><li>不看講義、不看骨架卡、只能用原生套件，UI 不可以用截圖。</li></ol>
+</section><section id="spec">
+  <div class="sh"><h2>題目</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)"></span>
+  <p></p></div>
+  <div class="spec"><h3>GyroQuiz Plus 題本</h3>
+<ol>
+<li><b>GyroQuiz 全部功能</b>：首頁、答題頁、陀螺儀游標、停留 3 秒、答錯鎖定 5 秒、答對綠框 2 秒、結算、SQLite（規格同模擬賽一）。</li>
+<li><b>首頁最佳成績</b>：按鈕上方顯示「最佳：答對 N 題・Xm Ys」。最佳＝答對最多，同分時時長最短。沒有任何紀錄時顯示「尚無紀錄」。</li>
+<li><b>紀錄頁統計列</b>：共幾局、平均答對（小數 1 位，例如 8.3）、最高答對。</li>
+<li><b>排序</b>：兩個按鈕「最新」「最佳」，目前的排序要看得出來。最新＝結束時間新到舊；最佳＝答對多到少，同分時時長短在前。</li>
+<li><b>刪除</b>：長按一筆跳出確認 Dialog，確認後從資料庫刪除。另有「清除」按鈕可刪除全部，也要確認。刪除後列表與統計立刻更新。</li>
+<li><b>詳細頁</b>：點一下紀錄進入詳細頁，顯示答對、錯誤、正確率（四捨五入到整數）、時長、結束時間；返回回到紀錄列表。</li>
+</ol></div>
+</section><section id="strategy">
+  <div class="sh"><h2>建議作答順序</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)"></span>
+  <p>資料功能每一項分數小但做法固定，適合在陀螺儀卡住時切換過去做。</p></div>
+  <div class="tbl"><table class="plain"><thead><tr><th>時間</th><th>內容</th><th>分數</th></tr></thead><tbody>
+<tr><td>0:00–0:55</td><td>GyroQuiz 基本：首頁、換頁、答題 UI、計時、顏色、結算、SQLite 讀寫</td><td>約 40</td></tr>
+<tr><td>0:55–1:15</td><td>資料功能 A：getAll 讀 id、統計列、兩種排序、首頁最佳成績</td><td>約 16</td></tr>
+<tr><td>1:15–1:50</td><td>陀螺儀、邊界、雙擊校正</td><td>22</td></tr>
+<tr><td>1:50–2:15</td><td>停留選答與答對答錯</td><td>18</td></tr>
+<tr><td>2:15–2:25</td><td>資料功能 B：長按刪除、清除、詳細頁</td><td>約 19</td></tr>
+<tr><td>2:25–2:30</td><td>匯出 APK</td><td>避免扣 5 分</td></tr>
+</tbody></table></div>
+<p class="note">資料功能 B 放最後，因為它依賴 A（id、version 重讀）。如果 2:15 時陀螺儀還沒好，先做 B 拿 19 分，比卡在陀螺儀划算。</p>
+</section><section id="sheet">
+  <div class="sh"><h2>互評評分表</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">30 分鐘</span>
+  <p>測刪除時先玩 3 局以上，才看得出排序與統計對不對。</p></div>
+  <div class="sheet"><div class="sgrp"><h3>扣分項目<small>勾選代表有發生</small></h3><ul><li><label><input type="checkbox" class="sc" id="sc41" data-pts="-1"><span>專案無法正確開啟</span><b>-1</b></label></li><li><label><input type="checkbox" class="sc" id="sc42" data-pts="-1"><span>無法在 Android Emulator 執行</span><b>-1</b></label></li><li><label><input type="checkbox" class="sc" id="sc43" data-pts="-1"><span>App 名稱不是 QXX</span><b>-1</b></label></li><li><label><input type="checkbox" class="sc" id="sc44" data-pts="-1"><span>Package name 不是 tw.mad08.gyroquizXX</span><b>-1</b></label></li><li><label><input type="checkbox" class="sc" id="sc45" data-pts="-5"><span>未匯出 APK 或位置、名稱錯誤（XX_GyroQuizPlus.apk）</span><b>-5</b></label></li></ul></div><div class="sgrp"><h3>首頁<small>5 分</small></h3><ul><li><label><input type="checkbox" class="sc" id="sc0" data-pts="1"><span>Logo、標題、兩個按鈕</span><b>1</b></label></li><li><label><input type="checkbox" class="sc" id="sc1" data-pts="1"><span>兩個按鈕導頁正確</span><b>1</b></label></li><li><label><input type="checkbox" class="sc" id="sc2" data-pts="2"><span>顯示最佳成績（答對最多、同分時間最短）</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc3" data-pts="1"><span>沒有紀錄時顯示「尚無紀錄」</span><b>1</b></label></li></ul></div><div class="sgrp"><h3>答題頁面 UI<small>3 分</small></h3><ul><li><label><input type="checkbox" class="sc" id="sc4" data-pts="1.5"><span>返回、題號、Progress Bar、經過時間</span><b>1.5</b></label></li><li><label><input type="checkbox" class="sc" id="sc5" data-pts="1.5"><span>題目、4 個選項、游標</span><b>1.5</b></label></li></ul></div><div class="sgrp"><h3>答題頁面功能<small>32 分</small></h3><ul><li><label><input type="checkbox" class="sc" id="sc6" data-pts="1"><span>返回按鈕顯示 Dialog 確認退出</span><b>1</b></label></li><li><label><input type="checkbox" class="sc" id="sc7" data-pts="2"><span>Questions.json 隨機 10 題不重複</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc8" data-pts="2"><span>題目與選項依 json 顯示</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc9" data-pts="2"><span>經過時間進背景暫停、回來繼續</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc10" data-pts="1"><span>Progress Bar 依題數正確顯示</span><b>1</b></label></li><li><label><input type="checkbox" class="sc" id="sc11" data-pts="2"><span>選項顏色規則正確</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc12" data-pts="2"><span>游標初始在 4 個選項中心點</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc13" data-pts="8"><span>游標依陀螺儀傾斜角度移動</span><b>8</b></label></li><li><label><input type="checkbox" class="sc" id="sc14" data-pts="6"><span>游標不可超出 4 個選項</span><b>6</b></label></li><li><label><input type="checkbox" class="sc" id="sc15" data-pts="6"><span>雙擊校正</span><b>6</b></label></li></ul></div><div class="sgrp"><h3>選擇／正確／錯誤狀態<small>18 分</small></h3><ul><li><label><input type="checkbox" class="sc" id="sc16" data-pts="4"><span>停留 3 秒確認並顯示圓形進度條</span><b>4</b></label></li><li><label><input type="checkbox" class="sc" id="sc17" data-pts="2"><span>進度條 0～100%</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc18" data-pts="3"><span>移至其他選項重新計算</span><b>3</b></label></li><li><label><input type="checkbox" class="sc" id="sc19" data-pts="4"><span>答錯：紅色進度條、禁止選擇 5 秒</span><b>4</b></label></li><li><label><input type="checkbox" class="sc" id="sc20" data-pts="1"><span>紅色進度條 100～0%</span><b>1</b></label></li><li><label><input type="checkbox" class="sc" id="sc21" data-pts="1"><span>「選擇錯誤」提示與紅框</span><b>1</b></label></li><li><label><input type="checkbox" class="sc" id="sc22" data-pts="2"><span>答對綠框 2 秒後下一題</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc23" data-pts="1"><span>最後一題導頁至結算</span><b>1</b></label></li></ul></div><div class="sgrp"><h3>結算畫面<small>10 分</small></h3><ul><li><label><input type="checkbox" class="sc" id="sc24" data-pts="2"><span>答對、錯誤、時長、結束時間、兩個按鈕</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc25" data-pts="2"><span>時長與日期時間格式正確</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc26" data-pts="1"><span>返回、回首頁、再玩一次導頁正確</span><b>1</b></label></li><li><label><input type="checkbox" class="sc" id="sc27" data-pts="5"><span>結果保存至 SQLite</span><b>5</b></label></li></ul></div><div class="sgrp"><h3>遊玩紀錄（資料功能）<small>32 分</small></h3><ul><li><label><input type="checkbox" class="sc" id="sc28" data-pts="2"><span>列表顯示答對/錯誤、時長、結束時間，格式正確</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc29" data-pts="4"><span>列表資料來自 SQLite</span><b>4</b></label></li><li><label><input type="checkbox" class="sc" id="sc30" data-pts="1"><span>統計列：局數</span><b>1</b></label></li><li><label><input type="checkbox" class="sc" id="sc31" data-pts="2"><span>統計列：平均答對（小數 1 位）</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc32" data-pts="1"><span>統計列：最高答對</span><b>1</b></label></li><li><label><input type="checkbox" class="sc" id="sc33" data-pts="2"><span>排序：最新（結束時間新到舊）</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc34" data-pts="3"><span>排序：最佳（答對多到少，同分時間短在前）</span><b>3</b></label></li><li><label><input type="checkbox" class="sc" id="sc35" data-pts="2"><span>長按一筆跳出確認 Dialog</span><b>2</b></label></li><li><label><input type="checkbox" class="sc" id="sc36" data-pts="4"><span>確認後從資料庫刪除該筆</span><b>4</b></label></li><li><label><input type="checkbox" class="sc" id="sc37" data-pts="3"><span>「清除」全部，有確認 Dialog</span><b>3</b></label></li><li><label><input type="checkbox" class="sc" id="sc38" data-pts="3"><span>刪除或清除後列表與統計立即更新</span><b>3</b></label></li><li><label><input type="checkbox" class="sc" id="sc39" data-pts="3"><span>點一筆進入詳細頁（含正確率）</span><b>3</b></label></li><li><label><input type="checkbox" class="sc" id="sc40" data-pts="2"><span>詳細頁返回回到紀錄列表</span><b>2</b></label></li></ul></div></div><div class="total"><span>得分</span><b id="score">0 / 100</b><button type="button" id="resetScore">清除勾選</button></div>
+</section><section id="review">
+  <div class="sh"><h2>檢討</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)"></span>
+  <p></p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>我的得分：＿＿＿／100（模擬賽一：＿＿＿、模擬賽二：＿＿＿）</span></label></li><li><label><input type="checkbox" id="ck1"><span>資料功能 32 分我拿到＿＿＿分</span></label></li><li><label><input type="checkbox" id="ck2"><span>我有照建議順序或自己的計畫作答</span></label></li><li><label><input type="checkbox" id="ck3"><span>刪除後畫面會立即更新</span></label></li><li><label><input type="checkbox" id="ck4"><span>我寫下這次扣分最多的 3 項與原因</span></label></li></ul>
+</section>
+
+<footer>Android Compose 手機程式設計・第 21 堂 / 共 24 堂</footer>
+</div>
+
+<script>
+(function(){
+  var KW=/^(fun|val|var|return|if|else|when|for|in|until|downTo|step|while|do|repeat|class|data|enum|object|true|false|null|is|as|import|package|override|private|set|get|const|it|by|super|this|try|catch|finally|throw|break|continue|lateinit)$/;
+  var TY=/^(Int|Long|Float|Double|Boolean|String|Char|Unit|List|Map|Set|Pair|Any|Modifier|Color|Composable|Screen|Phase|Question|GameResult|RecordDb|Context|Bundle|Offset|Size)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)')|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?[fL]?\b)/g;
+  document.querySelectorAll('code[data-lang]').forEach(function(el){
+    var lang=el.getAttribute('data-lang');
+    var src=el.textContent,out='',last=0,m;
+    re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]&&lang==='kotlin'){var w=t.replace('@','');if(t.charAt(0)==='@')cls='t';else if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+  var KEY='compose-l21-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var cardsEl=document.querySelectorAll('.ex');
+  function refresh(){
+    var n=0;
+    cardsEl.forEach(function(card){var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;});
+    if(prog){if(!cardsEl.length)prog.style.display='none';else prog.textContent='完成 '+n+' / '+cardsEl.length;}
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+<script>
+(function(){
+  var el=document.getElementById('score'); if(!el) return;
+  var total=el.textContent.split('/')[1].trim();
+  function sum(){var s=0;document.querySelectorAll('input.sc').forEach(function(c){if(c.checked)s+=parseFloat(c.getAttribute('data-pts'));});el.textContent=(Math.round(s*10)/10)+' / '+total;}
+  document.querySelectorAll('input.sc').forEach(function(c){c.addEventListener('change',sum);});
+  document.getElementById('resetScore').addEventListener('click',function(){document.querySelectorAll('input.sc').forEach(function(c){c.checked=false;c.dispatchEvent(new Event('change'));});sum();});
+  setTimeout(sum,0);
+})();
+</script>
+</body></html>

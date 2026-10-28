@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Android Compose 第 1 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, C# always sky blue, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--kotlin)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .ch{background:var(--sky)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.ct code{color:var(--sky)} td.kt code{color:var(--kotlin);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--kotlin-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--kotlin);font-size:13px}
+
+/* skeleton cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kcard{background:var(--surface);border:2px solid var(--sun);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kcard h3{font-size:18px}
+.kcard pre.code{font-size:12.5px;padding:12px 14px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data,.cards{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head><body>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#setup">環境</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#drills">實作 10 題</a><a href="#check">自評</a><a href="#card">骨架卡</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0 / 10</span>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 1 堂</b>Android Compose 手機程式設計</span>
+    <h1><span class="d">Kotlin</span> 語法基礎</h1>
+    <p class="lead">Android App 用 Kotlin 撰寫。你已經會 C#，今天把熟悉的寫法一行一行換成 Kotlin：變數、數字、字串、if 與 when、迴圈。最後寫出 GyroQuiz 會用到的 10 個小函式，之後直接搬進 App。</p>
+  </div>
+  <div class="swap" aria-label="今天學會">
+    <div class="ln sk"><span class="tag">C#</span><span>var label = $"{q}/{total}";</span></div>
+    <div class="mid" aria-hidden="true">↓</div>
+    <div class="ln k"><span class="tag">Kotlin</span><span>val label = "$q/$total"</span></div>
+    <div class="ln co"><span class="tag">when</span><span>when (key) { "a" -&gt; 0 else -&gt; -1 }</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1"><b>環境</b><small>0–10 分</small></div>
+    <div class="t2"><b>對照與重點</b><small>10–35 分</small></div>
+    <div class="t3"><b>實作 10 題</b><small>35–105 分・每題約 7 分鐘</small></div>
+    <div class="t4"><b>自評與骨架卡</b><small>105–120 分</small></div>
+  </div>
+  <p class="tl-note">第一堂開頭是環境準備。之後每堂開頭 10 分鐘默寫上一堂的骨架卡，寫不出來的地方就是要再練的地方。</p>
+</div>
+
+<section id="setup">
+  <div class="sh"><h2>環境準備</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">10 分鐘</span>
+  <p>比賽用 Android Studio，所以練習也直接在 Android Studio 裡寫。今天只跑純 Kotlin 的 main，不開模擬器。</p></div>
+  <ol class="steps">
+    <li>開啟 Android Studio，New Project 選 <code class="ic">Empty Activity</code>，名稱填 <code class="ic">KotlinPractice</code>。</li>
+    <li>第一次開專案會跑 Gradle Sync，等右下角進度跑完再動手。</li>
+    <li>左側切到 Project 檢視，在 <code class="ic">app/src/main/java/…</code> 套件上按右鍵，New → Kotlin Class/File → File，命名 <code class="ic">Lesson01</code>。</li>
+    <li>寫一個 <code class="ic">fun main()</code>，按行號旁的綠色三角形 Run，結果出現在下方 Run 視窗。</li>
+    <li>10 題練習都寫在 <code class="ic">Lesson01.kt</code>，每題一個函式，在 main 裡印出結果。</li>
+  </ol>
+  <div style="margin-top:14px"><pre class="code"><code data-lang="kotlin">fun main() {
+    println("Hello GyroQuiz")
+}</code></pre></div>
+  <p class="tip">在家沒有 Android Studio 時，可以用瀏覽器開 play.kotlinlang.org 練習，寫法完全一樣。</p>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>語法對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 25 分鐘</span>
+  <p>左欄是學過的 C#，右欄是 Kotlin 寫法。黃底的幾行最容易寫錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="ch">C#</th><th scope="col" class="kh">Kotlin</th></tr></thead>
+    <tbody>
+<tr><th scope="row">程式進入點</th><td class="ct"><code>static void Main() { }</code></td><td class="kt"><code>fun main() { }</code></td></tr>
+<tr><th scope="row">印出</th><td class="ct"><code>Console.WriteLine(x);</code></td><td class="kt"><code>println(x)</code></td></tr>
+<tr class="hot"><th scope="row">分號<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>一定要寫 ;</code></td><td class="kt"><code>不用寫，一行一個敘述</code></td></tr>
+<tr><th scope="row">可變變數</th><td class="ct"><code>var score = 0;</code></td><td class="kt"><code>var score = 0</code></td></tr>
+<tr class="hot"><th scope="row">不可變變數<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>readonly / const</code></td><td class="kt"><code>val total = 10</code></td></tr>
+<tr class="hot"><th scope="row">型別寫法<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>int score = 0;</code></td><td class="kt"><code>var score: Int = 0  // 型別在後</code></td></tr>
+<tr class="hot"><th scope="row">基本型別<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>int  long  float  double  bool  string</code></td><td class="kt"><code>Int  Long  Float  Double  Boolean  String</code></td></tr>
+<tr><th scope="row">整數除法</th><td class="ct"><code>7 / 2 → 3</code></td><td class="kt"><code>7 / 2 → 3（跟 C# 一樣）</code></td></tr>
+<tr><th scope="row">字面值</th><td class="ct"><code>1000L  0.5f  0.5</code></td><td class="kt"><code>1000L  0.5f  0.5</code></td></tr>
+<tr class="hot"><th scope="row">型別轉換<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>(double)x  (int)y</code></td><td class="kt"><code>x.toDouble()  y.toInt()</code></td></tr>
+<tr><th scope="row">字串轉數字</th><td class="ct"><code>int.Parse("42")</code></td><td class="kt"><code>"42".toInt()</code></td></tr>
+<tr><th scope="row">轉失敗給 null</th><td class="ct"><code>int.TryParse(s, out n)</code></td><td class="kt"><code>s.toIntOrNull()</code></td></tr>
+<tr class="hot"><th scope="row">字串插值<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>$"{q}/{total} {q + 1}"</code></td><td class="kt"><code>"$q/$total ${q + 1}"</code></td></tr>
+<tr><th scope="row">補零</th><td class="ct"><code>m.ToString("D2")</code></td><td class="kt"><code>m.toString().padStart(2, '0')</code></td></tr>
+<tr><th scope="row">小數位數</th><td class="ct"><code>x.ToString("F2")</code></td><td class="kt"><code>"%.2f".format(x)</code></td></tr>
+<tr class="hot"><th scope="row">三元運算<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>c ? a : b</code></td><td class="kt"><code>if (c) a else b</code></td></tr>
+<tr class="hot"><th scope="row">多重分支<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>switch (x) { case 1: …; break; }</code></td><td class="kt"><code>when (x) { 1 -&gt; … else -&gt; … }</code></td></tr>
+<tr><th scope="row">範圍判斷</th><td class="ct"><code>x &gt;= 7 &amp;&amp; x &lt;= 9</code></td><td class="kt"><code>x in 7..9</code></td></tr>
+<tr class="hot"><th scope="row">計數迴圈<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>for (int i = 0; i &lt; n; i++)</code></td><td class="kt"><code>for (i in 0 until n)</code></td></tr>
+<tr><th scope="row">含尾迴圈</th><td class="ct"><code>for (int i = 1; i &lt;= 10; i++)</code></td><td class="kt"><code>for (i in 1..10)</code></td></tr>
+<tr><th scope="row">倒數迴圈</th><td class="ct"><code>for (int i = 10; i &gt;= 0; i -= 5)</code></td><td class="kt"><code>for (i in 10 downTo 0 step 5)</code></td></tr>
+<tr><th scope="row">foreach</th><td class="ct"><code>foreach (var x in list)</code></td><td class="kt"><code>for (x in list)</code></td></tr>
+<tr class="hot"><th scope="row">函式<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>int Add(int a, int b) { return a + b; }</code></td><td class="kt"><code>fun add(a: Int, b: Int): Int { return a + b }</code></td></tr>
+<tr><th scope="row">單行函式</th><td class="ct"><code>int Add(int a, int b) =&gt; a + b;</code></td><td class="kt"><code>fun add(a: Int, b: Int) = a + b</code></td></tr>
+<tr><th scope="row">字串相等</th><td class="ct"><code>a == b</code></td><td class="kt"><code>a == b（比內容）</code></td></tr>
+    </tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">跟著教練一起跑</span>
+  <p>每段範例都已實際執行過，註解裡的值就是印出結果。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>val 與 var</h3></header><p>能用 val 就用 val，只有真的會變的值才用 var。型別通常讓 Kotlin 自己推斷，要寫的話放在名稱後面、用冒號隔開。</p><pre class="code"><code data-lang="kotlin">fun variables() {
+    var score = 0               // 型別推斷為 Int
+    val total = 10              // 之後不能改
+    val title: String = "GyroQuiz"
+    score += 3
+    println("$title：$score / $total 題")
+    // GyroQuiz：3 / 10 題
+    println(7 / 2)    // 3
+    println(7 / 2.0)  // 3.5
+    println(7 % 2)    // 1
+}</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>數字與轉型</h3></header><p>Kotlin 不會自動把 Int 變成 Double，C# 的 (double)x 要改成 x.toDouble()。計時用毫秒時數字很大，記得用 Long。</p><pre class="code"><code data-lang="kotlin">fun numbers() {
+    val sec: Int = 731
+    val ms: Long = sec * 1000L
+    val ratio: Float = 3 / 10f
+    println(ms)                       // 731000
+    println(ratio)                    // 0.3
+    println(sec.toDouble() / 60)      // 12.183333333333334
+    println("42".toInt() + 1)         // 43
+    println("abc".toIntOrNull())      // null
+    println(3.7.toInt())              // 3（直接捨去）
+}</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>字串模板與格式</h3></header><p>C# 的 $"{x}" 在 Kotlin 是 "$x"，有運算時加大括號 ${ }。補零用 padStart，題本要求的時間格式全靠它。</p><pre class="code"><code data-lang="kotlin">fun strings() {
+    val q = 3
+    val total = 10
+    println("第 $q 題，共 $total 題，進度 ${q * 100 / total}%")
+    // 第 3 題，共 10 題，進度 30%
+    println("5".padStart(2, '0'))     // 05
+    println("%.2f".format(3.14159))   // 3.14
+    println("%02d:%02d".format(1, 5)) // 01:05
+    val name = "Gyro"
+    println(name.length)              // 4
+    println(name.uppercase())         // GYRO
+}</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>if 是運算式</h3></header><p>Kotlin 沒有 ? : 三元運算子，因為 if 本身就能回傳值。注意 if 當運算式時一定要有 else。</p><pre class="code"><code data-lang="kotlin">fun ifExpr() {
+    val correct = 7
+    val passText = if (correct &gt;= 6) "及格" else "不及格"
+    println(passText)   // 及格
+    val bigger = if (3 &gt; 5) 3 else 5
+    println(bigger)     // 5
+}</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>when 取代 switch</h3></header><p>不用寫 break，一個分支可以放多個值或一段範圍。when 也能直接回傳值，回傳時要有 else。</p><pre class="code"><code data-lang="kotlin">fun grade(correct: Int): String = when (correct) {
+    10 -&gt; "滿分"
+    in 7..9 -&gt; "很棒"
+    in 4..6 -&gt; "再加油"
+    else -&gt; "多練習"
+}
+// grade(10) → 滿分   grade(8) → 很棒   grade(2) → 多練習
+
+fun optionName(key: String): String = when (key) {
+    "a", "A" -&gt; "第 1 個選項"
+    "b", "B" -&gt; "第 2 個選項"
+    else -&gt; "其他"
+}
+// optionName("B") → 第 2 個選項
+
+// 沒有括號的 when，就是一串 if / else if
+val h = when {
+    hour == 0 -&gt; 12
+    hour &gt; 12 -&gt; hour - 12
+    else -&gt; hour
+}</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>迴圈與區間</h3></header><p>1..3 包含 3，0 until 3 不含 3。C# 的 for (int i = 0; i &lt; n; i++) 幾乎都寫成 0 until n。</p><pre class="code"><code data-lang="kotlin">fun loops() {
+    for (i in 1..3) print("$i ")           // 1 2 3
+    println()
+    for (i in 0 until 3) print("$i ")      // 0 1 2
+    println()
+    for (i in 10 downTo 0 step 5) print("$i ")  // 10 5 0
+    println()
+    repeat(3) { print("★") }              // ★★★
+    println()
+    var n = 3
+    while (n &gt; 0) { print("$n "); n-- }    // 3 2 1
+}</code></pre></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>實作 10 題</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">70 分鐘</span>
+  <p>每題都是 GyroQuiz 之後會直接用到的函式。輸出要跟「預期結果」完全一致才算完成。</p></div>
+  <div class="rule">題本規定：一局 <b>10 題</b>、停留 <b>3 秒</b>確認選擇、答錯鎖定 <b>5 秒</b>；答題時長格式 <b>12m 11s</b>，結束時間格式 <b>2026.06.26 05:45 PM</b>。難度格子越多越難，卡住就先跳下一題。</div>
+  <div class="exs"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>題號文字</h3><span class="use">用在：答題頁「目前題號/全部題數」</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun progressText(current: Int, total: Int): String</code></pre>
+<p>用字串模板組出題號。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>(3, 10)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">3/10</pre></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>進度條比例</h3><span class="use">用在：答題進度 Progress Bar</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun progressFraction(current: Int, total: Int): Float</code></pre>
+<p>回傳 0～1 的小數。小心 3 / 10 在 Kotlin 是 0。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>(3, 10)
+(10, 10)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">0.3
+1.0</pre></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>經過時間 mm:ss</h3><span class="use">用在：答題經過時間</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun formatClock(totalSec: Int): String</code></pre>
+<p>分、秒都要補零成兩位。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>65
+0
+731</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">01:05
+00:00
+12:11</pre></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>答題時長 12m 11s</h3><span class="use">用在：結算頁、遊玩紀錄</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun formatDuration(totalSec: Int): String</code></pre>
+<p>這個格式不補零。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>731
+59</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">12m 11s
+0m 59s</pre></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>答案代號轉位置</h3><span class="use">用在：判斷選到的是不是正確答案</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun answerIndex(key: String): Int</code></pre>
+<p>Questions.json 的 answer 是 "a"～"d"，轉成 0～3；其他字回傳 -1。用 when 寫。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>"c"
+"x"</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">2
+-1</pre></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>日期 yyyy.MM.dd</h3><span class="use">用在：答題結束日期</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun formatDate(year: Int, month: Int, day: Int): String</code></pre>
+<p>月、日要補零，中間用點。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>(2026, 6, 26)
+(2026, 1, 5)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">2026.06.26
+2026.01.05</pre></div></div>
+<label class="done"><input type="checkbox" id="ex6"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>12 小時制時間</h3><span class="use">用在：答題結束時間</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun formatTime12(hour: Int, minute: Int): String</code></pre>
+<p>hour 是 0～23。午夜 0 點是 12 AM，中午 12 點是 12 PM。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>(17, 45)
+(0, 5)
+(12, 0)
+(9, 30)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">05:45 PM
+12:05 AM
+12:00 PM
+09:30 AM</pre></div></div>
+<label class="done"><input type="checkbox" id="ex7"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="8">
+<div class="ex-top"><span class="exn">08</span><div class="ex-title"><h3>停留進度 %</h3><span class="use">用在：游標周圍的圓形進度條</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun dwellPercent(elapsedMs: Long): Int</code></pre>
+<p>停留 3000 毫秒是 100%。超過也只回傳 100，用 if 運算式處理。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>0
+1500
+2999
+4000</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">0
+50
+99
+100</pre></div></div>
+<label class="done"><input type="checkbox" id="ex8"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="9">
+<div class="ex-top"><span class="exn">09</span><div class="ex-title"><h3>答錯鎖定倒數 %</h3><span class="use">用在：紅色圓形進度條 100～0%</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun lockPercent(elapsedMs: Long): Int</code></pre>
+<p>鎖定 5000 毫秒，從 100 倒數到 0，超過 5000 回傳 0。試著用沒有括號的 when 寫。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>0
+1000
+2500
+6000</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">100
+80
+50
+0</pre></div></div>
+<label class="done"><input type="checkbox" id="ex9"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="10">
+<div class="ex-top"><span class="exn">10</span><div class="ex-title"><h3>結束日期時間</h3><span class="use">用在：結算頁、遊玩紀錄</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun formatEndTime(year: Int, month: Int, day: Int,
+                  hour: Int, minute: Int): String</code></pre>
+<p>組合第 6、7 題，做出題本規定的格式。直接呼叫寫好的函式，不要重寫。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>(2026, 6, 26, 17, 45)
+(2026, 12, 1, 0, 3)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">2026.06.26 05:45 PM
+2026.12.01 12:03 AM</pre></div></div>
+<label class="done"><input type="checkbox" id="ex10"> 輸出一致，完成</label>
+</article></div>
+  <p class="tip">第 8、9 題提示：elapsedMs 是 Long，算出來的結果也是 Long，回傳前要 .toInt()。先乘 100 再除，才不會被整數除法吃掉。</p>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">15 分鐘</span>
+  <p>下課前逐項勾選。沒勾到的項目，就是下堂課開頭小測的重點。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>10 題輸出都與預期結果完全一致</span></label></li><li><label><input type="checkbox" id="ck1"><span>程式碼裡沒有黃色警告底線（Android Studio 右上角沒有黃色三角形）</span></label></li><li><label><input type="checkbox" id="ck2"><span>不會改變的變數都用 val，沒有多餘的 var</span></label></li><li><label><input type="checkbox" id="ck3"><span>第 2 題先轉成 Float 再除，沒有算出 0.0</span></label></li><li><label><input type="checkbox" id="ck4"><span>第 3、6 題用 padStart 補零，沒有自己寫 if 判斷小於 10</span></label></li><li><label><input type="checkbox" id="ck5"><span>第 5 題用 when，並且有 else 分支</span></label></li><li><label><input type="checkbox" id="ck6"><span>第 7 題 0 點與 12 點都正確</span></label></li><li><label><input type="checkbox" id="ck7"><span>不看對照表，能說出 val、"$x"、if 運算式、when、0 until n 對應 C# 的什麼</span></label></li></ul>
+</section>
+
+<section id="card">
+  <div class="sh"><h2>骨架卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">下堂課開頭默寫</span>
+  <p>下面三段是今天最常用的固定寫法。下堂課開頭 10 分鐘要不看講義寫出來，比賽時這些都要能直接打出來。</p></div>
+  <div class="cards">
+    <article class="kcard"><h3>補零組字串</h3><pre class="code"><code data-lang="kotlin">fun two(n: Int) = n.toString().padStart(2, '0')
+
+fun formatClock(sec: Int) = "${two(sec / 60)}:${two(sec % 60)}"</code></pre></article>
+    <article class="kcard"><h3>if 與 when 回傳值</h3><pre class="code"><code data-lang="kotlin">val ampm = if (hour &lt; 12) "AM" else "PM"
+
+val h = when {
+    hour == 0 -&gt; 12
+    hour &gt; 12 -&gt; hour - 12
+    else -&gt; hour
+}</code></pre></article>
+    <article class="kcard"><h3>Long 毫秒換百分比</h3><pre class="code"><code data-lang="kotlin">val p = (elapsedMs * 100 / 3000).toInt()
+val percent = if (p &gt; 100) 100 else p</code></pre></article>
+  </div>
+</section>
+
+<section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p>寫在 <code class="ic">Homework01.kt</code>，在 main 裡印出結果檢查。</p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><pre class="sig"><code data-lang="kotlin">fun lockSecondsLeft(elapsedMs: Long): Int</code></pre><p>答錯鎖定 5 秒時，畫面上要顯示還剩幾秒。不足 1 秒也算 1 秒，時間到回傳 0。</p><p class="hio"><b>輸入</b> 0 / 100 / 1000 / 4999 / 5000<br><b>結果</b> <code>5 / 5 / 4 / 1 / 0</code></p></article><article class="hw"><span class="hwn">作業 2</span><pre class="sig"><code data-lang="kotlin">fun progressBar(current: Int, total: Int): String</code></pre><p>用迴圈畫出文字版進度條，答過的題目用 ■，還沒答的用 □。</p><p class="hio"><b>輸入</b> (3, 10) / (0, 5)<br><b>結果</b> <code>■■■□□□□□□□ 3/10<br>□□□□□ 0/5</code></p></article><article class="hw"><span class="hwn">作業 3</span><pre class="sig"><code data-lang="kotlin">fun parseClock(text: String): Int</code></pre><p>第 3 題反過來：把 "mm:ss" 轉回總秒數。提示：text.split(":") 會回傳兩段字串。</p><p class="hio"><b>輸入</b> "01:05" / "12:11"<br><b>結果</b> <code>65 / 731</code></p></article></div>
+</section>
+
+<footer>Android Compose 手機程式設計・第 1 堂 / 共 24 堂</footer>
+</div>
+
+<script>
+(function(){
+  // 簡易 Kotlin 語法上色
+  var KW=/^(fun|val|var|return|if|else|when|for|in|until|downTo|step|while|do|repeat|class|object|true|false|null|is|as|import|package|override|private|const)$/;
+  var TY=/^(Int|Long|Float|Double|Boolean|String|Char|Unit|List|Map|Any)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)')|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?[fL]?\b)/g;
+  document.querySelectorAll('code[data-lang="kotlin"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='compose-l1-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 10';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+
+</body></html>

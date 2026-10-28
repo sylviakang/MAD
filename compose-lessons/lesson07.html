@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Android Compose 第 7 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, C# always sky blue, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--kotlin)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .ch{background:var(--sky)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.ct code{color:var(--sky)} td.kt code{color:var(--kotlin);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--kotlin-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--kotlin);font-size:13px}
+
+/* skeleton cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kcard{background:var(--surface);border:2px solid var(--sun);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kcard h3{font-size:18px}
+.kcard pre.code{font-size:12.5px;padding:12px 14px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data,.cards{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.exs.one{grid-template-columns:minmax(0,1fr)}
+.pts{flex:none;font-size:12px;font-weight:700;color:var(--coral);background:var(--coral-soft);border-radius:999px;padding:2px 10px;max-width:45%;text-align:center}
+.see{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:14.5px}
+.see b{font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-right:6px}
+.ex pre.code{font-size:13px}
+.see code,.ex p code,.steps code,.tl-note code,.note code,.tip code{overflow-wrap:anywhere}
+.file{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin-bottom:-4px}
+.note{margin-top:14px;font-size:15px;background:var(--sky-soft);border-radius:12px;padding:10px 14px}
+.scorebar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.scorebar span{font-size:13px;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.scorebar span b{color:var(--coral)}
+.tl .t5{background:var(--pink)}
+table.plain{min-width:520px}
+table.plain thead th{background:var(--ink);color:var(--bg)}
+</style>
+</head><body>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#warmup">默寫</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#tasks">實作</a><a href="#check">自評</a><a href="#card">骨架卡</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0</span>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 7 堂</b>Android Compose 手機程式設計</span>
+    <h1>結算頁與 <span class="d">SQLite</span> 寫入</h1>
+    <p class="lead">一局結束後要顯示答對題數、錯誤題數、答題時長、結束日期時間，並把結果存進 SQLite。這一堂拿到的分數最多（15.5 分），其中「保存至 SQLite」一項就占 8 分，而且寫法固定，一定要練熟。</p>
+    <div class="scorebar"><span>結算頁 UI <b>3.5</b></span><span>結算頁功能 <b>4</b></span><span>保存至 SQLite <b>8</b></span><span>累計 <b>36 / 100</b></span></div>
+  </div>
+  <div class="swap" aria-label="今天學會"><div class="ln k"><span class="tag">成績</span><span>GameResult(correct, wrong, durationSec, endMillis)</span></div><div class="ln sk"><span class="tag">格式</span><span>SimpleDateFormat("yyyy.MM.dd hh:mm a", Locale.US)</span></div><div class="ln co"><span class="tag">SQLite</span><span>writableDatabase.insert("records", null, values)</span></div></div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl"><div class="t1" style="flex:10"><b>默寫</b><small>0–10 分</small></div><div class="t2" style="flex:25"><b>對照與概念</b><small>10–35 分</small></div><div class="t3" style="flex:70"><b>實作 7 步</b><small>35–105 分</small></div><div class="t4" style="flex:15"><b>自評與骨架卡</b><small>105–120 分</small></div></div>
+  <p class="tl-note">題本規定格式：答題時長「12m 11s」、結束時間「2026.06.26 05:45 PM」。</p>
+</div>
+
+<section id="warmup">
+  <div class="sh"><h2>默寫第 6 堂骨架卡</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">10 分鐘</span>
+  <p>不看講義寫在紙上。</p></div>
+  <ol class="steps"><li>生命週期監聽：DisposableEffect 加 LifecycleEventObserver。</li><li>可暫停的計時：LaunchedEffect(resumed) 加累加毫秒。</li><li>顏色重抽的 while 迴圈。</li></ol>
+</section><section id="compare">
+  <div class="sh"><h2>對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">5 分鐘</span>
+  <p>SQLite 的 SQL 語法跟你在 C# 用過的資料庫一樣，差在連線方式。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="ch">C#／WinForms 經驗</th><th scope="col" class="kh">Kotlin／Compose</th></tr></thead>
+    <tbody><tr class="hot"><th scope="row">開資料庫連線<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>new SqliteConnection("Data Source=…")</code></td><td class="kt"><code>class RecordDb(context) : SQLiteOpenHelper(context, "gyroquiz.db", null, 1)</code></td></tr><tr><th scope="row">第一次建表</th><td class="ct"><code>手動執行 CREATE TABLE</code></td><td class="kt"><code>寫在 onCreate，第一次用時自動執行</code></td></tr><tr><th scope="row">執行 SQL</th><td class="ct"><code>cmd.ExecuteNonQuery()</code></td><td class="kt"><code>db.execSQL("CREATE TABLE …")</code></td></tr><tr class="hot"><th scope="row">新增一筆<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>INSERT INTO … VALUES (@a, @b)</code></td><td class="kt"><code>ContentValues + insert("records", null, values)</code></td></tr><tr class="hot"><th scope="row">日期格式<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>dt.ToString("yyyy.MM.dd hh:mm tt", CultureInfo.InvariantCulture)</code></td><td class="kt"><code>SimpleDateFormat("yyyy.MM.dd hh:mm a", Locale.US).format(Date(ms))</code></td></tr><tr><th scope="row">委派帶參數</th><td class="ct"><code>Action&lt;GameResult&gt;</code></td><td class="kt"><code>(GameResult) -&gt; Unit</code></td></tr></tbody></table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section><section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 20 分鐘</span>
+  <p></p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>錯誤題數與答對題數</h3></header><p>題本說「曾經答錯題數，該題答錯幾次都只算一題」，所以用 Set 記 qid。答錯後還要繼續答到對才能換題，因此每題最後都會答對；答對題數定義成「一次就答對」的題數 = 總題數 − 錯誤題數。</p><pre class="code"><code data-lang="kotlin">val wrongIds = remember { mutableSetOf&lt;String&gt;() }
+// 答錯時
+wrongIds.add(q.qid)
+// 結束時
+val wrong = wrongIds.size
+val correct = questions.size - wrong</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>用 lambda 把成績交出去</h3></header><p>onFinish 從 () -> Unit 改成 (GameResult) -> Unit，答題頁算好成績交給 GyroQuizApp，由它決定存檔與換頁。答題頁不需要知道資料庫存在。</p><pre class="code"><code data-lang="kotlin">@Composable
+fun QuizScreen(…, onFinish: (GameResult) -&gt; Unit)
+
+// GyroQuizApp
+onFinish = { r -&gt;
+    db.insert(r)
+    result = r
+    screen = Screen.RESULT
+}</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>Locale.US 很重要</h3></header><p>模擬器語言是中文時，a 會變成「下午」，格式就錯了，直接失分。指定 Locale.US 才會固定是 AM/PM。hh 是 12 小時制，HH 是 24 小時制。</p><pre class="code"><code data-lang="kotlin">SimpleDateFormat("yyyy.MM.dd hh:mm a", Locale.US)
+    .format(Date(millis))      // 2026.06.26 05:45 PM
+
+SimpleDateFormat("yyyy.MM.dd hh:mm a")  // 中文環境：2026.06.26 05:45 下午</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>SQLiteOpenHelper</h3></header><p>繼承它要寫兩個函式：onCreate 在資料庫第一次建立時建表；onUpgrade 在版本號變大時執行。之後用 writableDatabase 寫、readableDatabase 讀。</p><pre class="code"><code data-lang="kotlin">class RecordDb(context: Context) :
+    SQLiteOpenHelper(context, "gyroquiz.db", null, 1) {
+    override fun onCreate(db: SQLiteDatabase) {
+        db.execSQL("CREATE TABLE records (…)")
+    }
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        db.execSQL("DROP TABLE IF EXISTS records")
+        onCreate(db)
+    }
+}</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>ContentValues 新增資料</h3></header><p>ContentValues 就是「欄位名稱 → 值」的對照表，不用自己拼 SQL 字串，也不怕引號出錯。</p><pre class="code"><code data-lang="kotlin">val values = ContentValues()
+values.put("correct", r.correct)
+values.put("end_time", r.endMillis)
+writableDatabase.insert("records", null, values)</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>改了資料表要清資料</h3></header><p>onCreate 只會在第一次執行。如果改了 CREATE TABLE 的欄位，舊的資料庫還在，就會出錯。練習時直接在模擬器長按 App → 應用程式資訊 → 儲存空間 → 清除資料，或解除安裝重裝。</p></article></div>
+</section><section id="tasks">
+  <div class="sh"><h2>實作 7 步</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">70 分鐘</span>
+  <p></p></div>
+  <div class="exs one"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>成績資料類別</h3><span class="use">一局的結果</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>在 <code>QuizLogic.kt</code> 最上面加：</p><div class="file">QuizLogic.kt</div><pre class="code"><code data-lang="kotlin">data class GameResult(
+    val correct: Int,
+    val wrong: Int,
+    val durationSec: Int,
+    val endMillis: Long
+)</code></pre>
+<label class="done"><input type="checkbox" id="ex1"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>時長與結束時間格式</h3><span class="use">12m 11s、2026.06.26 05:45 PM</span></div><span class="pts">格式 1</span><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>在 <code>Formats.kt</code> 加兩個函式，並寫測試 <code>FormatsTest.kt</code>（放 test 資料夾）確認兩種格式都對。</p><div class="file">Formats.kt（新增部分）</div><pre class="code"><code data-lang="kotlin">// 答題時長 12m 11s
+fun formatDuration(totalSec: Int) = "${totalSec / 60}m ${totalSec % 60}s"
+
+// 答題結束日期時間 2026.06.26 05:45 PM
+fun formatEndTime(millis: Long): String =
+    SimpleDateFormat("yyyy.MM.dd hh:mm a", Locale.US).format(Date(millis))</code></pre><div class="file">FormatsTest.kt</div><pre class="code"><code data-lang="kotlin">class FormatsTest {
+    @Test
+    fun duration() {
+        assertEquals("12m 11s", formatDuration(731))
+        assertEquals("0m 59s", formatDuration(59))
+    }
+
+    @Test
+    fun endTime() {
+        val c = Calendar.getInstance()
+        c.set(2026, Calendar.JUNE, 26, 17, 45, 0)
+        assertEquals("2026.06.26 05:45 PM", formatEndTime(c.timeInMillis))
+        c.set(2026, Calendar.DECEMBER, 1, 0, 3, 0)
+        assertEquals("2026.12.01 12:03 AM", formatEndTime(c.timeInMillis))
+    }
+}</code></pre><div class="see"><b>完成後</b>FormatsTest 兩個測試通過。</div>
+<label class="done"><input type="checkbox" id="ex2"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>答題頁記錄錯題並交出成績</h3><span class="use">錯誤題數只算一次</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>QuizScreen 的 onFinish 改成帶 GameResult，加上 wrongIds，choose 改成下面這樣：</p><div class="file">QuizScreen.kt</div><pre class="code"><code data-lang="kotlin">    fun choose(i: Int) {
+        if (i != q.answerIndex) {
+            wrongIds.add(q.qid)
+            Toast.makeText(context, "選擇錯誤", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (index == questions.lastIndex) {
+            onFinish(
+                GameResult(
+                    correct = questions.size - wrongIds.size,
+                    wrong = wrongIds.size,
+                    durationSec = (elapsedMs / 1000).toInt(),
+                    endMillis = System.currentTimeMillis()
+                )
+            )
+        } else {
+            colors = nextColorIndexes(OptionPalette.size, colors)
+            index++
+        }
+    }</code></pre><p>參數宣告也要改：<code>onFinish: (GameResult) -> Unit</code>。</p>
+<label class="done"><input type="checkbox" id="ex3"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>SQLite 資料庫類別</h3><span class="use">需將答題結果保存至 SQLite</span></div><span class="pts">SQLite 8</span><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>新增 <code>RecordDb.kt</code>。end_time 存毫秒（INTEGER），排序與格式化都方便。</p><div class="file">RecordDb.kt</div><pre class="code"><code data-lang="kotlin">class RecordDb(context: Context) : SQLiteOpenHelper(context, "gyroquiz.db", null, 1) {
+
+    override fun onCreate(db: SQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE records (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "correct INTEGER, wrong INTEGER, duration INTEGER, end_time INTEGER)"
+        )
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        db.execSQL("DROP TABLE IF EXISTS records")
+        onCreate(db)
+    }
+
+    fun insert(r: GameResult) {
+        val values = ContentValues()
+        values.put("correct", r.correct)
+        values.put("wrong", r.wrong)
+        values.put("duration", r.durationSec)
+        values.put("end_time", r.endMillis)
+        writableDatabase.insert("records", null, values)
+    }
+}</code></pre>
+<label class="done"><input type="checkbox" id="ex4"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>結算頁顯示成績</h3><span class="use">答對、錯誤、時長、結束日期時間</span></div><span class="pts">UI 3.5、顯示 2</span><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>ResultScreen 多接收一個 result 參數：</p><div class="file">ResultScreen.kt</div><pre class="code"><code data-lang="kotlin">@Composable
+fun ResultScreen(result: GameResult?, onPlayAgain: () -&gt; Unit, onHome: () -&gt; Unit) {
+    BackHandler { onHome() }
+    Column(Modifier.fillMaxSize()) {
+        BackBar(title = "結算", onBack = onHome)
+        Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            if (result != null) {
+                Text("答對題數：${result.correct}", fontSize = 24.sp)
+                Text("錯誤題數：${result.wrong}", fontSize = 24.sp)
+                Text("答題時長：${formatDuration(result.durationSec)}", fontSize = 24.sp)
+                Text("結束時間：${formatEndTime(result.endMillis)}", fontSize = 20.sp)
+            }
+            Spacer(Modifier.height(40.dp))
+            Button(onClick = onPlayAgain, modifier = Modifier.width(220.dp)) {
+                Text("再玩一次", fontSize = 20.sp)
+            }
+            Spacer(Modifier.height(16.dp))
+            OutlinedButton(onClick = onHome, modifier = Modifier.width(220.dp)) {
+                Text("回首頁", fontSize = 20.sp)
+            }
+        }
+    }
+}</code></pre>
+<label class="done"><input type="checkbox" id="ex5"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>GyroQuizApp 存檔並換頁</h3><span class="use">再玩一次開始新的一局</span></div><span class="pts">功能 1</span><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>新增 db 與 result 兩個狀態，onFinish 存檔後換到結算頁：</p><div class="file">App.kt</div><pre class="code"><code data-lang="kotlin">@Composable
+fun GyroQuizApp() {
+    val context = LocalContext.current
+    val allQuestions = remember { loadQuestions(context) }
+    val db = remember { RecordDb(context) }
+    var screen by remember { mutableStateOf(Screen.HOME) }
+    var result by remember { mutableStateOf&lt;GameResult?&gt;(null) }
+
+    Surface(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
+        when (screen) {
+            Screen.HOME -&gt; HomeScreen(
+                onNewGame = { screen = Screen.QUIZ },
+                onRecords = { screen = Screen.RECORDS }
+            )
+            Screen.QUIZ -&gt; QuizScreen(
+                allQuestions = allQuestions,
+                onExit = { screen = Screen.HOME },
+                onFinish = { r -&gt;
+                    db.insert(r)
+                    result = r
+                    screen = Screen.RESULT
+                }
+            )
+            Screen.RESULT -&gt; ResultScreen(
+                result = result,
+                onPlayAgain = { screen = Screen.QUIZ },
+                onHome = { screen = Screen.HOME }
+            )
+            Screen.RECORDS -&gt; RecordsScreen(onBack = { screen = Screen.HOME })
+        }
+    }
+}</code></pre><div class="see"><b>完成後</b>玩完一局進結算頁，四項資料都正確；按再玩一次是新的 10 題，時間從 00:00 開始。</div>
+<label class="done"><input type="checkbox" id="ex6"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>用 Database Inspector 確認有存進去</h3><span class="use">確認 8 分有拿到</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>App 執行中，下方工具列開 <b>App Inspection</b> → Database Inspector，選 gyroquiz.db → records。玩完一局後按重新整理，應該多一筆資料。最後重新匯出 APK。</p><div class="see"><b>完成後</b>records 資料表每玩完一局多一筆，欄位值與結算頁一致。</div>
+<label class="done"><input type="checkbox" id="ex7"> 做完並在模擬器確認，完成</label>
+</article></div>
+</section><section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">15 分鐘</span>
+  <p>對照題本評分表。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>結算頁有返回、答對題數、錯誤題數、答題時長、再玩一次、回首頁、結束日期時間</span></label></li><li><label><input type="checkbox" id="ck1"><span>同一題答錯多次，錯誤題數只加 1</span></label></li><li><label><input type="checkbox" id="ck2"><span>答題時長格式是 12m 11s</span></label></li><li><label><input type="checkbox" id="ck3"><span>結束時間格式是 2026.06.26 05:45 PM，模擬器是中文也一樣</span></label></li><li><label><input type="checkbox" id="ck4"><span>返回按鈕與回首頁都回到首頁</span></label></li><li><label><input type="checkbox" id="ck5"><span>再玩一次是全新的一局</span></label></li><li><label><input type="checkbox" id="ck6"><span>Database Inspector 看得到每一局的紀錄</span></label></li><li><label><input type="checkbox" id="ck7"><span>能說出不加 Locale.US 會發生什麼事</span></label></li></ul>
+</section><section id="card">
+  <div class="sh"><h2>骨架卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">下堂課開頭默寫</span>
+  <p>SQLite 是 8＋8 分的固定寫法。</p></div>
+  <div class="cards"><article class="kcard"><h3>SQLiteOpenHelper</h3><pre class="code"><code data-lang="kotlin">class RecordDb(context: Context) :
+    SQLiteOpenHelper(context, "gyroquiz.db", null, 1) {
+    override fun onCreate(db: SQLiteDatabase) {
+        db.execSQL("CREATE TABLE records (id INTEGER PRIMARY KEY AUTOINCREMENT, correct INTEGER, wrong INTEGER, duration INTEGER, end_time INTEGER)")
+    }
+    override fun onUpgrade(db: SQLiteDatabase, o: Int, n: Int) {
+        db.execSQL("DROP TABLE IF EXISTS records")
+        onCreate(db)
+    }
+}</code></pre></article><article class="kcard"><h3>新增一筆</h3><pre class="code"><code data-lang="kotlin">fun insert(r: GameResult) {
+    val v = ContentValues()
+    v.put("correct", r.correct)
+    v.put("wrong", r.wrong)
+    v.put("duration", r.durationSec)
+    v.put("end_time", r.endMillis)
+    writableDatabase.insert("records", null, v)
+}</code></pre></article><article class="kcard"><h3>題本時間格式</h3><pre class="code"><code data-lang="kotlin">fun formatEndTime(millis: Long): String =
+    SimpleDateFormat("yyyy.MM.dd hh:mm a", Locale.US)
+        .format(Date(millis))
+
+fun formatDuration(sec: Int) = "${sec / 60}m ${sec % 60}s"</code></pre></article></div>
+</section><section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p></p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><pre class="sig"><code data-lang="kotlin">fun count(): Int</code></pre><p><b>計算筆數</b>：在 RecordDb 加一個函式回傳 records 的總筆數，顯示在首頁按鈕下方「已玩 N 局」。</p><p class="hio"><b>提示</b> SELECT COUNT(*) FROM records</p></article><article class="hw"><span class="hwn">作業 2</span><p><b>結算頁加正確率</b>：多顯示一行「正確率 80%」，用整數。</p><p class="hio"><b>提示</b> 先乘 100 再除</p></article><article class="hw"><span class="hwn">作業 3</span><p><b>計時重做</b>：從 New Project 做到今天進度，記錄時間。</p><p class="hio"><b>目標</b> 60 分鐘</p></article></div>
+</section>
+
+<footer>Android Compose 手機程式設計・第 7 堂 / 共 24 堂</footer>
+</div>
+
+<script>
+(function(){
+  var KW=/^(fun|val|var|return|if|else|when|for|in|until|downTo|step|while|do|repeat|class|data|enum|object|true|false|null|is|as|import|package|override|private|set|get|const|it|by|super|this|try|catch|finally|throw|break|continue|lateinit)$/;
+  var TY=/^(Int|Long|Float|Double|Boolean|String|Char|Unit|List|Map|Set|Pair|Any|Modifier|Color|Composable|Screen|Phase|Question|GameResult|RecordDb|Context|Bundle|Offset|Size)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)')|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?[fL]?\b)/g;
+  document.querySelectorAll('code[data-lang]').forEach(function(el){
+    var lang=el.getAttribute('data-lang');
+    var src=el.textContent,out='',last=0,m;
+    re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]&&lang==='kotlin'){var w=t.replace('@','');if(t.charAt(0)==='@')cls='t';else if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+  var KEY='compose-l7-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var cardsEl=document.querySelectorAll('.ex');
+  function refresh(){
+    var n=0;
+    cardsEl.forEach(function(card){var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;});
+    if(prog)prog.textContent='完成 '+n+' / '+cardsEl.length;
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+
+</body></html>
