@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 12 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, Dart always teal, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--dart)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .dh{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.kt code{color:var(--kotlin)} td.dt code{color:var(--dart);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--dart-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--dart);font-size:13px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+</style><style>
+.quiz{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;counter-reset:q;padding:0;margin:0}
+.quiz li{list-style:none;background:var(--surface);border:2px solid var(--sky);border-radius:14px;padding:12px 14px;font-size:15px;min-width:0}
+.quiz li::before{counter-increment:q;content:"Q" counter(q);display:block;font-family:var(--f-display);color:var(--sky);font-size:18px}
+.quiz code{font-size:13px;color:var(--dart)}
+.note{font-size:14.5px;background:var(--cs);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.io pre{white-space:pre-wrap}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.score div{background:var(--surface);border-radius:14px;padding:14px;border-left:6px solid var(--coral);min-width:0}
+.score b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--coral)}
+.score span{font-size:14px;color:var(--muted)}
+</style><style>
+.flow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch}
+.fs{background:var(--surface);border-radius:16px;padding:14px;border-top:6px solid var(--fc);display:flex;flex-direction:column;gap:6px;min-width:0}
+.fs .side{font-size:12px;font-weight:700;color:var(--fc);letter-spacing:.04em}
+.fs b{font-size:16px} .fs code{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.f-d{--fc:var(--dart)} .f-c{--fc:var(--sun)} .f-k{--fc:var(--kotlin)} .f-r{--fc:var(--sky)}
+.fa{display:grid;place-items:center;font-size:24px;color:var(--muted)}
+@media (max-width:760px){.flow{grid-template-columns:minmax(0,1fr)} .fa{transform:rotate(90deg)}}
+</style>
+</head><body>
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#quiz">小測</a><a href="#map">對照流程</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#drills">實作 10 項</a><a href="#check">自評</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0 / 10</span>
+</div></nav>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 12 堂</b>Flutter手機程式設計</span>
+    <h1>對照<span class="d">影片</span>調動畫</h1>
+    <p class="lead">題本寫著「動畫效果需與影片一致」。今天學一套固定的看影片方法：逐格觀察、量時長和曲線、把數字集中到 AnimSpec，再錄影並排比對。順便讓近 8 日的 8 格微縮進度條一起動起來，拿下 progress 與 progress_recent 共 6 分。</p>
+  </div>
+  <div class="swap" aria-label="今天學會">
+    <div class="ln dd"><span class="tag">觀察</span><span>逐格量測</span></div>
+    <div class="ln sk"><span class="tag">錯開</span><span>Interval</span></div>
+    <div class="ln co"><span class="tag">微調</span><span>Cubic</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1" style="flex:15"><b>小測</b><small>0–15 分</small></div>
+    <div class="t2" style="flex:25"><b>看影片與講解</b><small>15–40 分</small></div>
+    <div class="t3" style="flex:60"><b>實作 10 項</b><small>40–100 分</small></div>
+    <div class="t4" style="flex:20"><b>對照評分表自評</b><small>100–120 分</small></div>
+  </div>
+  <p class="tl-note">觀察表和 AnimSpec 的做法，後面的長條圖、跑步、徽章翻轉動畫都照用。</p>
+</div>
+
+<section id="quiz">
+  <div class="sh"><h2>第 11 堂小測</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">15 分鐘・不看筆記</span>
+  <p>口頭回答或寫在紙上，第 5 題直接在專案裡寫。</p></div>
+  <ol class="quiz"><li>AnimationController 的 value 從多少跑到多少？</li><li>State 要加什麼 mixin？為什麼？</li><li>寫出點擊重播的程式</li><li>為什麼一定要在 dispose 裡釋放 Controller？</li><li>AnimatedBuilder 的 builder 什麼時候會執行？</li></ol>
+</section>
+
+<section id="map">
+  <div class="sh"><h2>對照影片的四個步驟</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">看、量、改、比</span>
+  <p>評審是拿影片和模擬器比對的，「看起來差不多」不夠。先把影片變成數字，再把數字放進程式，最後錄影並排確認。</p></div>
+  <div class="flow" aria-label="對照影片四步驟">
+  <div class="fs f-d"><span class="side">看</span><b>① 逐格觀察</b><code>填觀察表 7 項</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-c"><span class="side">量</span><b>② 時長＋取樣點</b><code>ms 與 3 個位置</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-k"><span class="side">改</span><b>③ AnimSpec</b><code>只改這一個檔案</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-r"><span class="side">比</span><b>④ 錄影並排</b><code>同時開始、同時結束</code></div>
+</div>
+  <div class="score" style="margin-top:22px"><div><b>6 分</b><span>progress.mp4 3 分＋progress_recent.mp4 3 分</span></div><div><b>1 個檔案</b><span>所有動畫參數都在 AnimSpec，對照影片只改這裡</span></div><div><b>7 個問題</b><span>每段影片都用同一張觀察表，之後的長條、跑步、徽章動畫照用</span></div></div>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>Android 與 Flutter 多段動畫對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 15 分鐘</span>
+  <p>左欄是 Kotlin 的寫法，右欄是 Dart。黃底的幾行最容易寫錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="kh">Kotlin</th><th scope="col" class="dh">Dart</th></tr></thead>
+    <tbody><tr class="hot"><th scope="row">多個動畫錯開<span class="star">★</span></th><td class="kt"><code>AnimatorSet＋每個 startDelay</code></td><td class="dt"><code>一個 Controller＋每格 Interval(start, end)</code></td></tr><tr><th scope="row">延遲開始</th><td class="kt"><code>startDelay = 200</code></td><td class="dt"><code>Interval(0.2, 1.0)</code></td></tr><tr><th scope="row">同時播放</th><td class="kt"><code>playTogether(a, b)</code></td><td class="dt"><code>共用同一個 Controller 的 value</code></td></tr><tr><th scope="row">依序播放</th><td class="kt"><code>playSequentially(a, b)</code></td><td class="dt"><code>Interval 首尾相接：(0, 0.5)、(0.5, 1)</code></td></tr><tr class="hot"><th scope="row">自訂曲線<span class="star">★</span></th><td class="kt"><code>PathInterpolator(0.2f, 0.8f, 0.3f, 1f)</code></td><td class="dt"><code>const Cubic(0.2, 0.8, 0.3, 1)</code></td></tr><tr><th scope="row">先快後慢</th><td class="kt"><code>DecelerateInterpolator()</code></td><td class="dt"><code>Curves.easeOut／easeOutCubic</code></td></tr><tr class="hot"><th scope="row">放慢觀察<span class="star">★</span></th><td class="kt"><code>開發者選項「動畫時長縮放」</code></td><td class="dt"><code>timeDilation = 5.0</code></td></tr><tr class="hot"><th scope="row">兩個以上計時器<span class="star">★</span></th><td class="kt"><code>（不需要）</code></td><td class="dt"><code>with TickerProviderStateMixin</code></td></tr><tr><th scope="row">清單項目動畫</th><td class="kt"><code>RecyclerView 的 ItemAnimator</code></td><td class="dt"><code>itemBuilder 裡用 index 算出各自的值</code></td></tr><tr><th scope="row">參數集中</th><td class="kt"><code>res/values/integers.xml</code></td><td class="dt"><code>class AnimSpec { static const … }</code></td></tr><tr><th scope="row">錄模擬器畫面</th><td class="kt"><code>Android Studio 錄影</code></td><td class="dt"><code>adb shell screenrecord /sdcard/a.mp4</code></td></tr></tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">跟著教練一起做</span>
+  <p>範例取自教練版專案，已用 Flutter 3.47 通過 flutter analyze，並用 widget test 確認：今天那格比較早動、播完每格等於真正進度、點 Item 後從 0 重播。曲線比較的數字是實際執行的結果。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>怎麼看影片</h3></header><p class="note">題目附的影片為了方便觀察，同一段動畫會重複播好幾次，實作時只要播一次。用可以逐格前進的播放器，記下這幾件事。</p><pre class="code"><code data-lang="dart">// 影片觀察表（每段動畫填一張）
+// 1. 起點：從 0 開始？還是從舊的值開始？
+// 2. 終點：停在真正的進度？
+// 3. 時長：結束格 − 開始格，÷ 每秒格數
+// 4. 曲線：25%、50%、75% 時間點各走到哪裡
+// 5. 多個東西：同時開始？還是一個接一個？
+// 6. 文字：數字有沒有跟著跑？
+// 7. 觸發：開頁、點擊、換日期，哪些會重播？</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>參數集中在 AnimSpec</h3></header><p class="note">時間和曲線散在程式各處，對照影片時會改到眼花。全部搬到一個檔案，調整時只改這裡。</p><pre class="code"><code data-lang="dart">class AnimSpec {
+  // progress.mp4
+  static const ringDuration = Duration(milliseconds: 1200);
+  static const ringCurve = Curves.easeOutCubic;
+
+  // progress_recent.mp4
+  static const recentDuration = Duration(milliseconds: 1000);
+  static const recentCurve = Curves.easeOut;
+  static const recentStagger = 0.06; // 0 = 同時開始
+  static const recentEach = 0.55;
+}</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>兩個 Controller</h3></header><p class="note">圓環和近 8 日各自重播，所以各用一個 Controller。超過一個時，mixin 要換成 TickerProviderStateMixin。</p><pre class="code"><code data-lang="dart">class _HomePageState extends State&lt;HomePage&gt;
+    with TickerProviderStateMixin {
+  late final _ring = AnimationController(
+      vsync: this, duration: AnimSpec.ringDuration);
+  late final _recent = AnimationController(
+      vsync: this, duration: AnimSpec.recentDuration);
+
+  @override
+  void initState() {
+    super.initState();
+    _ring.forward();
+    _recent.forward();
+  }
+  …
+}</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>Interval 錯開 8 格</h3></header><p class="note">8 格共用一個 Controller。第 i 格從 i × 0.06 開始，跑 0.55 的時間。Interval 會把範圍外的值自動變成 0 或 1。</p><pre class="code"><code data-lang="dart">static double recentAt(int i, double t) {
+  final start = (i * recentStagger).clamp(0.0, 1.0);
+  final end = (start + recentEach).clamp(start, 1.0);
+  return recentCurve.transform(Interval(start, end).transform(t));
+}
+
+// 最後一格：7 × 0.06 + 0.55 = 0.97 ≤ 1
+// 超過 1 的話，最後一格會被截掉、跑不完</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>AnimatedBuilder 包住清單</h3></header><p class="note">每一格的進度 = 當天步數 ÷ 目標 × 自己的動畫值。點 Item 時兩個動畫都重播。</p><pre class="code"><code data-lang="dart">AnimatedBuilder(
+  animation: _recent,
+  builder: (_, _) =&gt; ListView.separated(
+    …
+    itemBuilder: (_, i) {
+      final d = days[i];
+      return DayChip(
+        progress: repo.stepsOfDay(d) / repo.goal *
+            AnimSpec.recentAt(i, _recent.value),
+        onTap: () {
+          setState(() =&gt; _selected = d);
+          _recent.forward(from: 0);
+          _ring.forward(from: 0);
+        },
+        …
+      );
+    },
+  ),
+)</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>用數字挑曲線</h3></header><p class="note">從影片量出 25%、50%、75% 時間點的位置，跟各種曲線比誤差，最小的就是答案。都不像時用 Cubic 自己調四個數字。</p><pre class="code"><code data-lang="dart">// 量到 [0.55, 0.85, 0.96] 時的比較結果
+// linear                 0.25  0.50  0.75   誤差 0.860
+// easeOut                0.38  0.68  0.91   誤差 0.392
+// easeOutCubic           0.60  0.88  0.98   誤差 0.090 ← 最接近
+// easeOutQuart           0.70  0.91  0.99   誤差 0.240
+// fastOutSlowIn          0.24  0.78  0.96   誤差 0.388
+
+final v = Curves.easeOutCubic.transform(0.5); // 0.875</code></pre></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>實作 10 項</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">60 分鐘</span>
+  <p>沿用第 11 堂的 movego 專案。前兩項只看影片不寫程式，先把數字量出來。</p></div>
+  <div class="exs"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>量時長</h3><span class="use">對應：對照影片</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>逐格播放 progress 與 progress_recent 影片，記下動畫開始和結束的格數</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>時長 = (結束格 − 開始格) ÷ 每秒格數</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">兩段影片各有一個毫秒數</pre></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 驗收通過</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>量曲線</h3><span class="use">對應：對照影片</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>在 25%、50%、75% 時間點，量出圓環走到全程的幾成</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>用尺量螢幕，或數弧線佔幾格</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">每段影片有 3 個 0～1 的數字</pre></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 驗收通過</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>建立 AnimSpec</h3><span class="use">對應：程式結構</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>新增 lib/anim_spec.dart，把第 11 堂寫死的時間與曲線搬進來</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>class AnimSpec { static const … }</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">home_page.dart 裡不再出現 Duration(…)</pre></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 驗收通過</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>第二個 Controller</h3><span class="use">對應：progress_recent 前置</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>加入 _recent，mixin 改成 TickerProviderStateMixin</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>initState 播放、dispose 釋放</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">flutter analyze 沒有問題</pre></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 驗收通過</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>清單動起來</h3><span class="use">對應：progress_recent.mp4</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>AnimatedBuilder 包住 ListView，每格乘上動畫值</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>progress × _recent.value</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">開頁時 8 格一起從 0 長出來</pre></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 驗收通過</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>錯開</h3><span class="use">對應：progress_recent.mp4</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>用 Interval 讓每格依序開始</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>AnimSpec.recentAt(i, t)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">今天那格先動，最舊那格最後</pre></div></div>
+<label class="done"><input type="checkbox" id="ex6"> 驗收通過</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>同時還是錯開</h3><span class="use">對應：對照影片</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>把 recentStagger 改成 0 再看一次，和影片比較</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>只改 AnimSpec 一個數字</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">能說出影片是哪一種</pre></div></div>
+<label class="done"><input type="checkbox" id="ex7"> 驗收通過</label>
+</article><article class="ex" data-ex="8">
+<div class="ex-top"><span class="exn">08</span><div class="ex-title"><h3>點擊重播</h3><span class="use">對應：點擊重播（progress_recent，3 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>點 Item 時近 8 日與圓環都重播；換日期也重播</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>_recent.forward(from: 0)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">播到一半點也會從 0 重新開始</pre></div></div>
+<label class="done"><input type="checkbox" id="ex8"> 驗收通過</label>
+</article><article class="ex" data-ex="9">
+<div class="ex-top"><span class="exn">09</span><div class="ex-title"><h3>挑曲線</h3><span class="use">對應：對照影片</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>把第 2 項量到的數字放進曲線比較程式，挑誤差最小的</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>flutter test test/curve_probe_test.dart</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">AnimSpec 換成誤差最小的曲線</pre></div></div>
+<label class="done"><input type="checkbox" id="ex9"> 驗收通過</label>
+</article><article class="ex" data-ex="10">
+<div class="ex-top"><span class="exn">10</span><div class="ex-title"><h3>並排比對</h3><span class="use">對應：動畫與影片一致（共 6 分）</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>錄下模擬器畫面，和題目影片並排播放</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>adb shell screenrecord /sdcard/a.mp4
+adb pull /sdcard/a.mp4</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">兩邊同時開始、同時結束</pre></div></div>
+<label class="done"><input type="checkbox" id="ex10"> 驗收通過</label>
+</article></div>
+  <p class="tip">下方的時間與曲線是教練版的起始值，不是標準答案。每個人都要用自己量到的數字調整，最後以錄影並排的結果為準。</p>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">20 分鐘</span>
+  <p>每一項都要在模擬器上實際看到結果才打勾。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>兩段影片都量了時長</span></label></li><li><label><input type="checkbox" id="ck1"><span>兩段影片都量了 3 個取樣點</span></label></li><li><label><input type="checkbox" id="ck2"><span>home_page.dart 裡沒有寫死的動畫數字</span></label></li><li><label><input type="checkbox" id="ck3"><span>開頁時圓環與 8 格都會動</span></label></li><li><label><input type="checkbox" id="ck4"><span>8 格是同時或錯開，和影片一致</span></label></li><li><label><input type="checkbox" id="ck5"><span>點 Item、換日期都會重播</span></label></li><li><label><input type="checkbox" id="ck6"><span>錄影並排比對過</span></label></li><li><label><input type="checkbox" id="ck7"><span>flutter analyze 沒有任何問題</span></label></li></ul>
+</section>
+
+<section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p>第 1 題的觀察表請帶來，第 14、19、21 堂會直接用。</p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><h3 style="font-size:19px">量完其他影片</h3><p>用同一張觀察表，先量好 increase、run、badge_rotate 三段影片，之後的課直接用。</p><p class="hio"><b>提示</b> <code>run 和 badge_rotate 要特別注意是否循環、翻轉到一半時發生什麼事</code></p></article><article class="hw"><span class="hwn">作業 2</span><h3 style="font-size:19px">曲線比較程式</h3><p>寫 test/curve_probe_test.dart：輸入量到的三個數字，印出 6 種曲線在 25%、50%、75% 的值與誤差。</p><p class="hio"><b>提示</b> <code>Curves 需要 Flutter 引擎，要用 flutter test 執行，不能 dart run</code></p></article><article class="hw"><span class="hwn">作業 3</span><h3 style="font-size:19px">反方向錯開</h3><p>改成最舊那天（最右邊）先動、今天最後動，再改回來。想想只要改哪裡？</p><p class="hio"><b>提示</b> <code>recentAt 裡的 i 換成 7 - i</code></p></article></div>
+</section>
+
+<footer>Flutter手機程式設計・第 12 堂 / 共 24 堂</footer>
+</div>
+<script>
+(function(){
+  // 簡易 Dart 語法上色
+  var KW=/^(void|var|final|const|return|if|else|for|in|switch|class|this|required|late|get|set|true|false|null|import|override|new|async|await|extends|super|return|if|null|true|false|fun|val|var|package|when|else|try|catch|on|throw|static|switch|case|is)$/;
+  var TY=/^(int|double|bool|String|List|Map|DateTime|Iterable|StringBuffer|StepRecord|Badge|num|Widget|BuildContext|State|StatelessWidget|StatefulWidget|MaterialApp|Scaffold|AppBar|Text|Center|Column|Image|Padding|EdgeInsets|SizedBox|TextStyle|FloatingActionButton|Icon|Icons|ThemeData|Color|MainAxisSize|HomePage|MoveGoApp|Row|Expanded|Stack|Container|BoxDecoration|BorderRadius|Alignment|MainAxisAlignment|CrossAxisAlignment|FontWeight|Colors|AppColors|AppText|StatCard|DayChip|ListView|Axis|CircularProgressIndicator|LinearProgressIndicator|SingleChildScrollView|Positioned|Border|BoxShape|Navigator|MaterialPageRoute|IndexedStack|BottomNavigationBar|BottomNavigationBarItem|ImageIcon|AssetImage|AlertDialog|Dialog|GestureDetector|PopScope|TextButton|FilledButton|IconButton|DefaultTabController|TabBar|TabBarView|Tab|MainShell|TrendPage|StepDetectPage|AddStepsDialog|BadgeDialog|Future|ProgressDial|AchievementPage|Intent|MethodChannel|FlutterActivity|FlutterEngine|File|String|Boolean|NativeStorage|PlatformException|MissingPluginException|WidgetsFlutterBinding|Directory|List|Map|bool|int|StepRecord|StepRepository|DateTime|Duration|Random|JSONArray|LocalDateTime|FormatException|LocalDate|ScrollController|VoidCallback|Badge|DayChip|StringBuffer|GridView|TextField|TextEditingController|OutlinedButton|InputDecoration|OutlineInputBorder|NeverScrollableScrollPhysics|TextAlign|EditText|GridLayout|CustomPainter|CustomPaint|Canvas|Size|Paint|PaintingStyle|StrokeCap|Offset|Rect|RingPainter|MiniBarPainter|GoalDialog|View|RectF|SweepGradient|double|AnimationController|Animation|CurvedAnimation|Curves|Tween|AnimatedBuilder|SingleTickerProviderStateMixin|TickerProviderStateMixin|AnimationStatus|ValueAnimator|DecelerateInterpolator|Interval|Cubic|AnimSpec|Curve|PathInterpolator|AnimatorSet)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='dart-l12-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 10';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
