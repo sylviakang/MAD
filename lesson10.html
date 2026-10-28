@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 10 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, Dart always teal, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--dart)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .dh{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.kt code{color:var(--kotlin)} td.dt code{color:var(--dart);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--dart-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--dart);font-size:13px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+</style><style>
+.quiz{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;counter-reset:q;padding:0;margin:0}
+.quiz li{list-style:none;background:var(--surface);border:2px solid var(--sky);border-radius:14px;padding:12px 14px;font-size:15px;min-width:0}
+.quiz li::before{counter-increment:q;content:"Q" counter(q);display:block;font-family:var(--f-display);color:var(--sky);font-size:18px}
+.quiz code{font-size:13px;color:var(--dart)}
+.note{font-size:14.5px;background:var(--cs);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.io pre{white-space:pre-wrap}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.score div{background:var(--surface);border-radius:14px;padding:14px;border-left:6px solid var(--coral);min-width:0}
+.score b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--coral)}
+.score span{font-size:14px;color:var(--muted)}
+</style><style>
+.flow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch}
+.fs{background:var(--surface);border-radius:16px;padding:14px;border-top:6px solid var(--fc);display:flex;flex-direction:column;gap:6px;min-width:0}
+.fs .side{font-size:12px;font-weight:700;color:var(--fc);letter-spacing:.04em}
+.fs b{font-size:16px} .fs code{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.f-d{--fc:var(--dart)} .f-c{--fc:var(--sun)} .f-k{--fc:var(--kotlin)} .f-r{--fc:var(--sky)}
+.fa{display:grid;place-items:center;font-size:24px;color:var(--muted)}
+@media (max-width:760px){.flow{grid-template-columns:minmax(0,1fr)} .fa{transform:rotate(90deg)}}
+</style>
+</head><body>
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#quiz">小測</a><a href="#map">繪製步驟</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#drills">實作 10 項</a><a href="#check">自評</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0 / 10</span>
+</div></nav>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 10 堂</b>Flutter手機程式設計</span>
+    <h1>圓形<span class="d">進度條</span></h1>
+    <p class="lead">圓形進度條光 UI 就占 3 分，下一堂還要讓它動起來。今天用 CustomPainter 自己畫圓環和微縮進度條，算出卡路里與里程，並讓使用者點「完成度」修改目標步數。</p>
+  </div>
+  <div class="swap" aria-label="今天學會">
+    <div class="ln dd"><span class="tag">畫圖</span><span>CustomPainter</span></div>
+    <div class="ln sk"><span class="tag">弧線</span><span>drawArc</span></div>
+    <div class="ln co"><span class="tag">計算</span><span>kcal・km・%</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1" style="flex:15"><b>小測</b><small>0–15 分</small></div>
+    <div class="t2" style="flex:25"><b>繪圖原理與講解</b><small>15–40 分</small></div>
+    <div class="t3" style="flex:60"><b>實作 10 項</b><small>40–100 分</small></div>
+    <div class="t4" style="flex:20"><b>對照評分表自評</b><small>100–120 分</small></div>
+  </div>
+  <p class="tl-note">圓環一定要自己畫：內建的 CircularProgressIndicator 很難做出和影片一樣的動畫。</p>
+</div>
+
+<section id="quiz">
+  <div class="sh"><h2>第 9 堂小測</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">15 分鐘・不看筆記</span>
+  <p>口頭回答或寫在紙上，第 5 題直接在專案裡寫。</p></div>
+  <ol class="quiz"><li>AlertDialog 裡放 GridView 會怎樣？怎麼改？</li><li>怎麼讓輸入框不跳出系統鍵盤？</li><li>新增按鈕要怎麼停用？</li><li>Dialog 怎麼把步數交回首頁？</li><li>存到選取日時，時分秒用什麼？</li></ol>
+</section>
+
+<section id="map">
+  <div class="sh"><h2>畫一個圓環的四個步驟</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">先算再畫</span>
+  <p>CustomPainter 拿到一塊畫布和它的大小，先算出中心與半徑，再畫灰色底圈，最後在上面疊一段進度弧。</p></div>
+  <div class="flow" aria-label="圓環繪製步驟">
+  <div class="fs f-d"><span class="side">畫布</span><b>① paint(canvas, size)</b><code>size 就是 SizedBox 的大小</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-c"><span class="side">算位置</span><b>② center、radius</b><code>半徑扣掉半個線寬</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-k"><span class="side">底圈</span><b>③ drawCircle</b><code>track 顏色</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-r"><span class="side">進度</span><b>④ drawArc</b><code>從 -pi / 2 掃 sweep</code></div>
+</div>
+  <div class="score" style="margin-top:22px"><div><b>11 分</b><span>圓形進度條、步數、完成度、卡路里、里程、修改目標的 UI 與功能</span></div><div><b>3 分</b><span>圓形進度條 UI，首頁單項最高</span></div><div><b>下一堂</b><span>CustomPainter 加上動畫，就是 progress.mp4 的 3 分</span></div></div>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>Android Canvas 與 Flutter 繪圖對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 15 分鐘</span>
+  <p>左欄是 Kotlin 的寫法，右欄是 Dart。黃底的幾行最容易寫錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="kh">Kotlin（自訂 View）</th><th scope="col" class="dh">Dart（CustomPainter）</th></tr></thead>
+    <tbody><tr><th scope="row">自訂繪圖</th><td class="kt"><code>class RingView : View { override fun onDraw(canvas: Canvas) }</code></td><td class="dt"><code>class RingPainter extends CustomPainter { void paint(Canvas canvas, Size size) }</code></td></tr><tr><th scope="row">放到畫面上</th><td class="kt"><code>XML 放 &lt;RingView /&gt;</code></td><td class="dt"><code>CustomPaint(painter: RingPainter(…), child: …)</code></td></tr><tr class="hot"><th scope="row">畫筆<span class="star">★</span></th><td class="kt"><code>Paint().apply { style = Paint.Style.STROKE }</code></td><td class="dt"><code>Paint()..style = PaintingStyle.stroke</code></td></tr><tr><th scope="row">圓頭線</th><td class="kt"><code>strokeCap = Paint.Cap.ROUND</code></td><td class="dt"><code>..strokeCap = StrokeCap.round</code></td></tr><tr class="hot"><th scope="row">畫弧<span class="star">★</span></th><td class="kt"><code>drawArc(rectF, -90f, sweep, false, paint)（角度）</code></td><td class="dt"><code>drawArc(rect, -pi / 2, sweep, false, paint)（弧度）</code></td></tr><tr class="hot"><th scope="row">12 點鐘方向<span class="star">★</span></th><td class="kt"><code>-90f</code></td><td class="dt"><code>-pi / 2</code></td></tr><tr><th scope="row">一整圈</th><td class="kt"><code>360f</code></td><td class="dt"><code>2 * pi（import &#x27;dart:math&#x27;）</code></td></tr><tr><th scope="row">畫圓</th><td class="kt"><code>drawCircle(cx, cy, r, paint)</code></td><td class="dt"><code>drawCircle(center, radius, paint)</code></td></tr><tr><th scope="row">畫線</th><td class="kt"><code>drawLine(x1, y1, x2, y2, paint)</code></td><td class="dt"><code>drawLine(Offset(x1, y1), Offset(x2, y2), paint)</code></td></tr><tr><th scope="row">中心點</th><td class="kt"><code>width / 2f, height / 2f</code></td><td class="dt"><code>size.center(Offset.zero)</code></td></tr><tr class="hot"><th scope="row">重畫<span class="star">★</span></th><td class="kt"><code>invalidate()</code></td><td class="dt"><code>shouldRepaint 回傳 true（外面 setState 時）</code></td></tr><tr><th scope="row">限制在 0～1</th><td class="kt"><code>coerceIn(0f, 1f)</code></td><td class="dt"><code>clamp(0.0, 1.0)</code></td></tr><tr><th scope="row">小數格式</th><td class="kt"><code>&quot;%.1f&quot;.format(x)</code></td><td class="dt"><code>x.toStringAsFixed(1)</code></td></tr></tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">跟著教練一起做</span>
+  <p>範例取自教練版專案，已用 Flutter 3.47 通過 flutter analyze，並用 flutter test 驗證卡路里、里程、完成度計算與修改目標後的畫面更新。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>CustomPainter 兩個方法</h3></header><p class="note">paint 負責畫，shouldRepaint 決定資料變了要不要重畫。畫布左上角是 (0, 0)，往右 x 變大、往下 y 變大。</p><pre class="code"><code data-lang="dart">class RingPainter extends CustomPainter {
+  RingPainter({required this.progress, required this.color,
+      required this.track, this.stroke = 16});
+
+  final double progress; // 0～1
+  final Color color;
+  final Color track;
+  final double stroke;
+
+  @override
+  void paint(Canvas canvas, Size size) { /* 下一張卡 */ }
+
+  @override
+  bool shouldRepaint(RingPainter old) =&gt;
+      old.progress != progress || old.color != color;
+}</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>畫底圈和進度弧</h3></header><p class="note">角度用弧度：-pi / 2 是 12 點鐘，2 * pi 是一整圈。半徑要扣掉半個線寬，否則線條外側會被切掉。</p><pre class="code"><code data-lang="dart">@override
+void paint(Canvas canvas, Size size) {
+  final center = size.center(Offset.zero);
+  final radius = (min(size.width, size.height) - stroke) / 2;
+  final paint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = stroke
+    ..strokeCap = StrokeCap.round;
+
+  canvas.drawCircle(center, radius, paint..color = track);
+
+  final sweep = 2 * pi * progress.clamp(0.0, 1.0);
+  if (sweep &gt; 0) {
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -pi / 2, sweep, false, paint..color = color,
+    );
+  }
+}</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>CustomPaint 疊上文字</h3></header><p class="note">CustomPaint 的 child 會畫在圖的上面，所以不需要 Stack。點「完成度」修改目標，長按整個儀表板進步數檢測，兩個手勢不會打架。</p><pre class="code"><code data-lang="dart">SizedBox(
+  width: 220,
+  height: 220,
+  child: CustomPaint(
+    painter: RingPainter(progress: steps / goal,
+        color: AppColors.primary, track: AppColors.track),
+    child: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(fmtThousands(steps), style: AppText.big),
+          const Text(&#x27;步數&#x27;, style: AppText.label),
+          GestureDetector(
+            onTap: _editGoal,
+            child: Text(&#x27;完成度 ${percentOf(steps, goal)}%&#x27;),
+          ),
+        ],
+      ),
+    ),
+  ),
+)</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>微縮進度條也自己畫</h3></header><p class="note">近 8 日每一格的小進度條同樣用 CustomPainter，下一堂才能跟圓環一起做動畫。圓頭會多出半個線寬，左右各內縮。</p><pre class="code"><code data-lang="dart">@override
+void paint(Canvas canvas, Size size) {
+  final y = size.height / 2;
+  final r = size.height / 2;
+  final paint = Paint()
+    ..strokeWidth = size.height
+    ..strokeCap = StrokeCap.round;
+  canvas.drawLine(Offset(r, y), Offset(size.width - r, y),
+      paint..color = track);
+  final p = progress.clamp(0.0, 1.0);
+  if (p &gt; 0) {
+    final end = r + (size.width - 2 * r) * p;
+    canvas.drawLine(Offset(r, y), Offset(end, y), paint..color = color);
+  }
+}</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>卡路里與里程</h3></header><p class="note">第 1 堂看過 35 * 0.04 會變成 1.4000000000000001。先乘整數再除，結果就乾淨了。</p><pre class="code"><code data-lang="dart">// 每步 0.04 kcal = 4 / 100；每步 0.0006 km = 6 / 10000
+double kcalOf(int steps) =&gt; steps * 4 / 100;
+double kmOf(int steps) =&gt; steps * 6 / 10000;
+
+String fmtKcal(int steps) =&gt; kcalOf(steps).toStringAsFixed(1); // 341.7
+String fmtKm(int steps) =&gt; kmOf(steps).toStringAsFixed(2);     // 5.13
+
+int percentOf(int steps, int goal) =&gt;
+    goal &lt;= 0 ? 0 : (steps * 100 / goal).round();</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>目標步數要存起來</h3></header><p class="note">題目說「修改介面自行設計」，用 AlertDialog＋數字輸入就好。目標另外存在 settings.json，重開 App 仍然有效。</p><pre class="code"><code data-lang="dart">// StepRepository 裡
+int _goal = 10000;
+int get goal =&gt; _goal;
+
+Future&lt;void&gt; setGoal(int goal) async {
+  if (goal &lt;= 0) return;
+  _goal = goal;
+  await _settings.writeAsString(jsonEncode({&#x27;goal&#x27;: goal}), flush: true);
+}
+
+// 首頁
+Future&lt;void&gt; _editGoal() async {
+  final goal = await showDialog&lt;int&gt;(
+    context: context,
+    builder: (_) =&gt; GoalDialog(goal: repo.goal),
+  );
+  if (goal == null) return;
+  await repo.setGoal(goal);
+  setState(() {});
+}</code></pre></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>實作 10 項</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">60 分鐘</span>
+  <p>沿用第 9 堂的 movego 專案。畫圖時每改一次就存檔，Hot Reload 立刻看得到。</p></div>
+  <div class="exs"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>RingPainter 底圈</h3><span class="use">對應：首頁：圓形進度條（UI 3 分）</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>新增 lib/painters.dart，先只畫灰色底圈</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>drawCircle(center, radius, paint)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">圓圈完整，沒有被切掉</pre></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 驗收通過</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>進度弧</h3><span class="use">對應：首頁：圓形進度條</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>從 12 點鐘順時針畫出進度</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>drawArc(rect, -pi / 2, sweep, false, paint)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">progress 0.25 時弧停在 3 點鐘</pre></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 驗收通過</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>換掉內建元件</h3><span class="use">對應：首頁：進度儀表板</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>ProgressDial 改用 CustomPaint，文字放在 child</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>CustomPaint(painter: …, child: …)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">畫面跟之前一樣，但是自己畫的</pre></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 驗收通過</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>MiniBarPainter</h3><span class="use">對應：近 8 日：微縮進度條</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>近 8 日每一格的進度條改成自己畫</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>drawLine＋StrokeCap.round</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">兩端是圓頭，滿格時不超出格子</pre></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 驗收通過</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>超過目標</h3><span class="use">對應：圓形進度條正確計算（共 3 分）</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>步數超過目標時圓環滿格、文字照實際顯示</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>progress.clamp(0.0, 1.0)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">12,500 步顯示完成度 125%</pre></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 驗收通過</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>calc.dart</h3><span class="use">對應：卡路里（1 分）、里程（1 分）</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>寫 kcalOf、kmOf、fmtKcal、fmtKm、percentOf</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>steps * 4 / 100</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">8542 步 → 341.7 kcal、5.13 km、85%</pre></div></div>
+<label class="done"><input type="checkbox" id="ex6"> 驗收通過</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>接上數據小卡</h3><span class="use">對應：卡路里、里程 UI（各 0.5 分）</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>卡路里、里程兩張卡片改顯示選取日的數字</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>StatCard(value: fmtKcal(steps), …)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">點不同的日期，兩張卡片跟著變</pre></div></div>
+<label class="done"><input type="checkbox" id="ex7"> 驗收通過</label>
+</article><article class="ex" data-ex="8">
+<div class="ex-top"><span class="exn">08</span><div class="ex-title"><h3>目標存檔</h3><span class="use">對應：修改目標步數</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>StepRepository 加入 goal 與 setGoal，存在 settings.json</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>jsonEncode({&#x27;goal&#x27;: goal})</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">停止再執行，目標還在</pre></div></div>
+<label class="done"><input type="checkbox" id="ex8"> 驗收通過</label>
+</article><article class="ex" data-ex="9">
+<div class="ex-top"><span class="exn">09</span><div class="ex-title"><h3>GoalDialog</h3><span class="use">對應：點擊完成度可修改目標（1 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>點「完成度」打開修改目標的對話框</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>TextField(keyboardType: TextInputType.number)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">輸入 0 或空白時不能儲存</pre></div></div>
+<label class="done"><input type="checkbox" id="ex9"> 驗收通過</label>
+</article><article class="ex" data-ex="10">
+<div class="ex-top"><span class="exn">10</span><div class="ex-title"><h3>全部連動</h3><span class="use">對應：資料連動</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>修改目標後，儀表板和 8 個微縮進度條一起更新</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>每格 progress 都用 repo.goal</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">目標改成 5000，85% 變成 171%</pre></div></div>
+<label class="done"><input type="checkbox" id="ex10"> 驗收通過</label>
+</article></div>
+  <p class="tip">顏色、線寬、圓環大小都要對照 StyleGuide。題目附的 StyleGuide 若是圓形的微縮進度條，就把 RingPainter 縮小重用，不必另外寫。</p>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">20 分鐘</span>
+  <p>每一項都要在模擬器上實際看到結果才打勾。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>圓環從 12 點鐘順時針畫</span></label></li><li><label><input type="checkbox" id="ck1"><span>線條外側沒有被切掉</span></label></li><li><label><input type="checkbox" id="ck2"><span>超過目標時圓環滿格、文字超過 100%</span></label></li><li><label><input type="checkbox" id="ck3"><span>微縮進度條也是 CustomPainter</span></label></li><li><label><input type="checkbox" id="ck4"><span>8542 步顯示 341.7 kcal、5.13 km</span></label></li><li><label><input type="checkbox" id="ck5"><span>點完成度可以修改目標</span></label></li><li><label><input type="checkbox" id="ck6"><span>重開 App 目標仍在</span></label></li><li><label><input type="checkbox" id="ck7"><span>flutter analyze 沒有任何問題</span></label></li></ul>
+</section>
+
+<section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p>三題都改在 RingPainter 裡，可以先複製一份 RingPainter2 練習，確定好看再換掉。</p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><h3 style="font-size:19px">漸層進度弧</h3><p>進度弧從淺到深漸層。注意 SweepGradient 預設從 3 點鐘開始，要轉到 12 點鐘。</p><p class="hio"><b>提示</b> <code>paint.shader = SweepGradient(…, transform: GradientRotation(-pi / 2)).createShader(rect)</code></p></article><article class="hw"><span class="hwn">作業 2</span><h3 style="font-size:19px">終點小白點</h3><p>進度弧的終點畫一個白色小圓點。</p><p class="hio"><b>提示</b> <code>角度 a = -pi / 2 + sweep；點 = center + Offset(cos(a), sin(a)) * radius</code></p></article><article class="hw"><span class="hwn">作業 3</span><h3 style="font-size:19px">超過 100% 換顏色</h3><p>步數超過目標時，進度弧改用強調色，讓使用者一眼看出已達標。</p><p class="hio"><b>提示</b> <code>progress &gt; 1 時換顏色，畫的時候仍然 clamp</code></p></article></div>
+</section>
+
+<footer>Flutter手機程式設計・第 10 堂 / 共 24 堂</footer>
+</div>
+<script>
+(function(){
+  // 簡易 Dart 語法上色
+  var KW=/^(void|var|final|const|return|if|else|for|in|switch|class|this|required|late|get|set|true|false|null|import|override|new|async|await|extends|super|return|if|null|true|false|fun|val|var|package|when|else|try|catch|on|throw|static|switch|case|is)$/;
+  var TY=/^(int|double|bool|String|List|Map|DateTime|Iterable|StringBuffer|StepRecord|Badge|num|Widget|BuildContext|State|StatelessWidget|StatefulWidget|MaterialApp|Scaffold|AppBar|Text|Center|Column|Image|Padding|EdgeInsets|SizedBox|TextStyle|FloatingActionButton|Icon|Icons|ThemeData|Color|MainAxisSize|HomePage|MoveGoApp|Row|Expanded|Stack|Container|BoxDecoration|BorderRadius|Alignment|MainAxisAlignment|CrossAxisAlignment|FontWeight|Colors|AppColors|AppText|StatCard|DayChip|ListView|Axis|CircularProgressIndicator|LinearProgressIndicator|SingleChildScrollView|Positioned|Border|BoxShape|Navigator|MaterialPageRoute|IndexedStack|BottomNavigationBar|BottomNavigationBarItem|ImageIcon|AssetImage|AlertDialog|Dialog|GestureDetector|PopScope|TextButton|FilledButton|IconButton|DefaultTabController|TabBar|TabBarView|Tab|MainShell|TrendPage|StepDetectPage|AddStepsDialog|BadgeDialog|Future|ProgressDial|AchievementPage|Intent|MethodChannel|FlutterActivity|FlutterEngine|File|String|Boolean|NativeStorage|PlatformException|MissingPluginException|WidgetsFlutterBinding|Directory|List|Map|bool|int|StepRecord|StepRepository|DateTime|Duration|Random|JSONArray|LocalDateTime|FormatException|LocalDate|ScrollController|VoidCallback|Badge|DayChip|StringBuffer|GridView|TextField|TextEditingController|OutlinedButton|InputDecoration|OutlineInputBorder|NeverScrollableScrollPhysics|TextAlign|EditText|GridLayout|CustomPainter|CustomPaint|Canvas|Size|Paint|PaintingStyle|StrokeCap|Offset|Rect|RingPainter|MiniBarPainter|GoalDialog|View|RectF|SweepGradient|double)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='dart-l10-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 10';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
