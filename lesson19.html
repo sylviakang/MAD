@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 19 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, Dart always teal, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--dart)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .dh{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.kt code{color:var(--kotlin)} td.dt code{color:var(--dart);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--dart-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--dart);font-size:13px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+</style><style>
+.quiz{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;counter-reset:q;padding:0;margin:0}
+.quiz li{list-style:none;background:var(--surface);border:2px solid var(--sky);border-radius:14px;padding:12px 14px;font-size:15px;min-width:0}
+.quiz li::before{counter-increment:q;content:"Q" counter(q);display:block;font-family:var(--f-display);color:var(--sky);font-size:18px}
+.quiz code{font-size:13px;color:var(--dart)}
+.note{font-size:14.5px;background:var(--cs);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.io pre{white-space:pre-wrap}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.score div{background:var(--surface);border-radius:14px;padding:14px;border-left:6px solid var(--coral);min-width:0}
+.score b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--coral)}
+.score span{font-size:14px;color:var(--muted)}
+</style><style>
+.flow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch}
+.fs{background:var(--surface);border-radius:16px;padding:14px;border-top:6px solid var(--fc);display:flex;flex-direction:column;gap:6px;min-width:0}
+.fs .side{font-size:12px;font-weight:700;color:var(--fc);letter-spacing:.04em}
+.fs b{font-size:16px} .fs code{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+.f-d{--fc:var(--dart)} .f-c{--fc:var(--sun)} .f-k{--fc:var(--kotlin)} .f-r{--fc:var(--sky)}
+.fa{display:grid;place-items:center;font-size:24px;color:var(--muted)}
+@media (max-width:760px){.flow{grid-template-columns:minmax(0,1fr)} .fa{transform:rotate(90deg)}}
+</style>
+</head><body>
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#quiz">小測</a><a href="#map">頁面流程</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#drills">實作 10 項</a><a href="#check">自評</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0 / 10</span>
+</div></nav>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 19 堂</b>Flutter手機程式設計</span>
+    <h1>步數<span class="d">檢測頁</span></h1>
+    <p class="lead">感測器和演算法都準備好了，今天把整個頁面做完：照 run.mp4 做指示區塊的循環動畫、即時顯示步數和卡路里、結束時存檔，回到首頁數字要跟著變。這一頁共 15.5 分。</p>
+  </div>
+  <div class="swap" aria-label="今天學會">
+    <div class="ln dd"><span class="tag">循環</span><span>repeat()</span></div>
+    <div class="ln sk"><span class="tag">切換</span><span>didUpdateWidget</span></div>
+    <div class="ln co"><span class="tag">存檔</span><span>repo.add</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1" style="flex:15"><b>小測</b><small>0–15 分</small></div>
+    <div class="t2" style="flex:25"><b>拆解影片</b><small>15–40 分</small></div>
+    <div class="t3" style="flex:60"><b>實作 10 項</b><small>40–100 分</small></div>
+    <div class="t4" style="flex:20"><b>對照評分表自評</b><small>100–120 分</small></div>
+  </div>
+  <p class="tl-note">拆解影片的 15 分鐘不要省，兩個人各看一次再對答案。</p>
+</div>
+
+<section id="quiz">
+  <div class="sh"><h2>第 18 堂小測</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">15 分鐘・不看筆記</span>
+  <p>口頭回答或寫在紙上，第 5 題直接在專案裡寫。</p></div>
+  <ol class="quiz"><li>為什麼不能寫成「超過門檻就加步數」？</li><li>_above 什麼時候會設回 false？</li><li>冷卻時間用哪個方法算兩個時間差？</li><li>隨機 1～3 步在 Dart 怎麼寫？Kotlin 呢？</li><li>為什麼 Random 要從建構子傳進來？</li></ol>
+</section>
+
+<section id="map">
+  <div class="sh"><h2>一次檢測的四個階段</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">按鈕、動畫、存檔一起動</span>
+  <p>整頁只有一個狀態：_sub 有沒有值。按鈕文字、動畫要不要跑，全部看它。</p></div>
+  <div class="flow" aria-label="步數檢測流程">
+  <div class="fs f-d"><span class="side">開始</span><b>① 開始檢測</b><code>listen＋repeat()</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-c"><span class="side">檢測中</span><b>② 搖晃加步數</b><code>即時更新步數、kcal</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-k"><span class="side">結束</span><b>③ 結束檢測</b><code>cancel＋stop()＋repo.add</code></div>
+  <div class="fa" aria-hidden="true">→</div>
+  <div class="fs f-r"><span class="side">返回</span><b>④ 首頁更新</b><code>await push → setState</code></div>
+</div>
+  <div class="score" style="margin-top:22px"><div><b>15.5 分</b><span>步數檢測頁：UI 1.5＋功能 14，今天全部完成</span></div><div><b>5 分</b><span>指示區塊和 run.mp4 一致，是這頁最大的一項</span></div><div><b>2 分</b><span>結束後存檔，回首頁數字要跟著變</span></div></div>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>Kotlin 與 Flutter 循環動畫對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 15 分鐘</span>
+  <p>左欄是 Kotlin 的寫法，右欄是 Dart。黃底的幾行最容易寫錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="kh">Kotlin</th><th scope="col" class="dh">Dart</th></tr></thead>
+    <tbody><tr class="hot"><th scope="row">無限循環<span class="star">★</span></th><td class="kt"><code>animator.repeatCount = ValueAnimator.INFINITE</code></td><td class="dt"><code>controller.repeat()</code></td></tr><tr><th scope="row">來回播放</th><td class="kt"><code>repeatMode = ValueAnimator.REVERSE</code></td><td class="dt"><code>controller.repeat(reverse: true)</code></td></tr><tr><th scope="row">停止</th><td class="kt"><code>animator.cancel()</code></td><td class="dt"><code>controller.stop()</code></td></tr><tr><th scope="row">回到第一格</th><td class="kt"><code>animator.setCurrentPlayTime(0)</code></td><td class="dt"><code>controller.value = 0</code></td></tr><tr class="hot"><th scope="row">參數變了要反應<span class="star">★</span></th><td class="kt"><code>setter 或 observe</code></td><td class="dt"><code>didUpdateWidget(old)</code></td></tr><tr><th scope="row">透明度</th><td class="kt"><code>view.alpha = 0.5f</code></td><td class="dt"><code>Opacity(opacity: 0.5, child: …)</code></td></tr><tr><th scope="row">位移</th><td class="kt"><code>view.translationY = -8f</code></td><td class="dt"><code>Transform.translate(offset: Offset(0, -8))</code></td></tr><tr><th scope="row">縮放</th><td class="kt"><code>view.scaleX = 1.2f</code></td><td class="dt"><code>Transform.scale(scale: 1.2)</code></td></tr><tr><th scope="row">三角函數</th><td class="kt"><code>kotlin.math.sin(x)</code></td><td class="dt"><code>import &#x27;dart:math&#x27;; sin(x)</code></td></tr><tr class="hot"><th scope="row">不等它做完<span class="star">★</span></th><td class="kt"><code>scope.launch { save() }</code></td><td class="dt"><code>unawaited(save());</code></td></tr><tr><th scope="row">關閉頁面</th><td class="kt"><code>finish()</code></td><td class="dt"><code>Navigator.pop(context)</code></td></tr><tr class="hot"><th scope="row">回來後刷新<span class="star">★</span></th><td class="kt"><code>registerForActivityResult { … }</code></td><td class="dt"><code>await Navigator.push(…); setState(() {});</code></td></tr></tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">跟著教練一起做</span>
+  <p>範例取自教練版專案，已用 Flutter 3.47 通過 flutter analyze。Widget 測試確認了動畫循環與停止、搖晃加步數、結束存檔、檢測中返回也會存，以及首頁數字更新。指示區塊的動畫是範例，請對照 run.mp4 調整。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>先拆解 run.mp4</h3></header><p class="note">不要急著寫程式。逐格看影片，把答案寫在 AnimSpec 的註解裡。題目說影片會重複播放幾次方便觀察，但這一個動畫在檢測中本來就要一直循環。</p><pre class="code"><code data-lang="dart">// 對照 run.mp4 回答這五題
+// 1. 哪些東西在動？（大小、位置、透明度、旋轉、顏色）
+// 2. 一圈多久？（數影片的影格，或用秒錶）
+// 3. 是一直往同一個方向，還是來回？
+// 4. 有沒有好幾個東西錯開時間動？
+// 5. 速度是等速，還是有加速、減速？
+class AnimSpec {
+  static const runDuration = Duration(milliseconds: 1200);
+  static const runRipple = 0.5;   // 第二圈晚多少開始
+  static const runBounce = 8.0;   // 上下跳的距離
+}</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>指示區塊自己管動畫</h3></header><p class="note">RunIndicator 只收一個 running。父層 setState 換了值，Flutter 會呼叫 didUpdateWidget，在這裡開始或停止。</p><pre class="code"><code data-lang="dart">class _RunIndicatorState extends State&lt;RunIndicator&gt;
+    with SingleTickerProviderStateMixin {
+  late final _c = AnimationController(
+      vsync: this, duration: AnimSpec.runDuration);
+
+  @override
+  void didUpdateWidget(RunIndicator old) {
+    super.didUpdateWidget(old);
+    if (widget.running == old.running) return;
+    if (widget.running) {
+      _c.repeat();          // 一直循環
+    } else {
+      _c.stop();            // 停止
+      _c.value = 0;         // 回到第一格
+    }
+  }
+  …
+}</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>用 t 算出每個東西的樣子</h3></header><p class="note">教練版用「兩圈波紋＋小人上下跳」當範例，請依照你們拆解 run.mp4 的結果改。重點是所有變化都從同一個 t（0～1）算出來。</p><pre class="code"><code data-lang="dart">builder: (_, _) {
+  final t = _c.value;
+  return Stack(alignment: Alignment.center, children: [
+    if (widget.running) ...[
+      _ripple(t, size),
+      _ripple((t + AnimSpec.runRipple) % 1, size),  // 錯開半圈
+    ],
+    Transform.translate(
+      offset: Offset(0, -AnimSpec.runBounce * sin(t * 2 * pi).abs()),
+      child: …,
+    ),
+  ]);
+}
+
+Widget _ripple(double t, double size) =&gt; Opacity(
+  opacity: 1 - t,                          // 越大越透明
+  child: Container(width: size * (0.5 + 0.5 * t), …),
+);</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>版面：題目的六個元素</h3></header><p class="note">標題、指示區塊、步數、卡路里、返回、開始／結束按鈕。步數和卡路里長得一樣，寫成一個小元件。</p><pre class="code"><code data-lang="dart">Column(children: [
+  Expanded(child: Center(child: RunIndicator(running: _running))),
+  Row(children: [
+    Expanded(child: _Value(label: &#x27;步數&#x27;, value: &#x27;$_steps&#x27;)),
+    const SizedBox(width: 12),
+    Expanded(child: _Value(label: &#x27;卡路里&#x27;, value: fmtKcal(_steps))),
+  ]),
+  const SizedBox(height: 24),
+  SizedBox(
+    width: double.infinity,
+    child: FilledButton(
+      onPressed: _running ? _finish : _start,
+      child: Text(_running ? &#x27;結束檢測&#x27; : &#x27;開始檢測&#x27;),
+    ),
+  ),
+])</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>結束檢測就存檔</h3></header><p class="note">一個 _finish 做三件事：取消感測器、停止動畫（_sub 變 null）、存進 repo。檢測中直接按返回也要存，不然步數就不見了。</p><pre class="code"><code data-lang="dart">Future&lt;void&gt; _finish() async {
+  _sub?.cancel();
+  setState(() =&gt; _sub = null);              // 按鈕、動畫一起變
+  await repo.add(DateTime.now(), _steps);   // 0 步會直接略過
+}
+
+void _back() {
+  if (_running) unawaited(_finish());       // 不必等寫完檔
+  Navigator.pop(context);
+}</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>回到首頁要更新</h3></header><p class="note">首頁的數字是 build 時從 repo 算的。從檢測頁回來後 setState 一次，順便重播動畫。</p><pre class="code"><code data-lang="dart">Future&lt;void&gt; _openDetect() async {
+  await Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) =&gt; const StepDetectPage()),
+  );
+  if (!mounted) return;
+  setState(() {});
+  _replay();
+  _replayRecent();
+  _replayBar();
+}
+
+// 進度儀表板
+onLongPress: _openDetect,</code></pre></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>實作 10 項</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">60 分鐘</span>
+  <p>沿用第 18 堂的 movego 專案。第 1 項先不要開 VS Code，只看影片。</p></div>
+  <div class="exs"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>拆解 run.mp4</h3><span class="use">對應：指示區塊動畫（5 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>逐格觀察影片，回答五個問題</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>寫成 AnimSpec 的註解</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">兩人答案一致才往下做</pre></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 驗收通過</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>AnimSpec 參數</h3><span class="use">對應：程式結構</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>新增 run 開頭的參數</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>時間、錯開比例、距離</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">只改這裡就能調整動畫</pre></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 驗收通過</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>RunIndicator</h3><span class="use">對應：停止動畫（0.5 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>新增 lib/run_indicator.dart，running 控制 repeat、stop</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>didUpdateWidget</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">按開始會動、按結束停在第一格</pre></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 驗收通過</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>做出影片效果</h3><span class="use">對應：指示區塊動畫（5 分）</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>依照拆解結果完成動畫</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>Opacity、Transform、Stack</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">兩支手機並排和影片比對</pre></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 驗收通過</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>頁面版面</h3><span class="use">對應：UI（1.5 分）</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>標題、指示區塊、步數、卡路里、返回、按鈕</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>_Value 小元件</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">六個元素都在，小螢幕不溢出</pre></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 驗收通過</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>按鈕文字</h3><span class="use">對應：按鈕文字（各 0.5 分）</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>開始檢測、結束檢測切換</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>_running 看 _sub</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">文字和動畫同時切換</pre></div></div>
+<label class="done"><input type="checkbox" id="ex6"> 驗收通過</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>即時數值</h3><span class="use">對應：即時顯示（0.3 分）</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>步數、卡路里搖一下就更新</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>只有加步數時才 setState</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">30 步顯示 1.2</pre></div></div>
+<label class="done"><input type="checkbox" id="ex7"> 驗收通過</label>
+</article><article class="ex" data-ex="8">
+<div class="ex-top"><span class="exn">08</span><div class="ex-title"><h3>結束存檔</h3><span class="use">對應：持久化儲存（2 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>_finish 裡呼叫 repo.add</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>0 步不存</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">重開 App 步數還在</pre></div></div>
+<label class="done"><input type="checkbox" id="ex8"> 驗收通過</label>
+</article><article class="ex" data-ex="9">
+<div class="ex-top"><span class="exn">09</span><div class="ex-title"><h3>返回首頁</h3><span class="use">對應：返回首頁（0.2 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>檢測中按返回也存，首頁數字更新</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>_openDetect＋setState</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">首頁總步數增加，動畫重播</pre></div></div>
+<label class="done"><input type="checkbox" id="ex9"> 驗收通過</label>
+</article><article class="ex" data-ex="10">
+<div class="ex-top"><span class="exn">10</span><div class="ex-title"><h3>Widget 測試</h3><span class="use">對應：穩定度</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>測開始、動畫、加步數、存檔、返回</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>MockStreamHandler＋isAnimating</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">flutter test 全部通過</pre></div></div>
+<label class="done"><input type="checkbox" id="ex10"> 驗收通過</label>
+</article></div>
+  <p class="tip">動畫 5 分看的是「效果一致」。動的東西、一圈的時間、錯開的方式都對了，細節差一點通常還是拿得到大部分分數。</p>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">20 分鐘</span>
+  <p>每一項都要在模擬器上實際看到結果才打勾。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>六個介面元素都在</span></label></li><li><label><input type="checkbox" id="ck1"><span>按開始檢測，動畫開始循環</span></label></li><li><label><input type="checkbox" id="ck2"><span>按結束檢測，動畫停止並回到第一格</span></label></li><li><label><input type="checkbox" id="ck3"><span>按鈕文字正確切換</span></label></li><li><label><input type="checkbox" id="ck4"><span>搖一下步數、卡路里立刻更新</span></label></li><li><label><input type="checkbox" id="ck5"><span>結束後重開 App，步數還在</span></label></li><li><label><input type="checkbox" id="ck6"><span>檢測中按返回也有存檔，首頁數字更新</span></label></li><li><label><input type="checkbox" id="ck7"><span>flutter test 和 flutter analyze 都通過</span></label></li></ul>
+</section>
+
+<section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p>第 1 題比賽時也建議做，裁判可能會用系統返回鍵測試。</p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><h3 style="font-size:19px">系統返回鍵</h3><p>檢測中按 Android 的系統返回鍵（或手勢返回）也要存檔。</p><p class="hio"><b>提示</b> <code>PopScope(onPopInvokedWithResult: (didPop, _) { if (didPop &amp;&amp; _running) _finish(); })</code></p></article><article class="hw"><span class="hwn">作業 2</span><h3 style="font-size:19px">數字跳一下</h3><p>步數增加時，數字放大再縮回來。</p><p class="hio"><b>提示</b> <code>AnimatedSwitcher 加 ScaleTransition，child 的 key 用 ValueKey(_steps)</code></p></article><article class="hw"><span class="hwn">作業 3</span><h3 style="font-size:19px">檢測計時</h3><p>畫面顯示這次檢測經過的時間 mm:ss。</p><p class="hio"><b>提示</b> <code>Stopwatch 計時，Timer.periodic 每秒 setState；結束和 dispose 都要 cancel Timer</code></p></article></div>
+</section>
+
+<footer>Flutter手機程式設計・第 19 堂 / 共 24 堂</footer>
+</div>
+<script>
+(function(){
+  // 簡易 Dart 語法上色
+  var KW=/^(void|var|final|const|return|if|else|for|in|switch|class|this|required|late|get|set|true|false|null|import|override|new|async|await|extends|super|return|if|null|true|false|fun|val|var|package|when|else|try|catch|on|throw|static|switch|case|is|test|expect)$/;
+  var TY=/^(int|double|bool|String|List|Map|DateTime|Iterable|StringBuffer|StepRecord|Badge|num|Widget|BuildContext|State|StatelessWidget|StatefulWidget|MaterialApp|Scaffold|AppBar|Text|Center|Column|Image|Padding|EdgeInsets|SizedBox|TextStyle|FloatingActionButton|Icon|Icons|ThemeData|Color|MainAxisSize|HomePage|MoveGoApp|Row|Expanded|Stack|Container|BoxDecoration|BorderRadius|Alignment|MainAxisAlignment|CrossAxisAlignment|FontWeight|Colors|AppColors|AppText|StatCard|DayChip|ListView|Axis|CircularProgressIndicator|LinearProgressIndicator|SingleChildScrollView|Positioned|Border|BoxShape|Navigator|MaterialPageRoute|IndexedStack|BottomNavigationBar|BottomNavigationBarItem|ImageIcon|AssetImage|AlertDialog|Dialog|GestureDetector|PopScope|TextButton|FilledButton|IconButton|DefaultTabController|TabBar|TabBarView|Tab|MainShell|TrendPage|StepDetectPage|AddStepsDialog|BadgeDialog|Future|ProgressDial|AchievementPage|Intent|MethodChannel|FlutterActivity|FlutterEngine|File|String|Boolean|NativeStorage|PlatformException|MissingPluginException|WidgetsFlutterBinding|Directory|List|Map|bool|int|StepRecord|StepRepository|DateTime|Duration|Random|JSONArray|LocalDateTime|FormatException|LocalDate|ScrollController|VoidCallback|Badge|DayChip|StringBuffer|GridView|TextField|TextEditingController|OutlinedButton|InputDecoration|OutlineInputBorder|NeverScrollableScrollPhysics|TextAlign|EditText|GridLayout|CustomPainter|CustomPaint|Canvas|Size|Paint|PaintingStyle|StrokeCap|Offset|Rect|RingPainter|MiniBarPainter|GoalDialog|View|RectF|SweepGradient|double|AnimationController|Animation|CurvedAnimation|Curves|Tween|AnimatedBuilder|SingleTickerProviderStateMixin|TickerProviderStateMixin|AnimationStatus|ValueAnimator|DecelerateInterpolator|Interval|Cubic|AnimSpec|Curve|PathInterpolator|AnimatorSet|BarChartPainter|ChartCard|TextPainter|TextSpan|TextDirection|RRect|Radius|LayoutBuilder|RectF|StaticLayout|YAxis|Math|TrendData|TrendView|TrendPage|TabLayout|ViewPager2|YearMonth|ChronoUnit|DayOfWeek|Path|LineChartPainter|PathMeasure|LinearGradient|StrokeJoin|LabelAlign|EventChannel|StreamHandler|EventSink|SensorManager|Sensor|SensorEvent|SensorEventListener|Stream|StreamSubscription|AccelSample|Accel|MockStreamHandler|Flow|Job|FloatArray|Any|Unit|Object|ShakeDetector|Set|RunIndicator|Opacity|Transform|ValueAnimator|PopScope|Stopwatch|Timer)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='dart-l19-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 10';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
