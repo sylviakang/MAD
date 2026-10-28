@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 番外篇</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, Dart always teal, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--dart)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .dh{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.kt code{color:var(--kotlin)} td.dt code{color:var(--dart);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--dart-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--dart);font-size:13px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+</style><style>
+.cs-tag{background:var(--kotlin)!important}
+thead .ch{background:var(--kotlin)}
+td.ct code{color:var(--kotlin)}
+.pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.pair>div{min-width:0;display:flex;flex-direction:column;gap:6px}
+.lang{align-self:flex-start;font-size:11.5px;font-weight:700;color:#fff;border-radius:6px;padding:2px 8px}
+.lang.c{background:var(--kotlin)} .lang.d{background:var(--dart)}
+.concept.wide{grid-column:1/-1}
+.note{font-size:14.5px;background:var(--cs);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.ex .pair pre.code{font-size:12.5px}
+details{border-radius:10px;background:var(--dart-soft);padding:8px 12px}
+summary{cursor:pointer;font-weight:700;color:var(--dart);font-size:14px}
+details pre.code{margin-top:8px}
+.exs.one{grid-template-columns:minmax(0,1fr)}
+@media (max-width:760px){.pair{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head><body>
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#compare">語法對照表</a><a href="#concepts">六組對照</a><a href="#drills">改寫 5 題</a><a href="#check">自評</a>
+  <span class="prog" id="prog">完成 0 / 5</span>
+</div></nav>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>番外篇</b>Flutter手機程式設計</span>
+    <h1><span style="color:var(--kotlin)">C#</span> 與 <span class="d">Dart</span> 語法對照</h1>
+    <p class="lead">第 1 堂的補充教材。用學過的 C# 對照 Dart，找出寫法相同與容易寫錯的地方，最後把 5 段 C# 程式改寫成 Dart。</p>
+  </div>
+  <div class="swap" aria-label="同一行程式的 C# 與 Dart 寫法">
+    <div class="ln k"><span class="tag">C#</span><span>var b = new Badge("一萬步", 10000);</span></div>
+    <div class="ln dd"><span class="tag">Dart</span><span>final b = Badge('一萬步', 10000);</span></div>
+    <div class="ln co"><span class="tag">差別</span><span>不用 new・單引號・final</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>建議的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1" style="flex:25"><b>語法對照表</b><small>0–25 分</small></div>
+    <div class="t2" style="flex:35"><b>六組對照</b><small>25–60 分</small></div>
+    <div class="t3" style="flex:40"><b>改寫 5 題</b><small>60–100 分</small></div>
+    <div class="t4" style="flex:20"><b>自評討論</b><small>100–120 分</small></div>
+  </div>
+  <p class="tl-note">也可以當成自學教材，選手課後依自己的速度完成。</p>
+</div>
+
+<section id="compare">
+  <div class="sh"><h2>語法對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">C# ↔ Dart</span>
+  <p>左欄是學過的 C#，右欄是 Dart 寫法。黃底的幾行最容易寫錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="ch">C#</th><th scope="col" class="dh">Dart</th></tr></thead>
+    <tbody><tr><th scope="row">不可變變數</th><td class="ct"><code>readonly int goal = 6000;  // 只能用在欄位</code></td><td class="dt"><code>final goal = 6000;  // 區域變數也能用</code></td></tr><tr><th scope="row">編譯期常數</th><td class="ct"><code>const int Goal = 6000;</code></td><td class="dt"><code>const goal = 6000;</code></td></tr><tr><th scope="row">可變變數</th><td class="ct"><code>var steps = 0;</code></td><td class="dt"><code>var steps = 0;</code></td></tr><tr class="hot"><th scope="row">字串型別<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>string（小寫）</code></td><td class="dt"><code>String（大寫 S）</code></td></tr><tr><th scope="row">印出</th><td class="ct"><code>Console.WriteLine(x);</code></td><td class="dt"><code>print(x);</code></td></tr><tr class="hot"><th scope="row">字串插值<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>$&quot;{name} {a + 1}&quot;</code></td><td class="dt"><code>&#x27;$name ${a + 1}&#x27;</code></td></tr><tr><th scope="row">小數位數</th><td class="ct"><code>x.ToString(&quot;F2&quot;)</code></td><td class="dt"><code>x.toStringAsFixed(2)</code></td></tr><tr><th scope="row">可為 null</th><td class="ct"><code>int? n = null;</code></td><td class="dt"><code>int? n;</code></td></tr><tr><th scope="row">null 預設值</th><td class="ct"><code>n ?? 0</code></td><td class="dt"><code>n ?? 0（相同）</code></td></tr><tr class="hot"><th scope="row">方法命名<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>int Add(int a, int b) =&gt; a + b;</code></td><td class="dt"><code>int add(int a, int b) =&gt; a + b;  // 小寫開頭</code></td></tr><tr class="hot"><th scope="row">具名參數<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>呼叫時任何參數都能寫 name:</code></td><td class="dt"><code>要用 { } 宣告才能具名呼叫</code></td></tr><tr><th scope="row">選擇性參數</th><td class="ct"><code>string unit = &quot;步&quot;</code></td><td class="dt"><code>[String unit = &#x27;步&#x27;]</code></td></tr><tr class="hot"><th scope="row">整數除法<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>7 / 2  → 3</code></td><td class="dt"><code>7 / 2 → 3.5，要用 7 ~/ 2</code></td></tr><tr><th scope="row">switch 表達式</th><td class="ct"><code>p switch { &gt;= 100 =&gt; &quot;達標&quot;, _ =&gt; &quot;加油&quot; }</code></td><td class="dt"><code>switch (p) { &gt;= 100 =&gt; &#x27;達標&#x27;, _ =&gt; &#x27;加油&#x27; }</code></td></tr><tr><th scope="row">foreach</th><td class="ct"><code>foreach (var d in days)</code></td><td class="dt"><code>for (final d in days)</code></td></tr><tr><th scope="row">建立 List</th><td class="ct"><code>new List&lt;int&gt; { 1, 2 }</code></td><td class="dt"><code>[1, 2]  或  &lt;int&gt;[1, 2]</code></td></tr><tr><th scope="row">建立字典</th><td class="ct"><code>new Dictionary&lt;string, int&gt; { [&quot;a&quot;] = 1 }</code></td><td class="dt"><code>{&#x27;a&#x27;: 1}</code></td></tr><tr class="hot"><th scope="row">取不存在的鍵<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>dict[&quot;x&quot;] 丟出例外</code></td><td class="dt"><code>map[&#x27;x&#x27;] 回傳 null</code></td></tr><tr class="hot"><th scope="row">建立物件<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>new Badge(...)</code></td><td class="dt"><code>Badge(...)  // 不用 new</code></td></tr><tr class="hot"><th scope="row">private<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>private int _steps;</code></td><td class="dt"><code>int _steps;  // 底線開頭就是私有</code></td></tr><tr><th scope="row">唯讀屬性</th><td class="ct"><code>public bool Unlocked =&gt; Current &gt;= Target;</code></td><td class="dt"><code>bool get unlocked =&gt; current &gt;= target;</code></td></tr><tr class="hot"><th scope="row">LINQ Select／Where<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>list.Where(s =&gt; s &gt; 0).Select(s =&gt; s * 2).ToList()</code></td><td class="dt"><code>list.where((s) =&gt; s &gt; 0).map((s) =&gt; s * 2).toList()</code></td></tr><tr><th scope="row">LINQ Sum／Max／Any</th><td class="ct"><code>list.Sum()  list.Max()  list.Any(...)</code></td><td class="dt"><code>list.fold(0, (a, b) =&gt; a + b)  list.reduce(max)  list.any(...)</code></td></tr><tr><th scope="row">非同步</th><td class="ct"><code>async Task&lt;int&gt;</code></td><td class="dt"><code>Future&lt;int&gt; ... async</code></td></tr></tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六組對照</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">左 C#・右 Dart</span>
+  <p>同一件事的兩種寫法並排。Dart 範例都已實際執行過，註解裡的值就是印出結果。</p></div>
+  <div class="concepts"><article class="concept wide c0"><header><span class="cnum">1</span><h3>字串插值與格式</h3></header><p class="note">C# 用 $&quot;{x}&quot;；Dart 不用前綴，變數直接寫 $x，運算式才要 ${ }。</p><div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">int steps = 1500;
+string name = &quot;SK&quot;;
+Console.WriteLine($&quot;{name} 走了 {steps} 步，共 {steps * 0.04} kcal&quot;);
+Console.WriteLine(3.14159.ToString(&quot;F2&quot;));</code></pre></div><div><span class="lang d">Dart</span><pre class="code"><code data-lang="dart">final steps = 1500;
+final name = &#x27;SK&#x27;;
+print(&#x27;$name 走了 $steps 步，共 ${steps * 0.04} kcal&#x27;);
+// SK 走了 1500 步，共 60.0 kcal
+print(3.14159.toStringAsFixed(2)); // 3.14</code></pre></div></div></article><article class="concept wide c1"><header><span class="cnum">2</span><h3>字典取值與 null</h3></header><p class="note">C# 取不存在的鍵會丟例外；Dart 會回傳 null，所以一定要搭配 ??。</p><div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">var daily = new Dictionary&lt;string, int&gt; { [&quot;Mon&quot;] = 3000 };
+// daily[&quot;Wed&quot;] 會丟出 KeyNotFoundException
+int wed = daily.TryGetValue(&quot;Wed&quot;, out var v) ? v : 0;</code></pre></div><div><span class="lang d">Dart</span><pre class="code"><code data-lang="dart">final daily = &lt;String, int&gt;{&#x27;Mon&#x27;: 3000};
+print(daily[&#x27;Wed&#x27;]);            // null，不會丟例外
+final wed = daily[&#x27;Wed&#x27;] ?? 0;  // 0</code></pre></div></div></article><article class="concept wide c2"><header><span class="cnum">3</span><h3>具名與選擇性參數</h3></header><p class="note">C# 呼叫時任何參數都能具名；Dart 只有寫在 { } 裡的參數才能具名，Flutter Widget 全是這種寫法。</p><div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">string Greet(string name, string prefix = &quot;Hi&quot;, int times = 1)
+    =&gt; string.Join(&quot;, &quot;, Enumerable.Repeat($&quot;{prefix} {name}&quot;, times));
+
+Greet(&quot;SK&quot;, times: 2);</code></pre></div><div><span class="lang d">Dart</span><pre class="code"><code data-lang="dart">String greet(String name, {String prefix = &#x27;Hi&#x27;, int times = 1}) =&gt;
+    List.filled(times, &#x27;$prefix $name&#x27;).join(&#x27;, &#x27;);
+
+greet(&#x27;SK&#x27;, times: 2);   // Hi SK, Hi SK</code></pre></div></div></article><article class="concept wide c3"><header><span class="cnum">4</span><h3>switch 表達式</h3></header><p class="note">兩者幾乎一樣，差別只在 switch 的位置與字串引號。</p><div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">string Level(int p) =&gt; p switch
+{
+    &gt;= 100 =&gt; &quot;達標&quot;,
+    &gt;= 50 =&gt; &quot;過半&quot;,
+    _ =&gt; &quot;加油&quot;
+};</code></pre></div><div><span class="lang d">Dart</span><pre class="code"><code data-lang="dart">String level(int p) =&gt; switch (p) {
+      &gt;= 100 =&gt; &#x27;達標&#x27;,
+      &gt;= 50 =&gt; &#x27;過半&#x27;,
+      _ =&gt; &#x27;加油&#x27;,
+    };</code></pre></div></div></article><article class="concept wide c4"><header><span class="cnum">5</span><h3>類別與屬性</h3></header><p class="note">Dart 沒有 public／private 關鍵字，名稱底線開頭就是私有；建立物件不用 new；欄位用 this.x 直接在建構子指定。</p><div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">public class Badge
+{
+    public string Title { get; }
+    public int Target { get; }
+    public int Current { get; set; }
+
+    public Badge(string title, int target, int current = 0)
+    {
+        Title = title; Target = target; Current = current;
+    }
+
+    public bool Unlocked =&gt; Current &gt;= Target;
+}
+
+var b = new Badge(&quot;初次一萬步&quot;, 10000, current: 12000);</code></pre></div><div><span class="lang d">Dart</span><pre class="code"><code data-lang="dart">class Badge {
+  final String title;
+  final int target;
+  int current;
+
+  Badge(this.title, this.target, {this.current = 0});
+
+  bool get unlocked =&gt; current &gt;= target;
+}
+
+final b = Badge(&#x27;初次一萬步&#x27;, 10000, current: 12000);
+print(b.unlocked); // true</code></pre></div></div></article><article class="concept wide c5"><header><span class="cnum">6</span><h3>LINQ 與集合方法</h3></header><p class="note">名稱大多改成小寫；Select 對應 map；Sum、Max 沒有內建，要用 fold、reduce。</p><div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">var list = new List&lt;int&gt; { 300, 1200, 800, 500 };
+var doubled = list.Select(s =&gt; s * 2).ToList();
+int biggest = list.Max();
+bool any = list.Any(s =&gt; s &gt; 1000);
+int total = list.Sum();</code></pre></div><div><span class="lang d">Dart</span><pre class="code"><code data-lang="dart">// 檔案開頭：import &#x27;dart:math&#x27;;
+final list = &lt;int&gt;[300, 1200, 800, 500];
+final doubled = list.map((s) =&gt; s * 2).toList(); // [600, 2400, 1600, 1000]
+final biggest = list.reduce(max);                // 1200
+final any = list.any((s) =&gt; s &gt; 1000);           // true
+final total = list.fold(0, (a, b) =&gt; a + b);     // 2800</code></pre></div></div></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>改寫 5 題</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">40 分鐘</span>
+  <p>把每段 C# 改寫成 Dart，執行後的輸出要和「Dart 預期輸出」完全一致。先自己寫，寫完再打開參考答案。</p></div>
+  <div class="exs one"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>格式化輸出</h3><span class="use">把左邊的 C# 改寫成 Dart</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">double kcal = 1234 * 0.04;
+Console.WriteLine($&quot;消耗 {kcal:F2} kcal&quot;);</code></pre></div><div><span class="io-l">Dart 預期輸出</span><pre class="code"><code>消耗 49.36 kcal</code></pre>
+<details><summary>寫完再打開：參考答案</summary><pre class="code"><code data-lang="dart">final kcal = 1234 * 0.04;
+print(&#x27;消耗 ${kcal.toStringAsFixed(2)} kcal&#x27;);</code></pre></details></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>字典取值</h3><span class="use">把左邊的 C# 改寫成 Dart</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">var daily = new Dictionary&lt;string, int&gt; { [&quot;Mon&quot;] = 3200 };
+int tue = daily.TryGetValue(&quot;Tue&quot;, out var v) ? v : 0;
+Console.WriteLine(tue);</code></pre></div><div><span class="io-l">Dart 預期輸出</span><pre class="code"><code>0</code></pre>
+<details><summary>寫完再打開：參考答案</summary><pre class="code"><code data-lang="dart">final daily = {&#x27;Mon&#x27;: 3200};
+final tue = daily[&#x27;Tue&#x27;] ?? 0;
+print(tue);</code></pre></details></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>類別、私有欄位與屬性</h3><span class="use">把左邊的 C# 改寫成 Dart</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">public class Goal
+{
+    private int _steps;
+    public int Target { get; }
+    public Goal(int target) { Target = target; }
+    public void Add(int s) { _steps += s; }
+    public int Percent =&gt; Math.Min(_steps * 100 / Target, 100);
+}
+
+var g = new Goal(6000);
+g.Add(4500);
+Console.WriteLine(g.Percent);</code></pre></div><div><span class="io-l">Dart 預期輸出</span><pre class="code"><code>75</code></pre>
+<details><summary>寫完再打開：參考答案</summary><pre class="code"><code data-lang="dart">import &#x27;dart:math&#x27;;
+
+class Goal {
+  int _steps = 0;
+  final int target;
+  Goal(this.target);
+  void add(int s) =&gt; _steps += s;
+  int get percent =&gt; min(_steps * 100 ~/ target, 100);
+}
+
+void main() {
+  final g = Goal(6000);
+  g.add(4500);
+  print(g.percent);
+}</code></pre></details></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>LINQ 改寫</h3><span class="use">把左邊的 C# 改寫成 Dart</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">var steps = new List&lt;int&gt; { 300, 1200, 800, 500 };
+var big = steps.Where(s =&gt; s &gt;= 500).Select(s =&gt; s * 0.04).ToList();
+int total = steps.Sum();
+Console.WriteLine(string.Join(&quot;, &quot;, big));
+Console.WriteLine(total);</code></pre></div><div><span class="io-l">Dart 預期輸出</span><pre class="code"><code>[48.0, 32.0, 20.0]
+2800</code></pre>
+<details><summary>寫完再打開：參考答案</summary><pre class="code"><code data-lang="dart">final steps = [300, 1200, 800, 500];
+final big = steps.where((s) =&gt; s &gt;= 500).map((s) =&gt; s * 0.04).toList();
+final total = steps.fold(0, (a, b) =&gt; a + b);
+print(big);
+print(total);</code></pre></details></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>switch 與迴圈</h3><span class="use">把左邊的 C# 改寫成 Dart</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<div class="pair"><div><span class="lang c">C#</span><pre class="code"><code data-lang="cs">int[] percents = { 120, 60, 10 };
+foreach (var p in percents)
+{
+    string level = p switch
+    {
+        &gt;= 100 =&gt; &quot;達標&quot;,
+        &gt;= 50 =&gt; &quot;過半&quot;,
+        _ =&gt; &quot;加油&quot;
+    };
+    Console.WriteLine($&quot;{p}% {level}&quot;);
+}</code></pre></div><div><span class="io-l">Dart 預期輸出</span><pre class="code"><code>120% 達標
+60% 過半
+10% 加油</code></pre>
+<details><summary>寫完再打開：參考答案</summary><pre class="code"><code data-lang="dart">for (final p in [120, 60, 10]) {
+  final level = switch (p) {
+    &gt;= 100 =&gt; &#x27;達標&#x27;,
+    &gt;= 50 =&gt; &#x27;過半&#x27;,
+    _ =&gt; &#x27;加油&#x27;,
+  };
+  print(&#x27;$p% $level&#x27;);
+}</code></pre></details></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 輸出一致，完成</label>
+</article></div>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">20 分鐘</span>
+  <p>逐項勾選，沒勾到的回頭看對照表的黃底列。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>5 題改寫的輸出都與預期一致</span></label></li><li><label><input type="checkbox" id="ck1"><span>知道 Dart 的 String 是大寫，C# 的 string 是小寫</span></label></li><li><label><input type="checkbox" id="ck2"><span>知道 Dart 取不存在的鍵會得到 null，要搭配 ??</span></label></li><li><label><input type="checkbox" id="ck3"><span>知道 Dart 的 / 一定得到小數，整數除法要用 ~/</span></label></li><li><label><input type="checkbox" id="ck4"><span>建立物件時沒有寫 new</span></label></li><li><label><input type="checkbox" id="ck5"><span>私有成員用底線開頭，而不是 private</span></label></li></ul>
+</section>
+
+<footer>Flutter手機程式設計・番外篇：C# 與 Dart 語法對照</footer>
+</div>
+<script>
+(function(){
+  // 簡易 Dart 語法上色
+  var KW=/^(void|var|final|const|return|if|else|for|in|switch|class|this|required|late|get|set|true|false|null|import|override|new|public|private|static|readonly|foreach|out|using|async|await)$/;
+  var TY=/^(int|double|bool|String|List|Map|DateTime|Iterable|StringBuffer|StepRecord|Badge|num|string|Dictionary|Console|Math|Enumerable|Goal|Future|Task)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='dart-cs-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 5';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>

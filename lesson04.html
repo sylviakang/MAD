@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 4 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, Dart always teal, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--dart)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .dh{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.kt code{color:var(--kotlin)} td.dt code{color:var(--dart);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--dart-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--dart);font-size:13px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+</style><style>
+.quiz{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;counter-reset:q;padding:0;margin:0}
+.quiz li{list-style:none;background:var(--surface);border:2px solid var(--sky);border-radius:14px;padding:12px 14px;font-size:15px;min-width:0}
+.quiz li::before{counter-increment:q;content:"Q" counter(q);display:block;font-family:var(--f-display);color:var(--sky);font-size:18px}
+.quiz code{font-size:13px;color:var(--dart)}
+.note{font-size:14.5px;background:var(--cs);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.io pre{white-space:pre-wrap}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.score div{background:var(--surface);border-radius:14px;padding:14px;border-left:6px solid var(--coral);min-width:0}
+.score b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--coral)}
+.score span{font-size:14px;color:var(--muted)}
+</style><style>
+.wire{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:28px;align-items:center}
+.phone{background:var(--surface);border:3px solid var(--ink);border-radius:32px;padding:16px 12px;display:flex;flex-direction:column;gap:8px}
+.w{border:2px dashed var(--wc);border-radius:12px;padding:20px 8px 8px;position:relative;font-size:13px}
+.w>span{position:absolute;top:-1px;left:8px;transform:translateY(-50%);background:var(--wc);color:#fff;font-size:11px;font-weight:700;padding:1px 7px;border-radius:6px;font-family:var(--f-mono)}
+.w em{font-style:normal;color:var(--muted)}
+.w-bar{--wc:var(--sky);display:flex;justify-content:space-between}
+.w-list{--wc:var(--coral)} .chips{display:flex;gap:6px} .chips i{flex:1;height:38px;border-radius:8px;background:var(--bg)} .chips i.sel{background:var(--dart)}
+.w-stack{--wc:var(--dart);display:grid;place-items:center}
+.ring{width:120px;height:120px;border-radius:50%;border:10px solid var(--dart-soft);border-top-color:var(--dart);border-right-color:var(--dart);border-bottom-color:var(--dart);display:grid;place-content:center;text-align:center}
+.ring b{font-size:20px} .ring small{font-size:10px;color:var(--muted)}
+.w-row{--wc:var(--kotlin);display:flex;gap:6px}
+.half{flex:1;border:2px dashed var(--kotlin);border-radius:8px;padding:16px 6px 6px;position:relative;font-weight:700}
+.half span{position:absolute;top:2px;left:6px;font-size:9.5px;color:var(--kotlin);font-family:var(--f-mono);font-weight:600}
+.w-card{--wc:var(--sun)} .ttl{display:flex;justify-content:space-between;font-weight:700} .ph{margin-top:6px;height:46px;border-radius:8px;background:var(--bg);display:grid;place-items:center;color:var(--muted);font-size:12px}
+.w-nav{--wc:var(--pink);display:flex;justify-content:space-around}
+.legend2{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.legend2 li{display:flex;gap:10px;align-items:center;font-size:15px}
+.legend2 b{width:14px;height:14px;border-radius:4px;flex:none}
+@media (max-width:760px){.wire{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head><body>
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#quiz">小測</a><a href="#map">版面拆解</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#drills">實作 10 項</a><a href="#check">自評</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0 / 10</span>
+</div></nav>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 4 堂</b>Flutter手機程式設計</span>
+    <h1>版面 <span class="d">Widget</span> 與 StyleGuide</h1>
+    <p class="lead">把 StyleGuide 的首頁拆成一塊一塊的 Widget，再用 Column、Row、Stack、Expanded 組回來。今天只排版面、不接資料，下課時要有一個跟 StyleGuide 一樣的首頁靜態畫面。</p>
+  </div>
+  <div class="swap" aria-label="今天學會">
+    <div class="ln dd"><span class="tag">排列</span><span>Column・Row・Stack</span></div>
+    <div class="ln sk"><span class="tag">分配</span><span>Expanded(flex: 1)</span></div>
+    <div class="ln co"><span class="tag">外觀</span><span>BoxDecoration・AppColors</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1" style="flex:15"><b>小測</b><small>0–15 分</small></div>
+    <div class="t2" style="flex:25"><b>拆解與講解</b><small>15–40 分</small></div>
+    <div class="t3" style="flex:60"><b>實作 10 項</b><small>40–100 分</small></div>
+    <div class="t4" style="flex:20"><b>對照 StyleGuide 自評</b><small>100–120 分</small></div>
+  </div>
+  <p class="tl-note">今天的實作是排版練習，每項依「驗收標準」對照 StyleGuide 檢查。</p>
+</div>
+
+<section id="quiz">
+  <div class="sh"><h2>第 3 堂小測</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">15 分鐘・不看筆記</span>
+  <p>口頭回答或寫在紙上，第 5 題直接在專案裡寫。</p></div>
+  <ol class="quiz"><li>App 名稱要改哪個檔案的哪個屬性？</li><li>pubspec.yaml 登記 assets/icons/ 的寫法</li><li>Hot Reload 和 Hot Restart 差在哪裡？</li><li>release APK 建置後在哪個資料夾？</li><li>寫一個按 FAB 會 +100 的 StatefulWidget</li></ol>
+</section>
+
+<section id="map">
+  <div class="sh"><h2>首頁版面拆解</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">先拆再寫</span>
+  <p>拿到 StyleGuide 先畫框：每個框就是一個 Widget。外框決定用 Column、Row 還是 Stack，重複的框寫成自己的 Widget。</p></div>
+  <div class="wire" aria-label="首頁版面拆解">
+  <div class="phone">
+    <div class="w w-bar"><span>AppBar</span><em>MoveGo</em><em>Mar 2026 ▸ 圖示</em></div>
+    <div class="w w-list"><span>ListView（橫向）× DayChip</span><div class="chips"><i></i><i></i><i class="sel"></i><i></i><i></i></div></div>
+    <div class="w w-stack"><span>Stack</span><div class="ring"><b>8,542</b><small>步數・完成度 85%</small></div></div>
+    <div class="w w-row"><span>Row</span><div class="half"><span>Expanded › StatCard</span>342 kcal</div><div class="half"><span>Expanded › StatCard</span>6.2 km</div></div>
+    <div class="w w-card"><span>Container › Column</span><div class="ttl">卡路里概況 <em>今日</em></div><div class="ph">長條圖（第 13 堂）</div></div>
+    <div class="w w-nav"><span>BottomNavigationBar</span><em>首頁</em><em>成就</em></div>
+  </div>
+  <ul class="legend2">
+    <li><b style="background:var(--sky)"></b>AppBar：標題與動作按鈕</li>
+    <li><b style="background:var(--coral)"></b>ListView：8 張 DayChip 橫向滑動</li>
+    <li><b style="background:var(--dart)"></b>Stack：圓形進度條疊上文字</li>
+    <li><b style="background:var(--kotlin)"></b>Row＋Expanded：兩張卡片各半</li>
+    <li><b style="background:var(--sun)"></b>Container：卡片外框與圓角</li>
+    <li><b style="background:var(--pink)"></b>BottomNavigationBar：底部導覽</li>
+  </ul>
+</div>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>Android 版面與 Flutter 對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 15 分鐘</span>
+  <p>左欄是學過的 Android XML 版面，右欄是 Flutter 寫法。黃底的幾行最容易寫錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="kh">Android（XML）</th><th scope="col" class="dh">Flutter</th></tr></thead>
+    <tbody><tr><th scope="row">垂直排列</th><td class="kt"><code>LinearLayout（vertical）</code></td><td class="dt"><code>Column</code></td></tr><tr><th scope="row">水平排列</th><td class="kt"><code>LinearLayout（horizontal）</code></td><td class="dt"><code>Row</code></td></tr><tr><th scope="row">疊在一起</th><td class="kt"><code>FrameLayout</code></td><td class="dt"><code>Stack</code></td></tr><tr class="hot"><th scope="row">依比例分配寬度<span class="star">★</span></th><td class="kt"><code>layout_weight=&quot;1&quot;</code></td><td class="dt"><code>Expanded(flex: 1, child: …)</code></td></tr><tr class="hot"><th scope="row">主軸對齊<span class="star">★</span></th><td class="kt"><code>gravity=&quot;center&quot;</code></td><td class="dt"><code>mainAxisAlignment: MainAxisAlignment.center</code></td></tr><tr><th scope="row">交叉軸對齊</th><td class="kt"><code>layout_gravity</code></td><td class="dt"><code>crossAxisAlignment: CrossAxisAlignment.start</code></td></tr><tr><th scope="row">內距</th><td class="kt"><code>android:padding=&quot;16dp&quot;</code></td><td class="dt"><code>Padding(padding: EdgeInsets.all(16))</code></td></tr><tr><th scope="row">元件間距</th><td class="kt"><code>layout_marginTop</code></td><td class="dt"><code>SizedBox(height: 12)</code></td></tr><tr class="hot"><th scope="row">圓角背景<span class="star">★</span></th><td class="kt"><code>shape drawable＋corners</code></td><td class="dt"><code>BoxDecoration(borderRadius: BorderRadius.circular(16))</code></td></tr><tr><th scope="row">文字</th><td class="kt"><code>TextView＋textSize</code></td><td class="dt"><code>Text(&#x27;…&#x27;, style: TextStyle(fontSize: 16))</code></td></tr><tr><th scope="row">match_parent</th><td class="kt"><code>match_parent</code></td><td class="dt"><code>double.infinity 或 Expanded</code></td></tr><tr class="hot"><th scope="row">wrap_content<span class="star">★</span></th><td class="kt"><code>wrap_content</code></td><td class="dt"><code>mainAxisSize: MainAxisSize.min</code></td></tr><tr><th scope="row">可捲動</th><td class="kt"><code>ScrollView</code></td><td class="dt"><code>SingleChildScrollView</code></td></tr><tr class="hot"><th scope="row">橫向清單<span class="star">★</span></th><td class="kt"><code>RecyclerView＋LinearLayoutManager.HORIZONTAL</code></td><td class="dt"><code>ListView(scrollDirection: Axis.horizontal)</code></td></tr><tr><th scope="row">顏色表</th><td class="kt"><code>res/values/colors.xml</code></td><td class="dt"><code>class AppColors { static const … }</code></td></tr><tr><th scope="row">文字樣式</th><td class="kt"><code>styles.xml</code></td><td class="dt"><code>class AppText { static const … }</code></td></tr><tr><th scope="row">自訂元件</th><td class="kt"><code>自訂 View 或 include</code></td><td class="dt"><code>自己寫一個 StatelessWidget</code></td></tr></tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">跟著教練一起做</span>
+  <p>範例取自教練版完整首頁，已用 Flutter 3.47 通過 flutter analyze，並在 360×640 與 411×891 兩種尺寸測試沒有溢出。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>Column 與 Row</h3></header><p class="note">主軸是排列方向（Column 是上下、Row 是左右），交叉軸是另一個方向。</p><pre class="code"><code data-lang="dart">Column(
+  mainAxisAlignment: MainAxisAlignment.center,    // 上下置中
+  crossAxisAlignment: CrossAxisAlignment.start,   // 靠左
+  children: [
+    Text(&#x27;8,542&#x27;, style: TextStyle(fontSize: 36)),
+    SizedBox(height: 4),                          // 間距
+    Text(&#x27;步數&#x27;),
+  ],
+)</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>Expanded 分配空間</h3></header><p class="note">兩張卡片各佔一半；寫 flex: 2 就佔兩份。Row 裡的文字太長時也要包 Expanded，否則會出現黃黑條紋溢出警告。</p><pre class="code"><code data-lang="dart">Row(
+  children: [
+    Expanded(child: StatCard(value: &#x27;342&#x27;, label: &#x27;卡路里 (kcal)&#x27;)),
+    SizedBox(width: 12),
+    Expanded(child: StatCard(value: &#x27;6.2&#x27;, label: &#x27;里程 (km)&#x27;)),
+  ],
+)</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>Stack 疊層</h3></header><p class="note">圓形進度條和中間的數字是兩層疊在一起。alignment 決定子元件對齊位置，Positioned 可指定精確位置。</p><pre class="code"><code data-lang="dart">SizedBox(
+  width: 220,
+  height: 220,
+  child: Stack(
+    alignment: Alignment.center,
+    children: [
+      SizedBox.expand(
+        child: CircularProgressIndicator(value: 0.85, strokeWidth: 16),
+      ),
+      Text(&#x27;8,542&#x27;, style: TextStyle(fontSize: 36)),
+    ],
+  ),
+)</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>Container 與 BoxDecoration</h3></header><p class="note">卡片的白底、圓角、邊框、陰影都寫在 decoration。有 decoration 時，color 要寫在 BoxDecoration 裡，不能寫在 Container 上。</p><pre class="code"><code data-lang="dart">Container(
+  padding: const EdgeInsets.all(16),
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: Color(0xFFE3E8F0)),
+  ),
+  child: Text(&#x27;卡路里概況&#x27;),
+)</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>StyleGuide 轉成程式</h3></header><p class="note">題本規定「未依 StyleGuide 設計，該畫面不給分」。先把顏色、字級集中成常數，整個專案只引用常數，不直接寫色碼。</p><pre class="code"><code data-lang="dart">// lib/theme.dart
+class AppColors {
+  static const primary = Color(0xFF00A396);   // 用 StyleGuide 取色替換
+  static const background = Color(0xFFF4F7FB);
+  static const subText = Color(0xFF8A94A6);
+}
+
+class AppText {
+  static const big = TextStyle(fontSize: 36, fontWeight: FontWeight.bold);
+  static const label = TextStyle(fontSize: 13, color: AppColors.subText);
+}
+
+final appTheme = ThemeData(
+  scaffoldBackgroundColor: AppColors.background,
+  colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+);</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>拆成自己的 Widget</h3></header><p class="note">重複出現的區塊寫成一個 StatelessWidget，用建構子參數傳入不同內容。程式短、好改，也是比賽節省時間的關鍵。</p><pre class="code"><code data-lang="dart">class StatCard extends StatelessWidget {
+  const StatCard({super.key, required this.value, required this.label});
+
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(value, style: AppText.big),
+          Text(label, style: AppText.label),
+        ],
+      ),
+    );
+  }
+}</code></pre></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>實作 10 項</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">60 分鐘</span>
+  <p>沿用第 3 堂的 movego 專案。依序完成，每項做完對照 StyleGuide 檢查再打勾。</p></div>
+  <div class="exs"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>建立 theme.dart</h3><span class="use">對應：StyleGuide 設計</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>從 StyleGuide 取出主色、背景、文字色與 3 種字級</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>lib/theme.dart：AppColors、AppText、appTheme</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">程式其他地方不再出現任何 Color(0x…)</pre></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 驗收通過</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>套用主題</h3><span class="use">對應：StyleGuide 設計</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>MaterialApp 加上 theme: appTheme</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>背景色與 AppBar 顏色改變</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">畫面底色和 StyleGuide 一致</pre></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 驗收通過</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>頂部工具列</h3><span class="use">對應：首頁 UI：頂部工具列</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>AppBar：左邊「MoveGo」、右邊「Mar 2026」與數據分析圖示</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>AppBar(title:…, actions: […])</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">三個元素都在，左右分開</pre></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 驗收通過</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>日期小卡 DayChip</h3><span class="use">對應：首頁 UI：近 8 日導覽列（2 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>寫一個 Widget：星期、日期、微縮進度條</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>Column＋LinearProgressIndicator
+參數 week、day、progress、selected</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">選中的卡片用主色底、白字</pre></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 驗收通過</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>近 8 日橫向列</h3><span class="use">對應：首頁 UI：橫向滾動列表</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>用 8 個 DayChip 排成可左右滑的清單</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>ListView.separated
+scrollDirection: Axis.horizontal
+外層 SizedBox(height: 88)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">可以左右滑，卡片間距一致</pre></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 驗收通過</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>進度儀表板</h3><span class="use">對應：首頁 UI：進度儀表板（4 分）</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>圓形進度條中央疊上步數、「步數」、完成度</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>Stack＋CircularProgressIndicator(value: 0.85)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">8,542／步數／完成度 85% 置中在圓裡</pre></div></div>
+<label class="done"><input type="checkbox" id="ex6"> 驗收通過</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>數據小卡 StatCard</h3><span class="use">對應：首頁 UI：卡路里、里程</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>卡路里、里程兩張卡片左右各半</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>Row＋兩個 Expanded</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">342 卡路里 (kcal)、6.2 里程 (km)，等寬</pre></div></div>
+<label class="done"><input type="checkbox" id="ex7"> 驗收通過</label>
+</article><article class="ex" data-ex="8">
+<div class="ex-top"><span class="exn">08</span><div class="ex-title"><h3>卡路里概況卡片</h3><span class="use">對應：首頁 UI：卡路里概況</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>標題列「卡路里概況」＋右側「今日」標籤，下方先放 160 高的空白區</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>Row＋Expanded＋Container 圓角標籤</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">版面對齊 StyleGuide，空白區留給第 13 堂的長條圖</pre></div></div>
+<label class="done"><input type="checkbox" id="ex8"> 驗收通過</label>
+</article><article class="ex" data-ex="9">
+<div class="ex-top"><span class="exn">09</span><div class="ex-title"><h3>底部導覽列</h3><span class="use">對應：首頁 UI：底部導覽列</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>加入「首頁」「成就」兩個項目</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>BottomNavigationBar
+先用 Icons，下堂換成題目附的圖檔</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">兩個項目都在，首頁是選取狀態</pre></div></div>
+<label class="done"><input type="checkbox" id="ex9"> 驗收通過</label>
+</article><article class="ex" data-ex="10">
+<div class="ex-top"><span class="exn">10</span><div class="ex-title"><h3>小螢幕不溢出</h3><span class="use">對應：畫面穩定度</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>整頁包 SingleChildScrollView，切換到小尺寸模擬器或橫放測試</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>SingleChildScrollView(padding: …)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">任何尺寸都沒有黃黑條紋溢出警告</pre></div></div>
+<label class="done"><input type="checkbox" id="ex10"> 驗收通過</label>
+</article></div>
+  <p class="tip">遇到黃黑條紋（RenderFlex overflowed）時，先看是哪個 Row 或 Column：Row 裡的文字包 Expanded，整頁太長就包 SingleChildScrollView。</p>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">20 分鐘</span>
+  <p>把模擬器畫面和 StyleGuide 並排比對，逐項勾選。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>theme.dart 集中所有顏色與字級</span></label></li><li><label><input type="checkbox" id="ck1"><span>畫面上沒有直接寫死的色碼</span></label></li><li><label><input type="checkbox" id="ck2"><span>DayChip、StatCard 都是可重複使用的 Widget</span></label></li><li><label><input type="checkbox" id="ck3"><span>近 8 日列可以左右滑動</span></label></li><li><label><input type="checkbox" id="ck4"><span>進度儀表板的文字在圓的正中央</span></label></li><li><label><input type="checkbox" id="ck5"><span>兩張數據小卡等寬</span></label></li><li><label><input type="checkbox" id="ck6"><span>小螢幕與橫放都沒有溢出警告</span></label></li><li><label><input type="checkbox" id="ck7"><span>flutter analyze 沒有任何問題</span></label></li></ul>
+</section>
+
+<section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p>照同樣的方法排出另外三個畫面的靜態版面，之後的課程會直接接上資料。</p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><h3 style="font-size:19px">成就總覽頁</h3><p>照 StyleGuide 排出成就頁靜態版面：標題、「MG 徽章解鎖進度 5 / 12」卡片、4 個成就項目（已解鎖顯示日期，未解鎖顯示進度條與 6.5k / 10k）。</p><p class="hio"><b>提示</b> <code>寫一個 AchievementTile Widget，用參數區分解鎖與未解鎖</code></p></article><article class="hw"><span class="hwn">作業 2</span><h3 style="font-size:19px">步數檢測頁</h3><p>排出步數檢測頁靜態版面：標題、指示區塊、「步數」「卡路里」兩個數值、開始檢測按鈕。</p><p class="hio"><b>提示</b> <code>數值區塊可以直接重用 StatCard</code></p></article><article class="hw"><span class="hwn">作業 3</span><h3 style="font-size:19px">數字鍵盤版面</h3><p>排出新增步數 Dialog 的數字鍵盤：1～9、0 與刪除鍵，3 欄 4 列。</p><p class="hio"><b>提示</b> <code>GridView.count(crossAxisCount: 3, shrinkWrap: true)</code></p></article></div>
+</section>
+
+<footer>Flutter手機程式設計・第 4 堂 / 共 24 堂</footer>
+</div>
+<script>
+(function(){
+  // 簡易 Dart 語法上色
+  var KW=/^(void|var|final|const|return|if|else|for|in|switch|class|this|required|late|get|set|true|false|null|import|override|new|async|await|extends|super|return)$/;
+  var TY=/^(int|double|bool|String|List|Map|DateTime|Iterable|StringBuffer|StepRecord|Badge|num|Widget|BuildContext|State|StatelessWidget|StatefulWidget|MaterialApp|Scaffold|AppBar|Text|Center|Column|Image|Padding|EdgeInsets|SizedBox|TextStyle|FloatingActionButton|Icon|Icons|ThemeData|Color|MainAxisSize|HomePage|MoveGoApp|Row|Expanded|Stack|Container|BoxDecoration|BorderRadius|Alignment|MainAxisAlignment|CrossAxisAlignment|FontWeight|Colors|AppColors|AppText|StatCard|DayChip|ListView|Axis|CircularProgressIndicator|LinearProgressIndicator|SingleChildScrollView|Positioned|Border|BoxShape)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='dart-l4-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 10';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>

@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 1 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, Dart always teal, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--dart)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .dh{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.kt code{color:var(--kotlin)} td.dt code{color:var(--dart);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--dart-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--dart);font-size:13px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+</style>
+
+</head><body>
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#setup">環境</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#drills">實作 10 題</a><a href="#check">自評</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0 / 10</span>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 1 堂</b>Flutter手機程式設計</span>
+    <h1><span class="d">Dart</span> 語法基礎</h1>
+    <p class="lead">Flutter 用 Dart 撰寫。今天的目標：掌握 Dart 的核心語法，寫出 MoveGo 會用到的 10 個工具函式，之後直接搬進 Flutter 專案。</p>
+  </div>
+  <div class="swap" aria-label="今天學會">
+    <div class="ln dd"><span class="tag">變數</span><span>final kcal = steps * 0.04;</span></div>
+    <div class="ln sk"><span class="tag">函式</span><span>int add(int a, int b) =&gt; a + b;</span></div>
+    <div class="ln co"><span class="tag">集合</span><span>list.where((s) =&gt; s &gt;= 500).toList();</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1"><b>環境</b><small>0–10 分</small></div>
+    <div class="t2"><b>對照講解</b><small>10–40 分</small></div>
+    <div class="t3"><b>實作 10 題</b><small>40–100 分・每題約 6 分鐘</small></div>
+    <div class="t4"><b>自評討論</b><small>100–120 分</small></div>
+  </div>
+  <p class="tl-note">第一堂沒有複習，開頭改成環境準備。之後每堂開頭 15 分鐘是限時小測。</p>
+</div>
+
+<section id="setup">
+  <div class="sh"><h2>環境準備</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">10 分鐘</span>
+  <p>Flutter SDK 已內含 Dart，不用另外安裝。今天只寫純 Dart 檔，不開模擬器。</p></div>
+  <ol class="steps">
+    <li>VS Code 安裝 Flutter 擴充套件，會一併裝好 Dart 擴充。</li>
+    <li>終端機輸入 <code class="ic">dart --version</code>，有顯示版本就能用。</li>
+    <li>建立資料夾 <code class="ic">lesson01</code>，新增 <code class="ic">hello.dart</code>。</li>
+    <li>執行 <code class="ic">dart run hello.dart</code>，或按 main 上方的 Run。</li>
+    <li>練習都寫在 <code class="ic">lesson01/practice.dart</code>，每題一個函式，在 main 裡印出結果。</li>
+  </ol>
+  <div style="margin-top:14px"><pre class="code"><code data-lang="dart">void main() {
+  print(&#x27;Hello MoveGo&#x27;);
+}</code></pre></div>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>語法對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 30 分鐘</span>
+  <p>左欄是學過的 Kotlin，右欄是 Dart 寫法。黃底的幾行最容易寫錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="kh">Kotlin</th><th scope="col" class="dh">Dart</th></tr></thead>
+    <tbody><tr><th scope="row">不可變變數</th><td class="kt"><code>val goal = 6000</code></td><td class="dt"><code>final goal = 6000;</code></td></tr><tr><th scope="row">可變變數</th><td class="kt"><code>var steps = 0</code></td><td class="dt"><code>var steps = 0;</code></td></tr><tr class="hot"><th scope="row">型別寫法<span class="star" title="最容易寫錯">★</span></th><td class="kt"><code>val s: Int = 0</code></td><td class="dt"><code>int s = 0;  // 型別在前</code></td></tr><tr><th scope="row">基本型別</th><td class="kt"><code>Int  Double  Boolean  String</code></td><td class="dt"><code>int  double  bool  String</code></td></tr><tr class="hot"><th scope="row">分號<span class="star" title="最容易寫錯">★</span></th><td class="kt"><code>可省略</code></td><td class="dt"><code>一定要寫 ;</code></td></tr><tr><th scope="row">印出</th><td class="kt"><code>println(x)</code></td><td class="dt"><code>print(x);</code></td></tr><tr><th scope="row">字串插值</th><td class="kt"><code>&quot;$a ${a + 1}&quot;</code></td><td class="dt"><code>&#x27;$a ${a + 1}&#x27;</code></td></tr><tr><th scope="row">可為 null</th><td class="kt"><code>var n: Int? = null</code></td><td class="dt"><code>int? n;</code></td></tr><tr><th scope="row">null 預設值</th><td class="kt"><code>n ?: 0</code></td><td class="dt"><code>n ?? 0</code></td></tr><tr><th scope="row">強制非 null</th><td class="kt"><code>n!!</code></td><td class="dt"><code>n!</code></td></tr><tr><th scope="row">延後初始化</th><td class="kt"><code>lateinit var</code></td><td class="dt"><code>late</code></td></tr><tr class="hot"><th scope="row">函式<span class="star" title="最容易寫錯">★</span></th><td class="kt"><code>fun add(a: Int, b: Int): Int = a + b</code></td><td class="dt"><code>int add(int a, int b) =&gt; a + b;</code></td></tr><tr class="hot"><th scope="row">具名參數<span class="star" title="最容易寫錯">★</span></th><td class="kt"><code>任何參數都能具名呼叫</code></td><td class="dt"><code>要用 { } 宣告，必填加 required</code></td></tr><tr class="hot"><th scope="row">整數除法<span class="star" title="最容易寫錯">★</span></th><td class="kt"><code>7 / 2  → 3</code></td><td class="dt"><code>7 / 2 → 3.5，要用 7 ~/ 2</code></td></tr><tr><th scope="row">小數位數</th><td class="kt"><code>&quot;%.2f&quot;.format(x)</code></td><td class="dt"><code>x.toStringAsFixed(2)</code></td></tr><tr><th scope="row">分支</th><td class="kt"><code>when (x) { … }</code></td><td class="dt"><code>switch (x) { … }</code></td></tr><tr><th scope="row">區間迴圈</th><td class="kt"><code>for (i in 0 until n)</code></td><td class="dt"><code>for (var i = 0; i &lt; n; i++)</code></td></tr><tr class="hot"><th scope="row">Lambda<span class="star" title="最容易寫錯">★</span></th><td class="kt"><code>list.map { it * 2 }</code></td><td class="dt"><code>list.map((x) =&gt; x * 2).toList()</code></td></tr><tr><th scope="row">建立 List</th><td class="kt"><code>mutableListOf(1, 2)</code></td><td class="dt"><code>[1, 2]</code></td></tr><tr><th scope="row">建立 Map</th><td class="kt"><code>mutableMapOf(&quot;a&quot; to 1)</code></td><td class="dt"><code>{&#x27;a&#x27;: 1}</code></td></tr><tr><th scope="row">資料類別</th><td class="kt"><code>data class P(val x: Int)</code></td><td class="dt"><code>class P { final int x; P(this.x); }</code></td></tr><tr><th scope="row">getter</th><td class="kt"><code>val kcal get() = …</code></td><td class="dt"><code>double get kcal =&gt; …;</code></td></tr></tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">跟著教練一起跑</span>
+  <p>每段範例都已實際執行過，註解裡的值就是印出結果。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>變數與型別</h3></header><p>var 可以重新指定，final 就是 Kotlin 的 val，const 是編譯期常數。</p><pre class="code"><code data-lang="dart">void variables() {
+  var steps = 1200;          // 型別推斷為 int
+  final goal = 6000;         // 之後不能改
+  const kcalPerStep = 0.04;  // 編譯期常數
+  String title = &#x27;MoveGo&#x27;;
+  steps += 300;
+  print(&#x27;$title：$steps / $goal 步，${steps * kcalPerStep} kcal&#x27;);
+  // MoveGo：1500 / 6000 步，60.0 kcal
+  print(7 / 2);   // 3.5
+  print(7 ~/ 2);  // 3
+  print(3.14159.toStringAsFixed(2)); // 3.14
+  print(&#x27;5&#x27;.padLeft(2, &#x27;0&#x27;));        // 05
+  print(int.parse(&#x27;42&#x27;) + 1);        // 43
+}</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>null safety</h3></header><p>型別後加 ? 才能放 null。從 Map 取值、從檔案讀資料都可能拿到 null，這是 MoveGo 最常見的當機原因。</p><pre class="code"><code data-lang="dart">String? findName(bool ok) =&gt; ok ? &#x27;SK&#x27; : null;
+
+void nullSafety() {
+  int? saved;
+  print(saved ?? 0);             // 0
+  String? name = findName(false);
+  print(name?.length);           // null
+  saved ??= 100;                 // 是 null 才指定
+  print(saved);                  // 100
+}</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>函式</h3></header><p>一行的函式用 =&gt;。具名參數用 { }，Flutter 的 Widget 全都是這種寫法，一定要熟。</p><pre class="code"><code data-lang="dart">int add(int a, int b) =&gt; a + b;
+String greet(String name, {String prefix = &#x27;Hi&#x27;, required int times}) =&gt;
+    List.filled(times, &#x27;$prefix $name&#x27;).join(&#x27;, &#x27;);
+String label(int steps, [String unit = &#x27;步&#x27;]) =&gt; &#x27;$steps $unit&#x27;;
+
+// add(1, 2)              → 3
+// greet(&#x27;SK&#x27;, times: 2)  → Hi SK, Hi SK
+// label(10)              → 10 步</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>流程控制</h3></header><p>Dart 3 的 switch 可以直接回傳值，用起來跟 Kotlin 的 when 很像。</p><pre class="code"><code data-lang="dart">String level(int percent) =&gt; switch (percent) {
+      &gt;= 100 =&gt; &#x27;達標&#x27;,
+      &gt;= 50 =&gt; &#x27;過半&#x27;,
+      _ =&gt; &#x27;加油&#x27;,
+    };
+// level(120) → 達標   level(60) → 過半   level(10) → 加油
+
+for (var i = 0; i &lt; 3; i++) { /* ... */ }
+for (final d in [&#x27;Mon&#x27;, &#x27;Tue&#x27;]) { /* ... */ }</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>類別</h3></header><p>this.x 直接在建構子指定欄位；get 寫計算屬性；覆寫 toString 方便除錯。</p><pre class="code"><code data-lang="dart">class Badge {
+  final String title;
+  final int target;
+  int current;
+  Badge(this.title, this.target, {this.current = 0});
+  Badge.locked(String title, int target) : this(title, target);
+  bool get unlocked =&gt; current &gt;= target;
+  @override
+  String toString() =&gt;
+      &#x27;$title（$current/$target）${unlocked ? &#x27;已解鎖&#x27; : &#x27;未解鎖&#x27;}&#x27;;
+}
+// Badge(&#x27;初次一萬步&#x27;, 10000, current: 12000) → 初次一萬步（12000/10000）已解鎖
+// Badge.locked(&#x27;十萬步&#x27;, 100000)            → 十萬步（0/100000）未解鎖</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>List 與 Map</h3></header><p>where、map 回傳的是 Iterable，記得加 .toList()。... 與 collection-if 在 Flutter 組畫面時很常用。</p><pre class="code"><code data-lang="dart">final list = &lt;int&gt;[300, 1200, 800];
+list.add(500);
+final big = list.where((s) =&gt; s &gt;= 500).toList();  // [1200, 800, 500]
+final kcal = list.map((s) =&gt; s * 0.04).toList();  // [12.0, 48.0, 32.0, 20.0]
+final more = [...list, 0, if (showTotal) 9999];   // [300, 1200, 800, 500, 0, 9999]
+
+final map = &lt;String, int&gt;{&#x27;Mon&#x27;: 3000};
+map[&#x27;Tue&#x27;] = 4500;
+map.update(&#x27;Mon&#x27;, (v) =&gt; v + 100, ifAbsent: () =&gt; 0); // Mon → 3100
+print(map.containsKey(&#x27;Wed&#x27;));                         // false</code></pre></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>實作 10 題</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">60 分鐘</span>
+  <p>每題都是 MoveGo 之後會直接用到的函式。輸出要跟「預期結果」完全一致才算完成。</p></div>
+  <div class="rule">題本規定：每一步 <b>0.04 kcal</b>、每一步 <b>0.0006 km</b>。難度格子越多越難，卡住就先跳下一題。</div>
+  <div class="exs"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>換算卡路里與里程</h3><span class="use">用在：首頁卡路里、里程</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="dart">double toKcal(int steps)
+double toKm(int steps)</code></pre>
+<p>步數換算卡路里與里程，印出時取小數 2 位。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>toKcal(1234), toKm(1234)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">49.36 kcal, 0.74 km</pre></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>日期 yyyy.MM.dd</h3><span class="use">用在：徽章背面日期</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="dart">String formatYmd(DateTime d)</code></pre>
+<p>月、日要補零。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>2027/3/1</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">2027.03.01</pre></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>星期縮寫</h3><span class="use">用在：近 8 日導覽列</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="dart">String formatE(DateTime d)</code></pre>
+<p>Mon～Sun。提示：d.weekday 1 = 星期一。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>2027/3/1</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">Mon</pre></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>月份縮寫</h3><span class="use">用在：成就解鎖日期</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="dart">String formatMMM(DateTime d)
+String formatMMMdd(DateTime d)</code></pre>
+<p>Jan～Dec，以及「月 日」格式。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>2027/3/1</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">Mar、Mar 01</pre></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>目標完成度</h3><span class="use">用在：進度儀表板 %</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="dart">int percent(int steps, int goal)</code></pre>
+<p>整數、最多 100，goal 為 0 時回傳 0。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>(4500, 6000)
+(9000, 6000)
+(10, 0)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">75
+100
+0</pre></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>查不到就給 0</h3><span class="use">用在：讀取本地資料</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="dart">int stepsOf(Map&lt;String, int&gt; daily, String key)</code></pre>
+<p>查不到該日時回傳 0，不可當機。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>有資料的日期
+沒資料的日期</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">3200
+0</pre></div></div>
+<label class="done"><input type="checkbox" id="ex6"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>StepRecord 類別</h3><span class="use">用在：步數資料模型</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="dart">class StepRecord</code></pre>
+<p>欄位 time（DateTime）與 steps（int），用具名參數建立；提供 kcal 與 dateKey 兩個 getter。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>2027/3/1 06:00、500 步</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">kcal = 20.0
+dateKey = 2027.03.01</pre></div></div>
+<label class="done"><input type="checkbox" id="ex7"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="8">
+<div class="ex-top"><span class="exn">08</span><div class="ex-title"><h3>四時段加總</h3><span class="use">用在：本日卡路里長條圖</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<pre class="sig"><code data-lang="dart">List&lt;double&gt; kcalBySlot(List&lt;StepRecord&gt; records)</code></pre>
+<p>00:00～06:00、06:01～12:00、12:01～18:00、18:01～23:59。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>範例資料</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">[20.0, 40.0, 0.0, 42.0]</pre></div></div>
+<label class="done"><input type="checkbox" id="ex8"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="9">
+<div class="ex-top"><span class="exn">09</span><div class="ex-title"><h3>每日總步數</h3><span class="use">用在：趨勢分析、成就</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<pre class="sig"><code data-lang="dart">Map&lt;String, int&gt; dailyTotals(List&lt;StepRecord&gt; records)</code></pre>
+<p>依日期加總步數。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>範例資料</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">{2027.03.01: 1750, 2027.02.28: 800}</pre></div></div>
+<label class="done"><input type="checkbox" id="ex9"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="10">
+<div class="ex-top"><span class="exn">10</span><div class="ex-title"><h3>近 8 日清單</h3><span class="use">用在：近 8 日導覽列</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<pre class="sig"><code data-lang="dart">List&lt;DateTime&gt; last8Days(DateTime t)</code></pre>
+<p>回傳 T、T-1…T-7 共 8 天，跨月要正確。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>2027/3/3</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">Mar 03, Mar 02, Mar 01, Feb 28 … Feb 24</pre></div></div>
+<label class="done"><input type="checkbox" id="ex10"> 輸出一致，完成</label>
+</article></div>
+  <div class="data">
+    <p>第 7～9 題共用這份範例資料。第 8 題特別測試 06:00 與 06:01 的邊界。</p>
+    <pre class="code"><code data-lang="dart">final records = [
+  StepRecord(time: DateTime(2027, 3, 1, 6, 0), steps: 500),
+  StepRecord(time: DateTime(2027, 3, 1, 6, 1), steps: 1000),
+  StepRecord(time: DateTime(2027, 3, 1, 18, 30), steps: 250),
+  StepRecord(time: DateTime(2027, 2, 28, 23, 59), steps: 800),
+];</code></pre>
+  </div>
+  <p class="tip">第 10 題提示：<code>DateTime(y, m, d - i)</code> 的日數變成 0 或負數時，Dart 會自動往前一個月推算。</p>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">20 分鐘</span>
+  <p>下課前逐項勾選。沒勾到的項目，就是下堂課開頭小測的重點。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>10 題輸出都與預期結果完全一致</span></label></li><li><label><input type="checkbox" id="ck1"><span>dart analyze 沒有任何警告</span></label></li><li><label><input type="checkbox" id="ck2"><span>第 5 題用 ~/ 做整數除法，且處理了 goal = 0</span></label></li><li><label><input type="checkbox" id="ck3"><span>第 6 題用 ??，沒有用 ! 硬取</span></label></li><li><label><input type="checkbox" id="ck4"><span>第 7 題用具名參數加 required，欄位都是 final</span></label></li><li><label><input type="checkbox" id="ck5"><span>第 8 題 06:00 歸在第 1 段、06:01 歸在第 2 段</span></label></li><li><label><input type="checkbox" id="ck6"><span>第 10 題跨月（3/1 → 2/28）日期正確</span></label></li><li><label><input type="checkbox" id="ck7"><span>不看對照表，能說出 final、??、=&gt;、{required} 對應 Kotlin 的什麼</span></label></li></ul>
+</section>
+
+<section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p>這三個工具會用在趨勢分析頁與成就頁。寫在 <code class="ic">lesson01/homework.dart</code>，可以直接呼叫課堂上寫好的函式。</p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><pre class="sig"><code data-lang="dart">String withComma(int n)</code></pre><p>加上千分位逗號，不可用套件。</p><p class="hio"><b>輸入</b> 0 / 999 / 1000 / 1234567<br><b>結果</b> <code>0 / 999 / 1,000 / 1,234,567</code></p></article><article class="hw"><span class="hwn">作業 2</span><pre class="sig"><code data-lang="dart">List&lt;DateTime&gt; thisWeek(DateTime t)</code></pre><p>回傳 t 所在這週的星期一到星期日。</p><p class="hio"><b>輸入</b> 2027/3/3<br><b>結果</b> <code>Mon Mar 01 … Sun Mar 07</code></p></article><article class="hw"><span class="hwn">作業 3</span><pre class="sig"><code data-lang="dart">List&lt;DateTime&gt; last7Months(DateTime t)</code></pre><p>近 7 個月，由舊到新，最後一個是本月，要能跨年。</p><p class="hio"><b>輸入</b> 2027/3/15<br><b>結果</b> <code>Sep, Oct, Nov, Dec, Jan, Feb, Mar</code></p></article></div>
+</section>
+
+<footer>Flutter手機程式設計・第 1 堂 / 共 24 堂</footer>
+</div>
+
+<script>
+(function(){
+  // 簡易 Dart 語法上色
+  var KW=/^(void|var|final|const|return|if|else|for|in|switch|class|this|required|late|get|set|true|false|null|import|override|new)$/;
+  var TY=/^(int|double|bool|String|List|Map|DateTime|Iterable|StringBuffer|StepRecord|Badge|num)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\\n]|\\.)*')|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='dart-l1-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 10';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+
+</body></html>

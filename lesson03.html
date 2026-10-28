@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 3 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, Dart always teal, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--dart)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .dh{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.kt code{color:var(--kotlin)} td.dt code{color:var(--dart);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--dart-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--dart);font-size:13px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+body{margin:0}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+</style><style>
+.quiz{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;counter-reset:q;padding:0;margin:0}
+.quiz li{list-style:none;background:var(--surface);border:2px solid var(--sky);border-radius:14px;padding:12px 14px;font-size:15px;min-width:0}
+.quiz li::before{counter-increment:q;content:"Q" counter(q);display:block;font-family:var(--f-display);color:var(--sky);font-size:18px}
+.quiz code{font-size:13px;color:var(--dart)}
+.note{font-size:14.5px;background:var(--cs);border-radius:10px;padding:8px 12px;color:var(--ink)}
+.io pre{white-space:pre-wrap}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.score div{background:var(--surface);border-radius:14px;padding:14px;border-left:6px solid var(--coral);min-width:0}
+.score b{display:block;font-family:var(--f-display);font-weight:400;font-size:22px;color:var(--coral)}
+.score span{font-size:14px;color:var(--muted)}
+</style>
+</head><body>
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#quiz">小測</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#drills">實作 10 項</a><a href="#check">交件檢查</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0 / 10</span>
+</div></nav>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 3 堂</b>Flutter手機程式設計</span>
+    <h1><span class="d">Flutter</span> 專案與開發環境</h1>
+    <p class="lead">今天第一次開模擬器。學會建立專案、設定 App 名稱、加入圖片、用 Hot Reload 快速修改，最後匯出 APK。題本「一般項目」的扣分，今天就要全部避開。</p>
+  </div>
+  <div class="swap" aria-label="今天學會">
+    <div class="ln dd"><span class="tag">建立</span><span>flutter create movego</span></div>
+    <div class="ln sk"><span class="tag">執行</span><span>flutter run　r／R</span></div>
+    <div class="ln co"><span class="tag">交件</span><span>flutter build apk --release</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1" style="flex:15"><b>小測</b><small>0–15 分</small></div>
+    <div class="t2" style="flex:25"><b>對照講解</b><small>15–40 分</small></div>
+    <div class="t3" style="flex:60"><b>實作 10 項</b><small>40–100 分</small></div>
+    <div class="t4" style="flex:20"><b>交件檢查</b><small>100–120 分</small></div>
+  </div>
+  <p class="tl-note">今天的實作是操作練習，沒有固定輸出。每項依「驗收標準」由同伴互相確認。</p>
+</div>
+
+<section id="quiz">
+  <div class="sh"><h2>第 2 堂小測</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">15 分鐘・不看筆記</span>
+  <p>寫在 <code class="ic">lesson03/quiz.dart</code>，寫完和同伴交換檢查。</p></div>
+  <ol class="quiz"><li>寫出一個 async 函式，等 300 毫秒後回傳 <code>1200</code></li><li>Kotlin 的 <code>flow { emit(x) }</code>，在 Dart 怎麼寫？</li><li>用 jsonDecode 解析清單，取出第一筆的 <code>condition</code></li><li><code>sort</code> 會回傳新清單，還是直接改原清單？</li><li>寫出 Achievement 的 <code>factory fromJson</code></li></ol>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>Android 與 Flutter 對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 25 分鐘</span>
+  <p>左欄是學過的 Android（Kotlin）做法，右欄是 Flutter 做法。黃底的幾行最容易出錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="kh">Android（Kotlin）</th><th scope="col" class="dh">Flutter</th></tr></thead>
+    <tbody><tr><th scope="row">程式進入點</th><td class="kt"><code>MainActivity.onCreate()</code></td><td class="dt"><code>void main() { runApp(…); }</code></td></tr><tr class="hot"><th scope="row">畫面單位<span class="star">★</span></th><td class="kt"><code>Activity／Fragment＋XML 版面</code></td><td class="dt"><code>Widget（全部用程式寫）</code></td></tr><tr><th scope="row">設定畫面</th><td class="kt"><code>setContentView(R.layout.main)</code></td><td class="dt"><code>runApp(const MoveGoApp())</code></td></tr><tr class="hot"><th scope="row">App 名稱<span class="star">★</span></th><td class="kt"><code>AndroidManifest 的 android:label</code></td><td class="dt"><code>同一個檔案：android/app/src/main/AndroidManifest.xml</code></td></tr><tr><th scope="row">套件名稱</th><td class="kt"><code>build.gradle 的 applicationId</code></td><td class="dt"><code>android/app/build.gradle.kts 的 applicationId</code></td></tr><tr class="hot"><th scope="row">圖片資源<span class="star">★</span></th><td class="kt"><code>res/drawable／R.drawable.x</code></td><td class="dt"><code>assets/ 資料夾＋pubspec.yaml 登記</code></td></tr><tr><th scope="row">讀取圖片</th><td class="kt"><code>imageView.setImageResource(…)</code></td><td class="dt"><code>Image.asset(&#x27;assets/icons/x.png&#x27;)</code></td></tr><tr class="hot"><th scope="row">設定檔<span class="star">★</span></th><td class="kt"><code>build.gradle</code></td><td class="dt"><code>pubspec.yaml（縮排兩格，錯一格就失敗）</code></td></tr><tr class="hot"><th scope="row">畫面狀態更新<span class="star">★</span></th><td class="kt"><code>textView.text = &quot;…&quot;</code></td><td class="dt"><code>setState(() { … })，畫面自動重畫</code></td></tr><tr><th scope="row">快速套用修改</th><td class="kt"><code>Apply Changes</code></td><td class="dt"><code>Hot Reload（r）／Hot Restart（R）</code></td></tr><tr><th scope="row">除錯輸出</th><td class="kt"><code>Log.d(…)＋Logcat</code></td><td class="dt"><code>print(…)＋VS Code 偵錯主控台</code></td></tr><tr><th scope="row">建置 APK</th><td class="kt"><code>Build ▸ Build APK</code></td><td class="dt"><code>flutter build apk --release</code></td></tr><tr class="hot"><th scope="row">APK 位置<span class="star">★</span></th><td class="kt"><code>app/build/outputs/apk/</code></td><td class="dt"><code>build/app/outputs/flutter-apk/app-release.apk</code></td></tr></tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易出錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">跟著教練一起做</span>
+  <p>範例程式已用 Flutter 3.47 實際建立專案，通過 flutter analyze 與 widget 測試。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>專案結構</h3></header><p class="note">比賽只會動到這幾個地方，其他資料夾不要亂改。</p><pre class="code"><code data-lang="text">movego/
+├─ lib/
+│  └─ main.dart              ← 程式都寫在這裡
+├─ assets/
+│  └─ icons/ic_analysis.png  ← 自己建立，放題目附的圖檔
+├─ android/app/
+│  ├─ build.gradle.kts       ← applicationId（套件名稱）
+│  └─ src/main/AndroidManifest.xml  ← android:label（App 名稱）
+├─ pubspec.yaml              ← 登記 assets
+└─ 08_MoveGo.apk             ← 交件前複製到這裡</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>最小的 Flutter App</h3></header><p class="note">runApp 放進根 Widget；MaterialApp 提供主題與導覽；Scaffold 提供 AppBar、內容區、FAB 的位置。</p><pre class="code"><code data-lang="dart">import &#x27;package:flutter/material.dart&#x27;;
+
+void main() {
+  runApp(const MoveGoApp());
+}
+
+class MoveGoApp extends StatelessWidget {
+  const MoveGoApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,  // 拿掉右上角 DEBUG
+      home: Scaffold(
+        body: Center(child: Text(&#x27;首頁&#x27;)),
+      ),
+    );
+  }
+}</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>App 名稱</h3></header><p class="note">題本規定 App 名稱為「MoveGo_XX」，XX 是崗位號碼。名稱錯誤扣 1 分。改完要重新安裝才會生效。</p><pre class="code"><code data-lang="xml">&lt;!-- android/app/src/main/AndroidManifest.xml --&gt;
+&lt;application
+    android:label=&quot;MoveGo_08&quot;
+    android:name=&quot;${applicationName}&quot;
+    android:icon=&quot;@mipmap/ic_launcher&quot;&gt;</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>登記 assets</h3></header><p class="note">pubspec.yaml 用縮排表示層級，assets 要在 flutter: 底下縮排兩格。登記資料夾時結尾要加斜線。</p><pre class="code"><code data-lang="yaml"># pubspec.yaml
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
+    - assets/data/
+
+# 程式裡使用
+Image.asset(&#x27;assets/icons/ic_analysis.png&#x27;, width: 28)</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>StatefulWidget 與 setState</h3></header><p class="note">會變動的資料放在 State 裡；改資料一定要包在 setState 裡，畫面才會重畫。</p><pre class="code"><code data-lang="dart">class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State&lt;HomePage&gt; createState() =&gt; _HomePageState();
+}
+
+class _HomePageState extends State&lt;HomePage&gt; {
+  int _steps = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(child: Text(&#x27;今日步數：$_steps&#x27;)),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =&gt; setState(() =&gt; _steps += 100),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>常用指令</h3></header><p class="note">在 VS Code 終端機執行。Hot Reload 保留狀態、只更新畫面；Hot Restart 會從 main 重新開始，狀態歸零。</p><pre class="code"><code data-lang="text">flutter create --org tw.mad08 --platforms android movego
+flutter emulators                 # 列出模擬器
+flutter emulators --launch &lt;名稱&gt;  # 開啟模擬器
+flutter run                       # r = Hot Reload，R = Hot Restart，q = 離開
+flutter build apk --release
+
+# Windows：把 APK 複製到專案根目錄並改名
+copy build\app\outputs\flutter-apk\app-release.apk 08_MoveGo.apk</code></pre></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>實作 10 項</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">60 分鐘</span>
+  <p>依序完成，每項做完請同伴照「驗收標準」確認再打勾。範例以崗位 08 為例，請換成自己的號碼。</p></div>
+  <div class="exs"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>建立專案</h3><span class="use">對應：題目指南一</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>在 VS Code 終端機建立專案</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>flutter create --org tw.mad08 --platforms android movego</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">出現 lib/main.dart 與 android 資料夾</pre></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 驗收通過</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>在模擬器執行</h3><span class="use">對應：題目指南二</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>開啟模擬器並執行範例</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>flutter emulators --launch &lt;名稱&gt;
+flutter run</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">模擬器出現預設的計數器範例</pre></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 驗收通過</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>修改 App 名稱</h3><span class="use">對應：一般項目：App 名稱</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>把 App 名稱改成 MoveGo_08</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>AndroidManifest.xml 的 android:label</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">重新安裝後，模擬器桌面顯示 MoveGo_08</pre></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 驗收通過</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>開啟就是首頁</h3><span class="use">對應：一般項目：開啟顯示首頁</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>刪掉範例程式，只留 MaterialApp＋Scaffold</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>畫面中央顯示「首頁」</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">App 一開啟就看到首頁，沒有 DEBUG 標籤</pre></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 驗收通過</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>加入圖片資源</h3><span class="use">對應：首頁數據分析按鈕</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>建立 assets/icons，放入 ic_analysis.png 並登記</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>pubspec.yaml＋Image.asset</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">AppBar 右側顯示圖示，沒有 Unable to load asset 錯誤</pre></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 驗收通過</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>FAB 加步數</h3><span class="use">對應：首頁 FAB</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>把首頁改成 StatefulWidget，按 FAB 步數 +100</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>setState(() =&gt; _steps += 100)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">每按一次，畫面上的步數多 100</pre></div></div>
+<label class="done"><input type="checkbox" id="ex6"> 驗收通過</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>Hot Reload 實驗</h3><span class="use">對應：開發速度</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>步數按到 300 後，修改「首頁」文字並按 r</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>改成「MoveGo 首頁」</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">文字立刻改變，步數仍是 300</pre></div></div>
+<label class="done"><input type="checkbox" id="ex7"> 驗收通過</label>
+</article><article class="ex" data-ex="8">
+<div class="ex-top"><span class="exn">08</span><div class="ex-title"><h3>Hot Restart 實驗</h3><span class="use">對應：開發速度</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>接著按 R</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>觀察步數</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">步數歸零；能說出 r 和 R 的差別</pre></div></div>
+<label class="done"><input type="checkbox" id="ex8"> 驗收通過</label>
+</article><article class="ex" data-ex="9">
+<div class="ex-top"><span class="exn">09</span><div class="ex-title"><h3>匯出 APK</h3><span class="use">對應：一般項目：APK（未匯出扣 5 分）</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>建置 release 版並複製到專案根目錄</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>flutter build apk --release
+改名為 08_MoveGo.apk</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">movego/08_MoveGo.apk 存在</pre></div></div>
+<label class="done"><input type="checkbox" id="ex9"> 驗收通過</label>
+</article><article class="ex" data-ex="10">
+<div class="ex-top"><span class="exn">10</span><div class="ex-title"><h3>計時挑戰</h3><span class="use">對應：比賽開場節奏</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>關掉專案，從 flutter create 重做第 1～9 項</p>
+<div class="io"><div><span class="io-l">怎麼做</span><pre>計時</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">驗收標準</span><pre class="out">15 分鐘內完成，記下自己的時間</pre></div></div>
+<label class="done"><input type="checkbox" id="ex10"> 驗收通過</label>
+</article></div>
+  <p class="tip">第 3 項提示：改了 App 名稱後，Hot Reload 不會更新桌面名稱，要先停止 App 再重新 flutter run。</p>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>交件檢查清單</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">20 分鐘</span>
+  <p>題本「一般項目」的扣分如下。比賽交件前一定要逐項確認，今天先練習一次。</p></div>
+  <div class="score"><div><b>−1</b><span>專案無法開啟</span></div><div><b>−1</b><span>無法在模擬器執行</span></div><div><b>−1</b><span>App 名稱不是 MoveGo_XX</span></div><div><b>−1</b><span>開啟時不是首頁</span></div><div><b>−5</b><span>APK 未匯出或名稱位置錯誤</span></div><div><b>−10</b><span>每張截圖顯示 UI</span></div></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>專案可以在 VS Code 正常開啟，flutter analyze 沒有錯誤</span></label></li><li><label><input type="checkbox" id="ck1"><span>App 在模擬器上可以執行</span></label></li><li><label><input type="checkbox" id="ck2"><span>模擬器桌面的 App 名稱是 MoveGo_XX</span></label></li><li><label><input type="checkbox" id="ck3"><span>開啟 App 第一個畫面就是首頁</span></label></li><li><label><input type="checkbox" id="ck4"><span>專案根目錄有 XX_MoveGo.apk，而且可以安裝執行</span></label></li><li><label><input type="checkbox" id="ck5"><span>畫面裡沒有用截圖代替 UI</span></label></li><li><label><input type="checkbox" id="ck6"><span>能說出 Hot Reload 和 Hot Restart 的差別</span></label></li><li><label><input type="checkbox" id="ck7"><span>計時挑戰在 15 分鐘內完成</span></label></li></ul>
+</section>
+
+<section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p>作業 2、3 會把前兩堂寫的 Dart 函式和 JSON 搬進 Flutter 專案。</p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><h3 style="font-size:19px">計時三次</h3><p>從 flutter create 到匯出 APK 重做 3 次，記錄每次時間。</p><p class="hio"><b>目標</b> <code>每次都在 10 分鐘內</code></p></article><article class="hw"><span class="hwn">作業 2</span><h3 style="font-size:19px">搬入工具函式</h3><p>建立 lib/utils/date_utils.dart，放入第 1 堂的 formatYmd，在首頁顯示今天日期。</p><p class="hio"><b>畫面</b> <code>今天是 2026.10.27（顯示當天日期）</code></p></article><article class="hw"><span class="hwn">作業 3</span><h3 style="font-size:19px">讀取 JSON 資源</h3><p>把 achievements.json 放進 assets/data/，用 rootBundle.loadString 讀取，顯示成就數量。</p><p class="hio"><b>畫面</b> <code>共 4 個成就</code></p></article></div>
+</section>
+
+<footer>Flutter手機程式設計・第 3 堂 / 共 24 堂</footer>
+</div>
+<script>
+(function(){
+  // 簡易 Dart 語法上色
+  var KW=/^(void|var|final|const|return|if|else|for|in|switch|class|this|required|late|get|set|true|false|null|import|override|new|async|await|extends|super|return)$/;
+  var TY=/^(int|double|bool|String|List|Map|DateTime|Iterable|StringBuffer|StepRecord|Badge|num|Widget|BuildContext|State|StatelessWidget|StatefulWidget|MaterialApp|Scaffold|AppBar|Text|Center|Column|Image|Padding|EdgeInsets|SizedBox|TextStyle|FloatingActionButton|Icon|Icons|ThemeData|Color|MainAxisSize|HomePage|MoveGoApp)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='dart-l3-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 10';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
