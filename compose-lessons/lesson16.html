@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Android Compose 第 16 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, C# always sky blue, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--kotlin)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .ch{background:var(--sky)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.ct code{color:var(--sky)} td.kt code{color:var(--kotlin);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--kotlin-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--kotlin);font-size:13px}
+
+/* skeleton cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kcard{background:var(--surface);border:2px solid var(--sun);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kcard h3{font-size:18px}
+.kcard pre.code{font-size:12.5px;padding:12px 14px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data,.cards{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.exs.one{grid-template-columns:minmax(0,1fr)}
+.pts{flex:none;font-size:12px;font-weight:700;color:var(--coral);background:var(--coral-soft);border-radius:999px;padding:2px 10px;max-width:45%;text-align:center}
+.see{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:14.5px}
+.see b{font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-right:6px}
+.ex pre.code{font-size:13px}
+.see code,.ex p code,.steps code,.tl-note code,.note code,.tip code{overflow-wrap:anywhere}
+.file{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin-bottom:-4px}
+.note{margin-top:14px;font-size:15px;background:var(--sky-soft);border-radius:12px;padding:10px 14px}
+.scorebar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.scorebar span{font-size:13px;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.scorebar span b{color:var(--coral)}
+.tl .t5{background:var(--pink)}
+table.plain{min-width:520px}
+table.plain thead th{background:var(--ink);color:var(--bg)}
+
+.sheet{display:grid;gap:14px}
+.sgrp{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.sgrp h3{font-size:18px;display:flex;justify-content:space-between;gap:8px}
+.sgrp h3 small{font-family:var(--f-body);font-size:13px;color:var(--muted)}
+.sgrp ul{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px}
+.sgrp label{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;cursor:pointer}
+.sgrp label b{margin-left:auto;flex:none;color:var(--coral);font-variant-numeric:tabular-nums}
+.sgrp input{margin-top:3px}
+.total{position:sticky;bottom:12px;margin-top:16px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;font-size:18px;font-family:var(--f-display)}
+.total b{font-size:26px;color:var(--sun);font-variant-numeric:tabular-nums}
+.total button{font:inherit;font-size:14px;background:transparent;color:var(--bg);border:1px solid var(--bg);border-radius:999px;padding:4px 12px;cursor:pointer}
+.spec{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:10px}
+.spec h3{font-size:19px}
+.spec ol,.spec ul{margin:0;padding-left:22px;display:grid;gap:4px;font-size:15px}
+.chg{background:var(--sun-soft);border-radius:14px;padding:12px 16px}
+.chg ol{margin:6px 0 0;padding-left:22px;display:grid;gap:4px}
+</style>
+</head><body>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#warmup">檢討</a><a href="#concepts">概念</a><a href="#tasks">實作</a><a href="#check">自評</a><a href="#card">骨架卡</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0</span>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 16 堂</b>Android Compose 手機程式設計</span>
+    <h1>動畫與<span class="d">介面細節</span></h1>
+    <p class="lead">模擬賽一的分數穩了之後，再學怎麼讓畫面看起來完成度更高：進度條平滑前進、換頁淡入淡出、答錯提示滑入、選項邊框有過場、結算數字跳動。這些都是 Compose 內建的動畫，不用加任何套件。</p>
+    
+  </div>
+  <div class="swap" aria-label="今天學會"><div class="ln k"><span class="tag">數值動畫</span><span>animateFloatAsState</span></div><div class="ln sk"><span class="tag">出現消失</span><span>AnimatedVisibility</span></div><div class="ln co"><span class="tag">換頁</span><span>Crossfade(targetState = screen)</span></div></div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl"><div class="t1" style="flex:15"><b>模擬賽檢討</b><small>0–15 分</small></div><div class="t2" style="flex:20"><b>概念</b><small>15–35 分</small></div><div class="t3" style="flex:70"><b>實作 6 步</b><small>35–105 分</small></div><div class="t4" style="flex:15"><b>自評</b><small>105–120 分</small></div></div>
+  <p class="tl-note">動畫不在評分表上。比賽時只有 100 分都做完、還剩 10 分鐘以上才做，順序是 1 → 3 → 4。</p>
+</div>
+
+<section id="warmup">
+  <div class="sh"><h2>模擬賽一檢討</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">15 分鐘</span>
+  <p>教練發回互評結果，全班一起看最常扣分的項目。</p></div>
+  <ol class="steps"><li>每人說出自己扣分最多的 1 個項目和原因。</li><li>教練整理全班前 3 名的失分項目，寫在白板上。</li><li>把自己的模擬賽專案備份為 <code class="ic">GyroQuiz_M1</code>，今天在它上面加動畫。</li></ol>
+</section><section id="concepts">
+  <div class="sh"><h2>四個重點概念</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 20 分鐘</span>
+  <p>Compose 的動畫都是「目標值改變，畫面自己補中間的過程」。你只要改狀態，不用自己寫計時器。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>animate…AsState：數值慢慢變過去</h3></header><p>把原本直接用的數值包一層，目標值一改，回傳值會在 300 毫秒內慢慢變到新值。Float、Color、Int、Dp 都有對應的版本。</p><pre class="code"><code data-lang="kotlin">val progress by animateFloatAsState(
+    targetValue = (index + 1) / questions.size.toFloat(),
+    label = "progress"
+)</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>AnimatedVisibility：出現與消失</h3></header><p>visible 從 false 變 true 時播放 enter 動畫，變回 false 時播放 exit 動畫。用 + 可以組合兩種效果。</p><pre class="code"><code data-lang="kotlin">AnimatedVisibility(
+    visible = phase == Phase.WRONG,
+    enter = fadeIn() + slideInVertically(),
+    exit = fadeOut()
+) { Text("選擇錯誤") }</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>Crossfade：換頁淡入淡出</h3></header><p>把 when (screen) 包進 Crossfade。注意大括號裡要用參數 s，不能再用 screen，否則淡出中的舊頁面會變成新頁面。</p><pre class="code"><code data-lang="kotlin">Crossfade(targetState = screen, label = "screen") { s -&gt;
+    when (s) { … }
+}</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>tween：自訂時間長度</h3></header><p>預設動畫約 300 毫秒。想要更慢或更快就傳 animationSpec = tween(毫秒)。</p><pre class="code"><code data-lang="kotlin">val shown by animateIntAsState(
+    targetValue = if (started) result.correct else 0,
+    animationSpec = tween(800),
+    label = "correct"
+)</code></pre></article></div>
+</section><section id="tasks">
+  <div class="sh"><h2>實作 6 步</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">70 分鐘</span>
+  <p>每一步做完都在模擬器上看效果。</p></div>
+  <div class="exs one"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>進度條平滑前進</h3><span class="use">換題時進度條滑過去，不是跳過去</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>在答題頁的 LinearProgressIndicator 上方加一個動畫數值，progress 改用它：</p><div class="file">QuizScreen.kt</div><pre class="code"><code data-lang="kotlin">            // 進度條平滑前進
+            val progress by animateFloatAsState(
+                targetValue = (index + 1) / questions.size.toFloat(),
+                label = "progress"
+            )
+            LinearProgressIndicator(
+                progress = { progress },</code></pre><div class="see"><b>完成後</b>答對換題時進度條往前滑一格。</div>
+<label class="done"><input type="checkbox" id="ex1"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>換頁淡入淡出</h3><span class="use">Crossfade 包住 when</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<div class="file">App.kt</div><pre class="code"><code data-lang="kotlin">        // 換頁時淡入淡出
+        Crossfade(targetState = screen, label = "screen") { s -&gt;
+            when (s) {
+                Screen.HOME -&gt; HomeScreen(</code></pre><p>其他分支不用改，最後多補一個右大括號。</p><div class="see"><b>完成後</b>首頁、答題、結算、紀錄四頁切換時都有淡入淡出。</div>
+<label class="done"><input type="checkbox" id="ex2"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>答錯提示從上方滑入</h3><span class="use">Toast 之外，畫面上也有紅色提示</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>放在最外層 Box 裡、Canvas 之前，所以會蓋在選項上面：</p><div class="file">QuizScreen.kt</div><pre class="code"><code data-lang="kotlin">        // 答錯時從上方滑入的提示（Toast 之外，畫面上也看得到）
+        AnimatedVisibility(
+            visible = phase == Phase.WRONG,
+            enter = fadeIn() + slideInVertically(),
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.TopCenter).padding(top = 96.dp)
+        ) {
+            Text(
+                "選擇錯誤",
+                color = Color.White,
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .background(Color(0xFFC62828), RoundedCornerShape(24.dp))
+                    .padding(horizontal = 24.dp, vertical = 8.dp)
+            )
+        }</code></pre><div class="see"><b>完成後</b>答錯時紅色膠囊從上方滑入，5 秒鎖定結束淡出。</div>
+<label class="done"><input type="checkbox" id="ex3"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>選項邊框有過場</h3><span class="use">停留中淡灰框、答錯紅框、答對綠框</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>把第 12 堂的 borderColor 與 then 換成下面的寫法。每個選項都一直有邊框，只是沒選時是透明的，所以不再需要 then：</p><div class="file">QuizScreen.kt（選項 Box）</div><pre class="code"><code data-lang="kotlin">                            // 紅框、綠框、停留中的淡灰框，顏色切換有過場
+                            val borderColor by animateColorAsState(
+                                targetValue = when {
+                                    marked == i &amp;&amp; phase == Phase.WRONG -&gt; Color.Red
+                                    marked == i -&gt; Color(0xFF2E7D32)
+                                    hovered == i &amp;&amp; phase == Phase.PLAYING -&gt; Color(0x66000000)
+                                    else -&gt; Color.Transparent
+                                },
+                                label = "border"
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxSize()
+                                    .background(OptionPalette[colors[i]], RoundedCornerShape(16.dp))
+                                    .border(if (marked == i) 6.dp else 3.dp, borderColor, RoundedCornerShape(16.dp))</code></pre><div class="see"><b>完成後</b>游標停在選項上，邊框淡淡出現；選錯時邊框變紅、選對時變綠。</div>
+<label class="done"><input type="checkbox" id="ex4"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>結算數字跳動</h3><span class="use">答對題數從 0 跳到結果</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>started 一開始是 false，畫面出現後 LaunchedEffect 把它改成 true，目標值從 0 變成答對題數，動畫就開始：</p><div class="file">ResultScreen.kt</div><pre class="code"><code data-lang="kotlin">    // 數字從 0 跳到結果：started 由 false 變 true 時開始動畫
+    var started by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { started = true }
+    val shownCorrect by animateIntAsState(
+        targetValue = if (started) result?.correct ?: 0 else 0,
+        animationSpec = tween(800),
+        label = "correct"
+    )</code></pre><div class="file">ResultScreen.kt（原本的 Text）</div><pre class="code"><code data-lang="kotlin">Text("答對題數：$shownCorrect", fontSize = 24.sp)</code></pre>
+<label class="done"><input type="checkbox" id="ex5"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>主題顏色</h3><span class="use">整個 App 換主色，按鈕、進度條一起變</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>New Project 範本已經有 <code>ui/theme/Theme.kt</code>。找到 LightColorScheme，改 primary 與 secondary。範本產生的主題函式名稱跟 App 名稱有關，App 名稱 Q00 時叫 <code>Q00Theme</code>，MainActivity 的 setContent 裡要用它包住 GyroQuizApp：</p><div class="file">ui/theme/Theme.kt</div><pre class="code"><code data-lang="kotlin">private val LightColorScheme = lightColorScheme(
+    primary = Color(0xFF1565C0),
+    secondary = Color(0xFF00897B),
+    tertiary = Color(0xFFF9A825)
+)</code></pre><p>同一個檔案的 Q00Theme 參數 <code>dynamicColor</code> 預設是 true，Android 12 以上會改用桌布顏色。想固定顏色就把預設值改成 false。</p><div class="see"><b>完成後</b>按鈕和進度條都換成藍色。</div>
+<label class="done"><input type="checkbox" id="ex6"> 做完並在模擬器確認，完成</label>
+</article></div>
+</section><section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">15 分鐘</span>
+  <p></p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>進度條換題時是滑動的</span></label></li><li><label><input type="checkbox" id="ck1"><span>四頁切換有淡入淡出，而且換頁後畫面內容正確</span></label></li><li><label><input type="checkbox" id="ck2"><span>答錯時紅色提示滑入，鎖定結束後消失</span></label></li><li><label><input type="checkbox" id="ck3"><span>停留、答錯、答對三種邊框顏色正確</span></label></li><li><label><input type="checkbox" id="ck4"><span>結算頁答對題數有跳動效果</span></label></li><li><label><input type="checkbox" id="ck5"><span>我知道比賽時動畫要放在最後才做</span></label></li></ul>
+</section><section id="card">
+  <div class="sh"><h2>骨架卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)"></span>
+  <p>動畫不用默寫成整段，記住這三個名字和參數就好。</p></div>
+  <div class="cards"><article class="kcard"><h3>數值動畫</h3><pre class="code"><code data-lang="kotlin">val v by animateFloatAsState(目標值, label = "v")
+val c by animateColorAsState(目標色, label = "c")</code></pre></article><article class="kcard"><h3>出現消失</h3><pre class="code"><code data-lang="kotlin">AnimatedVisibility(visible = 條件,
+    enter = fadeIn() + slideInVertically(),
+    exit = fadeOut()) { … }</code></pre></article><article class="kcard"><h3>換頁</h3><pre class="code"><code data-lang="kotlin">Crossfade(targetState = screen, label = "screen") { s -&gt;
+    when (s) { … }
+}</code></pre></article></div>
+</section><section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">2 題</span>
+  <p></p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><p><b>游標呼吸效果</b>：用 rememberInfiniteTransition 讓游標半徑在 0.5～0.7 倍之間來回變化。</p><p class="hio"><b>提示</b> animateFloat + infiniteRepeatable(tween(600), RepeatMode.Reverse)</p></article><article class="hw"><span class="hwn">作業 2</span><p><b>紀錄頁逐筆出現</b>：遊玩紀錄每一筆卡片進入畫面時淡入。</p><p class="hio"><b>提示</b> LazyColumn 的 items 裡用 Modifier.animateItem()</p></article></div>
+</section>
+
+<footer>Android Compose 手機程式設計・第 16 堂 / 共 24 堂</footer>
+</div>
+
+<script>
+(function(){
+  var KW=/^(fun|val|var|return|if|else|when|for|in|until|downTo|step|while|do|repeat|class|data|enum|object|true|false|null|is|as|import|package|override|private|set|get|const|it|by|super|this|try|catch|finally|throw|break|continue|lateinit)$/;
+  var TY=/^(Int|Long|Float|Double|Boolean|String|Char|Unit|List|Map|Set|Pair|Any|Modifier|Color|Composable|Screen|Phase|Question|GameResult|RecordDb|Context|Bundle|Offset|Size)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)')|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?[fL]?\b)/g;
+  document.querySelectorAll('code[data-lang]').forEach(function(el){
+    var lang=el.getAttribute('data-lang');
+    var src=el.textContent,out='',last=0,m;
+    re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]&&lang==='kotlin'){var w=t.replace('@','');if(t.charAt(0)==='@')cls='t';else if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+  var KEY='compose-l16-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var cardsEl=document.querySelectorAll('.ex');
+  function refresh(){
+    var n=0;
+    cardsEl.forEach(function(card){var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;});
+    if(prog){if(!cardsEl.length)prog.style.display='none';else prog.textContent='完成 '+n+' / '+cardsEl.length;}
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+<script>
+(function(){
+  var el=document.getElementById('score'); if(!el) return;
+  var total=el.textContent.split('/')[1].trim();
+  function sum(){var s=0;document.querySelectorAll('input.sc').forEach(function(c){if(c.checked)s+=parseFloat(c.getAttribute('data-pts'));});el.textContent=(Math.round(s*10)/10)+' / '+total;}
+  document.querySelectorAll('input.sc').forEach(function(c){c.addEventListener('change',sum);});
+  document.getElementById('resetScore').addEventListener('click',function(){document.querySelectorAll('input.sc').forEach(function(c){c.checked=false;c.dispatchEvent(new Event('change'));});sum();});
+  setTimeout(sum,0);
+})();
+</script>
+</body></html>

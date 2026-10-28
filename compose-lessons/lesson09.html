@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Android Compose 第 9 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, C# always sky blue, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--kotlin)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .ch{background:var(--sky)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.ct code{color:var(--sky)} td.kt code{color:var(--kotlin);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--kotlin-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--kotlin);font-size:13px}
+
+/* skeleton cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kcard{background:var(--surface);border:2px solid var(--sun);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kcard h3{font-size:18px}
+.kcard pre.code{font-size:12.5px;padding:12px 14px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data,.cards{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.exs.one{grid-template-columns:minmax(0,1fr)}
+.pts{flex:none;font-size:12px;font-weight:700;color:var(--coral);background:var(--coral-soft);border-radius:999px;padding:2px 10px;max-width:45%;text-align:center}
+.see{background:var(--bg);border-radius:10px;padding:8px 12px;font-size:14.5px}
+.see b{font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-right:6px}
+.ex pre.code{font-size:13px}
+.see code,.ex p code,.steps code,.tl-note code,.note code,.tip code{overflow-wrap:anywhere}
+.file{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin-bottom:-4px}
+.note{margin-top:14px;font-size:15px;background:var(--sky-soft);border-radius:12px;padding:10px 14px}
+.scorebar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.scorebar span{font-size:13px;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+.scorebar span b{color:var(--coral)}
+.tl .t5{background:var(--pink)}
+table.plain{min-width:520px}
+table.plain thead th{background:var(--ink);color:var(--bg)}
+</style>
+</head><body>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#warmup">默寫</a><a href="#concepts">概念</a><a href="#tasks">實作</a><a href="#check">自評</a><a href="#card">骨架卡</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0</span>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 9 堂</b>Android Compose 手機程式設計</span>
+    <h1><span class="d">陀螺儀</span>讓游標動起來</h1>
+    <p class="lead">GyroQuiz 最核心、配分最重的功能從今天開始。陀螺儀回報的是「轉動速度」，不是角度，所以要自己乘上時間累加成角度，再換算成游標位置。今天的目標：游標一開始在四個選項的中心點，傾斜手機時跟著移動。</p>
+    <div class="scorebar"><span>游標初始在中心點 <b>2</b></span><span>依陀螺儀角度移動 <b>10</b></span><span>累計 <b>60 / 100</b></span></div>
+  </div>
+  <div class="swap" aria-label="今天學會"><div class="ln k"><span class="tag">感測器</span><span>sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE)</span></div><div class="ln sk"><span class="tag">積分</span><span>angle += rate * dt</span></div><div class="ln co"><span class="tag">畫游標</span><span>drawCircle(color, radius, center)</span></div></div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl"><div class="t1" style="flex:10"><b>默寫</b><small>0–10 分</small></div><div class="t2" style="flex:30"><b>概念</b><small>10–40 分</small></div><div class="t3" style="flex:65"><b>實作 7 步</b><small>40–105 分</small></div><div class="t4" style="flex:15"><b>自評與骨架卡</b><small>105–120 分</small></div></div>
+  <p class="tl-note">今天的概念比較多，講解多 5 分鐘。點擊作答先保留，第 11 堂才換掉，這樣每一步都能完整玩一局。</p>
+</div>
+
+<section id="warmup">
+  <div class="sh"><h2>默寫第 8 堂骨架卡</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">10 分鐘</span>
+  <p></p></div>
+  <ol class="steps"><li>getAll()：rawQuery、while moveToNext、close。</li><li>LazyColumn 搭配 items 與 Card。</li><li>RECORDS 分支的 remember { db.getAll() }。</li></ol>
+</section><section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 30 分鐘</span>
+  <p>先用模擬器的虛擬感測器看懂軸向，再寫程式。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>陀螺儀量的是轉速</h3></header><p>陀螺儀回傳三個軸的角速度，單位是弧度／秒。手機靜止時三個值都接近 0，就算手機是斜的也一樣。所以「傾斜了多少」要自己算：角度 += 角速度 × 經過時間。</p><pre class="code"><code data-lang="kotlin">角速度 2 rad/s，持續 0.25 秒
+→ 轉了 2 × 0.25 = 0.5 rad（約 29 度）
+
+fun integrate(angle: Float, rate: Float, dtSec: Float) =
+    angle + rate * dtSec</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>手機的三個軸</h3></header><p>x 軸指向手機右邊，y 軸指向手機上方，z 軸垂直螢幕朝向你。往右傾（右邊往下）是繞 y 軸正轉，游標往右；上緣往前壓低是繞 x 軸負轉，游標往上。方向反了就把正負號對調。</p><pre class="code"><code data-lang="text">values[0]  繞 x 軸（前後傾）→ 游標上下
+values[1]  繞 y 軸（左右傾）→ 游標左右
+values[2]  繞 z 軸（平面旋轉）→ 本題不用
+
+x = 中心 + angleY × 靈敏度
+y = 中心 + angleX × 靈敏度</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>timestamp 算經過時間</h3></header><p>每個感測器事件都有 timestamp，單位是奈秒（10⁻⁹ 秒）。跟上一次相減再除以 10 億就是秒數。第一次事件沒有上一次，只記下時間。</p><pre class="code"><code data-lang="kotlin">if (lastNs != 0L) {
+    val dt = (e.timestamp - lastNs) / 1_000_000_000f
+    angleX = integrate(angleX, e.values[0], dt)
+}
+lastNs = e.timestamp</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>註冊感測器一樣用 DisposableEffect</h3></header><p>跟第 6 堂的生命週期監聽同一個模式：進畫面註冊，離開畫面在 onDispose 取消，不然離開答題頁後還在耗電。SENSOR_DELAY_GAME 大約每秒 50 次，游標夠順。</p><pre class="code"><code data-lang="kotlin">DisposableEffect(Unit) {
+    val sm = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    val gyro = sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+    val listener = object : SensorEventListener { … }
+    sm.registerListener(listener, gyro, SensorManager.SENSOR_DELAY_GAME)
+    onDispose { sm.unregisterListener(listener) }
+}</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>量出四個選項的位置</h3></header><p>onGloballyPositioned 會在元件排好版後告訴你它的位置。boundsInRoot() 是相對整個視窗的矩形。四個矩形最左、最上、最右、最下圍起來的範圍，中心就是游標的起點。</p><pre class="code"><code data-lang="kotlin">.onGloballyPositioned {
+    val b = it.boundsInRoot()
+    val r = floatArrayOf(b.left, b.top, b.right, b.bottom)
+    if (rects[i]?.contentEquals(r) != true) rects[i] = r
+}</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>Canvas 畫在最上層</h3></header><p>Box 裡最後放一個填滿的 Canvas，就會疊在所有選項上面。Canvas 不攔截觸控，下面的選項還是點得到。位置要減掉 Box 自己的原點，因為 Canvas 的座標從 Box 左上角開始。</p><pre class="code"><code data-lang="kotlin">Canvas(Modifier.fillMaxSize()) {
+    if (!ready) return@Canvas
+    val c = Offset(cursorX - originX, cursorY - originY)
+    drawCircle(Color(0xFF37474F), radius = 22f, center = c)
+}</code></pre></article></div>
+</section><section id="tasks">
+  <div class="sh"><h2>實作 7 步</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">65 分鐘</span>
+  <p></p></div>
+  <div class="exs one"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>陀螺儀換算函式與測試</h3><span class="use">先確定數學是對的</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>在 <code>QuizLogic.kt</code> 加兩個函式，再寫測試 <code>GyroMathTest.kt</code>。</p><div class="file">QuizLogic.kt</div><pre class="code"><code data-lang="kotlin">// 陀螺儀：角速度 (rad/s) × 經過秒數 = 轉過的角度
+fun integrate(angle: Float, rate: Float, dtSec: Float): Float = angle + rate * dtSec
+
+// 角度換成游標位置：中心點 + (目前角度 - 校正時的角度) × 靈敏度
+fun cursorPos(center: Float, angle: Float, baseAngle: Float, pxPerRad: Float): Float =
+    center + (angle - baseAngle) * pxPerRad</code></pre><div class="file">GyroMathTest.kt</div><pre class="code"><code data-lang="kotlin">class GyroMathTest {
+    @Test
+    fun integrateAngle() {
+        // 每秒轉 2 弧度，經過 0.25 秒，轉了 0.5 弧度
+        assertEquals(0.5f, integrate(0f, 2f, 0.25f), 0.0001f)
+        // 反方向轉回來
+        assertEquals(0.3f, integrate(0.5f, -0.4f, 0.5f), 0.0001f)
+    }
+
+    @Test
+    fun cursorFromAngle() {
+        // 角度等於基準角時，游標在中心
+        assertEquals(500f, cursorPos(500f, 0.3f, 0.3f, 800f), 0.01f)
+        // 比基準多 0.1 弧度，移動 80 px
+        assertEquals(580f, cursorPos(500f, 0.4f, 0.3f, 800f), 0.01f)
+    }
+}</code></pre><div class="see"><b>完成後</b>兩個測試通過。</div>
+<label class="done"><input type="checkbox" id="ex1"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>常數</h3><span class="use">靈敏度與游標大小</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<p>放在 QuizScreen.kt 的調色盤下面。靈敏度太大游標會亂飄，太小要傾斜很多才會動，之後可以自己調。</p><div class="file">QuizScreen.kt</div><pre class="code"><code data-lang="kotlin">const val PX_PER_RAD = 800f      // 傾斜 1 弧度（約 57 度）游標移動 800 px
+const val CURSOR_RADIUS = 36f    // 游標半徑 px</code></pre>
+<label class="done"><input type="checkbox" id="ex2"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>註冊陀螺儀並累加角度</h3><span class="use">依陀螺儀的傾斜角度計算</span></div><span class="pts">移動 10 的基礎</span><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<p>放在計時程式下面。onAccuracyChanged 一定要覆寫，但內容可以空著。</p><div class="file">QuizScreen.kt</div><pre class="code"><code data-lang="kotlin">    // ---------- 陀螺儀：角速度積分成角度 ----------
+    var angleX by remember { mutableFloatStateOf(0f) }
+    var angleY by remember { mutableFloatStateOf(0f) }
+    DisposableEffect(Unit) {
+        val sm = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val gyro = sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        var lastNs = 0L
+        val listener = object : SensorEventListener {
+            override fun onSensorChanged(e: SensorEvent) {
+                if (lastNs != 0L) {
+                    val dt = (e.timestamp - lastNs) / 1_000_000_000f
+                    angleX = integrate(angleX, e.values[0], dt)
+                    angleY = integrate(angleY, e.values[1], dt)
+                }
+                lastNs = e.timestamp
+            }
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+        }
+        sm.registerListener(listener, gyro, SensorManager.SENSOR_DELAY_GAME)
+        onDispose { sm.unregisterListener(listener) }
+    }</code></pre>
+<label class="done"><input type="checkbox" id="ex3"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>量出選項位置</h3><span class="use">算出中心點</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>在每個選項 Box 的 Modifier 加 onGloballyPositioned（放在 clickable 之後、padding 之前）：</p><div class="file">QuizScreen.kt（選項 Box）</div><pre class="code"><code data-lang="kotlin">                                    .onGloballyPositioned {
+                                        val b = it.boundsInRoot()
+                                        val r = floatArrayOf(b.left, b.top, b.right, b.bottom)
+                                        if (rects[i]?.contentEquals(r) != true) rects[i] = r
+                                    }</code></pre><p>加上 contentEquals 判斷是為了避免「位置一樣也一直更新狀態」造成畫面不停重畫。</p>
+<label class="done"><input type="checkbox" id="ex4"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>算出游標位置</h3><span class="use">游標初始在 4 個選項的中心點</span></div><span class="pts">中心點 2</span><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>放在陀螺儀下面：</p><div class="file">QuizScreen.kt</div><pre class="code"><code data-lang="kotlin">    // ---------- 選項位置與游標 ----------
+    val rects = remember { mutableStateListOf&lt;FloatArray?&gt;(null, null, null, null) }
+    var originX by remember { mutableFloatStateOf(0f) }
+    var originY by remember { mutableFloatStateOf(0f) }
+    val ready = rects.all { it != null }
+    val left = if (ready) rects.minOf { it!![0] } else 0f
+    val top = if (ready) rects.minOf { it!![1] } else 0f
+    val right = if (ready) rects.maxOf { it!![2] } else 0f
+    val bottom = if (ready) rects.maxOf { it!![3] } else 0f
+    val cursorX = cursorPos((left + right) / 2, angleY, 0f, PX_PER_RAD)
+    val cursorY = cursorPos((top + bottom) / 2, angleX, 0f, PX_PER_RAD)</code></pre>
+<label class="done"><input type="checkbox" id="ex5"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>外層 Box 與 Canvas 游標</h3><span class="use">游標畫在選項上面</span></div><span class="pts">答題頁 UI：游標 1</span><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>把原本最外層的 <code>Column(Modifier.fillMaxSize())</code> 包進一個 Box，記下 Box 的原點，最後疊上 Canvas：</p><div class="file">QuizScreen.kt</div><pre class="code"><code data-lang="kotlin">    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .onGloballyPositioned {
+                originX = it.positionInRoot().x
+                originY = it.positionInRoot().y
+            }
+    ) {
+        Column(Modifier.fillMaxSize()) {
+            …原本的上方列、進度條、題目、選項…
+        }
+
+        Canvas(Modifier.fillMaxSize()) {
+            if (!ready) return@Canvas
+            val c = Offset(cursorX - originX, cursorY - originY)
+            drawCircle(Color(0xFF37474F), radius = CURSOR_RADIUS * 0.6f, center = c)
+        }
+    }</code></pre><div class="see"><b>完成後</b>進答題頁時，深灰色圓點在四個選項正中間。</div>
+<label class="done"><input type="checkbox" id="ex6"> 做完並在模擬器確認，完成</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>在模擬器測試傾斜</h3><span class="use">確認方向正確</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<p>模擬器右側工具列按「⋯」開 Extended Controls → <b>Virtual sensors</b> → Device Pose。拖動 Roll 讓手機左右傾、拖動 Pitch 讓手機前後傾，觀察游標方向。方向相反就在 cursorX 或 cursorY 的角度前面加負號。</p><p>目前游標可能跑出畫面，第 10 堂會加上邊界限制。最後匯出 APK。</p><div class="see"><b>完成後</b>往右傾游標往右，上緣往前壓游標往上；點擊作答仍然可以完成一局。</div>
+<label class="done"><input type="checkbox" id="ex7"> 做完並在模擬器確認，完成</label>
+</article></div>
+</section><section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">15 分鐘</span>
+  <p></p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>進答題頁時游標在四個選項的中心點</span></label></li><li><label><input type="checkbox" id="ck1"><span>左右傾斜游標左右移動，方向正確</span></label></li><li><label><input type="checkbox" id="ck2"><span>前後傾斜游標上下移動，方向正確</span></label></li><li><label><input type="checkbox" id="ck3"><span>手機回到原來的角度，游標回到原來的位置</span></label></li><li><label><input type="checkbox" id="ck4"><span>離開答題頁後感測器已取消註冊（onDispose）</span></label></li><li><label><input type="checkbox" id="ck5"><span>GyroMathTest 通過</span></label></li><li><label><input type="checkbox" id="ck6"><span>能說出陀螺儀與加速度計量的東西有什麼不同</span></label></li><li><label><input type="checkbox" id="ck7"><span>能說出 timestamp 為什麼要除以 1_000_000_000</span></label></li></ul>
+</section><section id="card">
+  <div class="sh"><h2>骨架卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">下堂課開頭默寫</span>
+  <p>感測器註冊是第 17、18 堂變化題（加速度計）也會用到的固定寫法。</p></div>
+  <div class="cards"><article class="kcard"><h3>註冊感測器</h3><pre class="code"><code data-lang="kotlin">DisposableEffect(Unit) {
+    val sm = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    val gyro = sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+    val listener = object : SensorEventListener {
+        override fun onSensorChanged(e: SensorEvent) { … }
+        override fun onAccuracyChanged(s: Sensor?, a: Int) {}
+    }
+    sm.registerListener(listener, gyro, SensorManager.SENSOR_DELAY_GAME)
+    onDispose { sm.unregisterListener(listener) }
+}</code></pre></article><article class="kcard"><h3>角速度積分</h3><pre class="code"><code data-lang="kotlin">if (lastNs != 0L) {
+    val dt = (e.timestamp - lastNs) / 1_000_000_000f
+    angleX += e.values[0] * dt
+    angleY += e.values[1] * dt
+}
+lastNs = e.timestamp</code></pre></article><article class="kcard"><h3>量位置與畫圓</h3><pre class="code"><code data-lang="kotlin">.onGloballyPositioned {
+    val b = it.boundsInRoot()
+}
+
+Canvas(Modifier.fillMaxSize()) {
+    drawCircle(Color.DarkGray, radius = 22f, center = Offset(x, y))
+}</code></pre></article></div>
+</section><section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p></p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><p><b>顯示角度</b>：在題目下方暫時加一行小字，顯示 angleX、angleY 換成「度」並取整數，用來觀察傾斜時數值怎麼變。</p><p class="hio"><b>提示</b> Math.toDegrees(angle.toDouble()).toInt()</p></article><article class="hw"><span class="hwn">作業 2</span><p><b>調靈敏度</b>：把 PX_PER_RAD 改成 400 與 1600 各玩一次，選一個你覺得最好控制的值，寫下理由。</p><p class="hio"><b>目的</b> 比賽時現場調整</p></article><article class="hw"><span class="hwn">作業 3</span><p><b>計時重做</b>：從第 8 堂備份開始，只重做今天 7 步。</p><p class="hio"><b>目標</b> 20 分鐘</p></article></div>
+</section>
+
+<footer>Android Compose 手機程式設計・第 9 堂 / 共 24 堂</footer>
+</div>
+
+<script>
+(function(){
+  var KW=/^(fun|val|var|return|if|else|when|for|in|until|downTo|step|while|do|repeat|class|data|enum|object|true|false|null|is|as|import|package|override|private|set|get|const|it|by|super|this|try|catch|finally|throw|break|continue|lateinit)$/;
+  var TY=/^(Int|Long|Float|Double|Boolean|String|Char|Unit|List|Map|Set|Pair|Any|Modifier|Color|Composable|Screen|Phase|Question|GameResult|RecordDb|Context|Bundle|Offset|Size)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)')|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?[fL]?\b)/g;
+  document.querySelectorAll('code[data-lang]').forEach(function(el){
+    var lang=el.getAttribute('data-lang');
+    var src=el.textContent,out='',last=0,m;
+    re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]&&lang==='kotlin'){var w=t.replace('@','');if(t.charAt(0)==='@')cls='t';else if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+  var KEY='compose-l9-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var cardsEl=document.querySelectorAll('.ex');
+  function refresh(){
+    var n=0;
+    cardsEl.forEach(function(card){var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;});
+    if(prog)prog.textContent='完成 '+n+' / '+cardsEl.length;
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+
+</body></html>

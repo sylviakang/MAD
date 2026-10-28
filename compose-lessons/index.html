@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Android Compose 手機程式設計</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, C# always sky blue, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--kotlin)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .ch{background:var(--sky)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.ct code{color:var(--sky)} td.kt code{color:var(--kotlin);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--kotlin-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--kotlin);font-size:13px}
+
+/* skeleton cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kcard{background:var(--surface);border:2px solid var(--sun);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kcard h3{font-size:18px}
+.kcard pre.code{font-size:12.5px;padding:12px 14px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data,.cards{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.list{display:grid;gap:14px;margin-top:12px}
+.lc{display:flex;gap:16px;align-items:center;background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px 18px;min-width:0}
+.lc:hover{border-color:var(--kotlin)}
+.no{font-family:var(--f-display);font-size:34px;color:var(--coral);line-height:1;flex:none;font-variant-numeric:tabular-nums}
+.lb{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.lb h3{font-size:21px} .lb h3 a{color:var(--ink);text-decoration:none}
+.lb p{color:var(--muted);font-size:15px}
+.go{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--kotlin);color:#fff;text-decoration:none;font-size:20px}
+.grp{margin-top:36px;font-size:22px}
+</style>
+</head><body>
+<div class="wrap">
+<header class="hero" style="grid-template-columns:1fr">
+  <div>
+    <span class="eyebrow"><b>課程目錄</b>共 24 堂</span>
+    <h1>Android Compose<span class="d">手機程式設計</span></h1>
+    <p class="lead">Kotlin＋Jetpack Compose，只用原生套件，以分區賽 GyroQuiz 為主軸。每堂 2 小時（模擬賽 190 分鐘）：骨架卡默寫、重點概念、實作、自評與作業。點選課程開啟講義，勾選進度會存在這台電腦的瀏覽器。</p>
+  </div>
+</header>
+<section style="margin-top:8px"><h2 class="grp">Kotlin 基礎<small style="font-family:var(--f-body);font-size:14px;color:var(--muted);margin-left:10px">第 1～2 堂</small></h2><div class="list"><article class="lc"><span class="no">01</span><div class="lb"><h3><a href="lesson01.html">Kotlin 語法基礎</a></h3><p>val／var、型別、if 與 when、for 迴圈、函式（從 C# 對照）</p></div><a class="go" href="lesson01.html" aria-label="開啟第 1 堂">→</a></article><article class="lc"><span class="no">02</span><div class="lb"><h3><a href="lesson02.html">Kotlin 類別與集合</a></h3><p>data class、enum、List／Map、lambda、null 安全</p></div><a class="go" href="lesson02.html" aria-label="開啟第 2 堂">→</a></article></div><h2 class="grp">一步步做出 GyroQuiz<small style="font-family:var(--f-body);font-size:14px;color:var(--muted);margin-left:10px">第 3～12 堂</small></h2><div class="list"><article class="lc"><span class="no">03</span><div class="lb"><h3><a href="lesson03.html">第一個 App：首頁</a></h3><p>New Project、App 名稱與 Package、直向、logo、Column 與 Button</p></div><a class="go" href="lesson03.html" aria-label="開啟第 3 堂">→</a></article><article class="lc"><span class="no">04</span><div class="lb"><h3><a href="lesson04.html">狀態與換頁</a></h3><p>remember／mutableStateOf、enum Screen＋when 換頁、BackHandler、AlertDialog</p></div><a class="go" href="lesson04.html" aria-label="開啟第 4 堂">→</a></article><article class="lc"><span class="no">05</span><div class="lb"><h3><a href="lesson05.html">答題頁畫面</a></h3><p>讀 assets 的 Questions.json、隨機 10 題、題號、進度條、2×2 選項</p></div><a class="go" href="lesson05.html" aria-label="開啟第 5 堂">→</a></article><article class="lc"><span class="no">06</span><div class="lb"><h3><a href="lesson06.html">計時與選項顏色</a></h3><p>LaunchedEffect 計時、進背景暫停、mm:ss、選項顏色規則與單元測試</p></div><a class="go" href="lesson06.html" aria-label="開啟第 6 堂">→</a></article><article class="lc"><span class="no">07</span><div class="lb"><h3><a href="lesson07.html">結算頁與 SQLite 寫入</a></h3><p>GameResult、12m 11s 與日期格式、SQLiteOpenHelper 寫入</p></div><a class="go" href="lesson07.html" aria-label="開啟第 7 堂">→</a></article><article class="lc"><span class="no">08</span><div class="lb"><h3><a href="lesson08.html">遊玩紀錄與 SQLite 讀取</a></h3><p>rawQuery 與 Cursor、LazyColumn 紀錄列表</p></div><a class="go" href="lesson08.html" aria-label="開啟第 8 堂">→</a></article><article class="lc"><span class="no">09</span><div class="lb"><h3><a href="lesson09.html">陀螺儀讓游標動起來</a></h3><p>SensorManager、角速度積分、Canvas 畫游標</p></div><a class="go" href="lesson09.html" aria-label="開啟第 9 堂">→</a></article><article class="lc"><span class="no">10</span><div class="lb"><h3><a href="lesson10.html">邊界與雙擊校正</a></h3><p>onGloballyPositioned 量選項位置、clamp 邊界、雙擊校正</p></div><a class="go" href="lesson10.html" aria-label="開啟第 10 堂">→</a></article><article class="lc"><span class="no">11</span><div class="lb"><h3><a href="lesson11.html">停留 3 秒選答</a></h3><p>碰撞判斷、停留計時、drawArc 圓形進度條</p></div><a class="go" href="lesson11.html" aria-label="開啟第 11 堂">→</a></article><article class="lc"><span class="no">12</span><div class="lb"><h3><a href="lesson12.html">答對與答錯狀態</a></h3><p>Phase 狀態機、紅綠框、鎖定倒數、最後一題導頁</p></div><a class="go" href="lesson12.html" aria-label="開啟第 12 堂">→</a></article></div><h2 class="grp">重建與第一次模擬賽<small style="font-family:var(--f-body);font-size:14px;color:var(--muted);margin-left:10px">第 13～15 堂</small></h2><div class="list"><article class="lc"><span class="no">13</span><div class="lb"><h3><a href="lesson13.html">重建一：從空白專案做完</a></h3><p>第一次從空白專案重建，8 個檢查點記錄時間</p></div><a class="go" href="lesson13.html" aria-label="開啟第 13 堂">→</a></article><article class="lc"><span class="no">14</span><div class="lb"><h3><a href="lesson14.html">除錯與時間分配</a></h3><p>Logcat 找閃退、抓錯 8 題、排出自己的 150 分鐘</p></div><a class="go" href="lesson14.html" aria-label="開啟第 14 堂">→</a></article><article class="lc"><span class="no">15</span><div class="lb"><h3><a href="lesson15.html">模擬賽一：GyroQuiz 150 分鐘</a></h3><p>照比賽規格 150 分鐘，100 分評分表互評</p></div><a class="go" href="lesson15.html" aria-label="開啟第 15 堂">→</a></article></div><h2 class="grp">變化題特訓<small style="font-family:var(--f-body);font-size:14px;color:var(--muted);margin-left:10px">第 16～21 堂</small></h2><div class="list"><article class="lc"><span class="no">16</span><div class="lb"><h3><a href="lesson16.html">動畫與介面細節</a></h3><p>animateFloatAsState、AnimatedVisibility、Crossfade、主題色</p></div><a class="go" href="lesson16.html" aria-label="開啟第 16 堂">→</a></article><article class="lc"><span class="no">17</span><div class="lb"><h3><a href="lesson17.html">感測器變化題特訓</a></h3><p>萬用 SensorEffect、加速度計、低通濾波、傾斜方向、搖一搖、光線與指南針</p></div><a class="go" href="lesson17.html" aria-label="開啟第 17 堂">→</a></article><article class="lc"><span class="no">18</span><div class="lb"><h3><a href="lesson18.html">模擬賽二：TiltQuiz 變化題</a></h3><p>加速度計、停留 2 秒、鎖定 3 秒、8 題、搖一搖跳題、正確率</p></div><a class="go" href="lesson18.html" aria-label="開啟第 18 堂">→</a></article><article class="lc"><span class="no">19</span><div class="lb"><h3><a href="lesson19.html">資料變化題特訓</a></h3><p>WHERE、ORDER BY、COUNT／AVG／MAX、刪除與長按、JSON 四種變化</p></div><a class="go" href="lesson19.html" aria-label="開啟第 19 堂">→</a></article><article class="lc"><span class="no">20</span><div class="lb"><h3><a href="lesson20.html">重建二：120 分鐘做完 GyroQuiz</a></h3><p>不看骨架卡，限時 120 分鐘，與第 13 堂比較</p></div><a class="go" href="lesson20.html" aria-label="開啟第 20 堂">→</a></article><article class="lc"><span class="no">21</span><div class="lb"><h3><a href="lesson21.html">模擬賽三：GyroQuiz Plus 資料變化題</a></h3><p>最佳成績、統計、排序、長按刪除、清除、詳細頁</p></div><a class="go" href="lesson21.html" aria-label="開啟第 21 堂">→</a></article></div><h2 class="grp">新題型與比賽日<small style="font-family:var(--f-body);font-size:14px;color:var(--muted);margin-left:10px">第 22～24 堂</small></h2><div class="list"><article class="lc"><span class="no">22</span><div class="lb"><h3><a href="lesson22.html">新題型拆解</a></h3><p>拆題五步、withFrameNanos 遊戲迴圈、文字地圖與分軸碰撞</p></div><a class="go" href="lesson22.html" aria-label="開啟第 22 堂">→</a></article><article class="lc"><span class="no">23</span><div class="lb"><h3><a href="lesson23.html">模擬賽四：TiltMaze 新題型</a></h3><p>全新題型：傾斜滾球過迷宮、掉洞、排行榜、新紀錄</p></div><a class="go" href="lesson23.html" aria-label="開啟第 23 堂">→</a></article><article class="lc"><span class="no">24</span><div class="lb"><h3><a href="lesson24.html">比賽日總演練</a></h3><p>離線環境檢查、30 分鐘骨架熱身、緊急處理表、策略卡</p></div><a class="go" href="lesson24.html" aria-label="開啟第 24 堂">→</a></article></div></section>
+<footer>Android Compose 手機程式設計</footer>
+</div></body></html>

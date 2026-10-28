@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Android Compose 第 2 堂</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a bright "training camp" handout. Colour-coded stations (concepts, drills, checklist, homework),
+   Kotlin always violet, C# always sky blue, one energetic coral for progress. */
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --kotlin:#7F52FF; --kotlin-soft:#EEE8FF;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --sky:#2F8CEB; --sky-soft:#E0EEFD;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --kotlin:#A98BFF; --kotlin-soft:#2A2248;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014;
+  --sky:#5EA9F5; --sky-soft:#16304D; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.25}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+/* nav */
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center;padding-block:40px 28px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px;letter-spacing:.04em}
+.hero h1{font-size:clamp(34px,6vw,56px);margin-top:10px}
+.hero h1 .d{color:var(--kotlin)}
+.hero .lead{margin-top:14px;color:var(--muted);max-width:34em}
+.swap{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;gap:10px;min-width:0}
+.swap .ln{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:14px;padding:10px 12px;border-radius:12px;overflow-x:auto}
+.swap .k{background:var(--kotlin-soft);color:var(--kotlin)}
+.swap .dd{background:var(--dart-soft);color:var(--dart)}
+.tag{flex:none;font-family:var(--f-body);font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:2px 7px}
+.k .tag{background:var(--kotlin)} .dd .tag{background:var(--dart)}
+.swap .sk{background:var(--sky-soft);color:var(--sky)} .sk .tag{background:var(--sky)}
+.swap .co{background:var(--coral-soft);color:var(--coral)} .co .tag{background:var(--coral)}
+.swap .mid{justify-self:center;font-size:22px;color:var(--sun);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.timeline h2{font-size:20px}
+.tl{display:flex;margin-top:14px;border-radius:12px;overflow:hidden;min-height:64px}
+.tl div{padding:10px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.tl b{font-family:var(--f-display);font-weight:400;font-size:16px}
+.tl small{font-size:12px;opacity:.95;font-variant-numeric:tabular-nums}
+.tl .t1{flex:10;background:var(--sky)} .tl .t2{flex:30;background:var(--kotlin)} .tl .t3{flex:60;background:var(--dart)} .tl .t4{flex:20;background:var(--coral)}
+.tl-note{margin-top:10px;font-size:14px;color:var(--muted)}
+
+section{margin-top:56px;scroll-margin-top:72px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sh h2{font-size:clamp(26px,4vw,34px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;counter-reset:s}
+.steps li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 52px;position:relative;min-width:0}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.steps{padding:0;margin:0}
+.ic{background:var(--sky-soft);color:var(--sky);padding:1px 6px;border-radius:6px;font-size:.9em}
+
+/* code */
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:16px 18px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}
+.sig .tk-k{color:var(--pink)} .sig .tk-t{color:var(--sky);font-weight:600} .sig .tk-n{color:var(--coral)} .sig .tk-s{color:var(--dart)} .tk-s{color:var(--c-str)} .tk-k{color:var(--c-kw)} .tk-n{color:var(--c-num)} .tk-t{color:var(--c-type)}
+
+/* comparison */
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:12px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .kh{background:var(--kotlin)} thead .ch{background:var(--sky)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td.ct code{color:var(--sky)} td.kt code{color:var(--kotlin);font-weight:600}
+td code{font-size:13.5px}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+
+/* concepts */
+.concepts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.concept{background:var(--surface);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;border-top:6px solid var(--cc);min-width:0}
+.concept header{display:flex;gap:10px;align-items:center}
+.cnum{width:32px;height:32px;border-radius:10px;background:var(--cs);color:var(--cc);font-weight:700;display:grid;place-items:center;flex:none}
+.concept h3{font-size:21px}
+.concept p{color:var(--muted);font-size:15px}
+.c0{--cc:var(--sky);--cs:var(--sky-soft)} .c1{--cc:var(--coral);--cs:var(--coral-soft)} .c2{--cc:var(--dart);--cs:var(--dart-soft)}
+.c3{--cc:var(--sun);--cs:var(--sun-soft)} .c4{--cc:var(--kotlin);--cs:var(--kotlin-soft)} .c5{--cc:var(--pink);--cs:var(--pink-soft)}
+
+/* exercises */
+.rule{background:var(--coral-soft);border-radius:14px;padding:12px 16px;font-size:15px;margin-bottom:16px}
+.rule b{color:var(--coral)}
+.exs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ex{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:border-color .2s,background .2s}
+.ex.is-done{border-color:var(--dart);background:linear-gradient(var(--dart-soft),var(--surface) 70%)}
+.ex-top{display:flex;gap:12px;align-items:center}
+.exn{font-family:var(--f-display);font-size:28px;color:var(--coral);line-height:1;font-variant-numeric:tabular-nums}
+.ex-title{flex:1;min-width:0}
+.ex h3{font-size:19px}
+.use{font-size:12.5px;color:var(--muted)}
+.lv{display:flex;gap:3px;flex:none}
+.lv i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.lv i.on{background:var(--sun)}
+pre.sig{margin:0;background:var(--kotlin-soft);color:var(--ink);padding:8px 12px;border-radius:10px;font-size:13px;overflow-x:auto}
+.ex p{font-size:15px}
+.io{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.io>div:not(.arrow){background:var(--bg);border-radius:10px;padding:8px 10px;min-width:0}
+.io pre{margin:2px 0 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.io pre.out{color:var(--dart);font-weight:600}
+.io-l{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.arrow{align-self:center;color:var(--coral);font-weight:700}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer;margin-top:auto;padding-top:4px}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.data{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px;align-items:center}
+.data p{font-size:15px;color:var(--muted)}
+.tip{margin-top:14px;font-size:15px;background:var(--sun-soft);border-radius:12px;padding:10px 14px}
+
+/* checklist */
+.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checks label{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;height:100%}
+.checks input{margin-top:4px}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dart)}
+
+/* homework */
+.hws{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--kotlin);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--kotlin);color:#fff;border-radius:999px;padding:2px 10px}
+.hw p{font-size:14.5px}
+.hio{color:var(--muted)} .hio b{color:var(--ink);font-weight:700;margin-right:4px} .hio code{color:var(--kotlin);font-size:13px}
+
+/* skeleton cards */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kcard{background:var(--surface);border:2px solid var(--sun);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kcard h3{font-size:18px}
+.kcard pre.code{font-size:12.5px;padding:12px 14px}
+
+footer{margin-top:56px;font-size:13px;color:var(--muted);text-align:center}
+
+@media (max-width:760px){
+  .hero,.concepts,.exs,.checks,.hws,.data,.cards{grid-template-columns:minmax(0,1fr)}
+  .tl{flex-wrap:wrap} .tl div{flex-basis:50%!important}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head><body>
+<nav class="bar" aria-label="章節"><div class="in">
+  <a href="#warmup">默寫</a><a href="#compare">對照表</a><a href="#concepts">概念</a><a href="#drills">實作 10 題</a><a href="#check">自評</a><a href="#card">骨架卡</a><a href="#homework">作業</a>
+  <span class="prog" id="prog">完成 0 / 10</span>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="eyebrow"><b>第 2 堂</b>Android Compose 手機程式設計</span>
+    <h1><span class="d">Kotlin</span> 類別與集合</h1>
+    <p class="lead">今天學會描述 GyroQuiz 的資料：一道題目、一筆遊玩紀錄、一局的進度。再用 List、Set 和 lambda 處理它們：隨機抽 10 題、算錯題數、找最佳紀錄。學完這堂，Kotlin 的部分就夠做完整個 App 了。</p>
+  </div>
+  <div class="swap" aria-label="今天學會">
+    <div class="ln k"><span class="tag">類別</span><span>data class Record(val correct: Int, …)</span></div>
+    <div class="ln sk"><span class="tag">null</span><span>best?.let { … } ?: "尚無紀錄"</span></div>
+    <div class="ln co"><span class="tag">集合</span><span>all.shuffled().take(10)</span></div>
+  </div>
+</header>
+
+<div class="timeline">
+  <h2>今天的 120 分鐘</h2>
+  <div class="tl">
+    <div class="t1"><b>默寫</b><small>0–10 分</small></div>
+    <div class="t2"><b>對照與重點</b><small>10–35 分</small></div>
+    <div class="t3"><b>實作 10 題</b><small>35–105 分・每題約 7 分鐘</small></div>
+    <div class="t4"><b>自評與骨架卡</b><small>105–120 分</small></div>
+  </div>
+  <p class="tl-note">繼續用第 1 堂的 KotlinPractice 專案，新增 <code>Lesson02.kt</code>。第 1 堂的 answerIndex 與 formatDuration 今天會再用到，直接複製過來。</p>
+</div>
+
+<section id="warmup">
+  <div class="sh"><h2>默寫第 1 堂骨架卡</h2><span class="pill" style="background:var(--sky-soft);color:var(--sky)">10 分鐘</span>
+  <p>關掉講義，在空白檔案寫出下面三個函式，寫完按 Run 對答案。寫不出來的就是今天回家要再練的。</p></div>
+  <ol class="steps">
+    <li><code class="ic">formatClock(65)</code> 印出 <code class="ic">01:05</code>，要用 padStart 補零。</li>
+    <li><code class="ic">formatTime12(0, 5)</code> 印出 <code class="ic">12:05 AM</code>，用 if 和沒有括號的 when。</li>
+    <li><code class="ic">dwellPercent(4000)</code> 印出 <code class="ic">100</code>，Long 先乘 100 再除。</li>
+  </ol>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>語法對照表</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">講解 25 分鐘</span>
+  <p>左欄是學過的 C#，右欄是 Kotlin 寫法。黃底的幾行最容易寫錯，先記起來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">用途</th><th scope="col" class="ch">C#</th><th scope="col" class="kh">Kotlin</th></tr></thead>
+    <tbody>
+<tr class="hot"><th scope="row">可為 null<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>int? best = null;</code></td><td class="kt"><code>var best: Int? = null</code></td></tr>
+<tr><th scope="row">null 時給預設值</th><td class="ct"><code>best ?? 0</code></td><td class="kt"><code>best ?: 0</code></td></tr>
+<tr><th scope="row">null 時跳過</th><td class="ct"><code>title?.Length</code></td><td class="kt"><code>title?.length</code></td></tr>
+<tr class="hot"><th scope="row">強制非 null<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>best.Value</code></td><td class="kt"><code>best!!（會閃退，盡量不用）</code></td></tr>
+<tr><th scope="row">不是 null 才做</th><td class="ct"><code>if (x != null) { … }</code></td><td class="kt"><code>x?.let { … }</code></td></tr>
+<tr><th scope="row">預設參數</th><td class="ct"><code>void F(int n = 10)</code></td><td class="kt"><code>fun f(n: Int = 10)</code></td></tr>
+<tr><th scope="row">具名參數</th><td class="ct"><code>F(n: 3)</code></td><td class="kt"><code>f(n = 3)</code></td></tr>
+<tr class="hot"><th scope="row">類別與建構子<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>class P { public int X; public P(int x) { X = x; } }</code></td><td class="kt"><code>class P(val x: Int)</code></td></tr>
+<tr><th scope="row">資料類別</th><td class="ct"><code>record P(int X);</code></td><td class="kt"><code>data class P(val x: Int)</code></td></tr>
+<tr><th scope="row">複製並改一欄</th><td class="ct"><code>p with { X = 2 }</code></td><td class="kt"><code>p.copy(x = 2)</code></td></tr>
+<tr class="hot"><th scope="row">建立物件<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>new P(1)</code></td><td class="kt"><code>P(1)（沒有 new）</code></td></tr>
+<tr><th scope="row">唯讀屬性</th><td class="ct"><code>public bool IsLast =&gt; …;</code></td><td class="kt"><code>val isLast: Boolean get() = …</code></td></tr>
+<tr><th scope="row">外部只能讀</th><td class="ct"><code>public int Index { get; private set; }</code></td><td class="kt"><code>var index = 0（下一行寫 private set）</code></td></tr>
+<tr><th scope="row">列舉</th><td class="ct"><code>enum Screen { Home, Quiz }</code></td><td class="kt"><code>enum class Screen { HOME, QUIZ }</code></td></tr>
+<tr><th scope="row">唯讀清單</th><td class="ct"><code>IReadOnlyList&lt;int&gt;</code></td><td class="kt"><code>listOf(1, 2)</code></td></tr>
+<tr class="hot"><th scope="row">可變清單<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>new List&lt;int&gt;()</code></td><td class="kt"><code>mutableListOf&lt;Int&gt;()</code></td></tr>
+<tr><th scope="row">集合（不重複）</th><td class="ct"><code>new HashSet&lt;string&gt;()</code></td><td class="kt"><code>mutableSetOf&lt;String&gt;()</code></td></tr>
+<tr><th scope="row">字典</th><td class="ct"><code>new Dictionary&lt;string, int&gt;()</code></td><td class="kt"><code>mutableMapOf&lt;String, Int&gt;()</code></td></tr>
+<tr class="hot"><th scope="row">筆數<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>list.Count</code></td><td class="kt"><code>list.size</code></td></tr>
+<tr class="hot"><th scope="row">Lambda<span class="star" title="最容易寫錯">★</span></th><td class="ct"><code>list.Where(x =&gt; x &gt; 5)</code></td><td class="kt"><code>list.filter { it &gt; 5 }</code></td></tr>
+<tr><th scope="row">轉換</th><td class="ct"><code>list.Select(x =&gt; x * 2)</code></td><td class="kt"><code>list.map { it * 2 }</code></td></tr>
+<tr><th scope="row">計數</th><td class="ct"><code>list.Count(x =&gt; x == 10)</code></td><td class="kt"><code>list.count { it == 10 }</code></td></tr>
+<tr><th scope="row">排序（大到小）</th><td class="ct"><code>list.OrderByDescending(r =&gt; r.Time)</code></td><td class="kt"><code>list.sortedByDescending { it.time }</code></td></tr>
+<tr><th scope="row">取前幾筆</th><td class="ct"><code>list.Take(10)</code></td><td class="kt"><code>list.take(10)</code></td></tr>
+<tr><th scope="row">組成字串</th><td class="ct"><code>string.Join(", ", list)</code></td><td class="kt"><code>list.joinToString(", ")</code></td></tr>
+    </tbody>
+  </table></div>
+  <p class="legend"><span>★ 黃底</span> = 最容易寫錯的地方</p>
+</section>
+
+<section id="concepts">
+  <div class="sh"><h2>六個重點概念</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">跟著教練一起跑</span>
+  <p>每段範例都已實際執行過，註解裡的值就是印出結果。</p></div>
+  <div class="concepts"><article class="concept c0"><header><span class="cnum">1</span><h3>null safety</h3></header><p>型別後面加 ? 才能放 null。用 ?. 跳過、用 ?: 給預設值，就不會因為 null 閃退。!! 等於「我保證不是 null」，猜錯就閃退，比賽時不要用。</p><pre class="code"><code data-lang="kotlin">fun findTitle(ok: Boolean): String? = if (ok) "GyroQuiz" else null
+
+fun nullSafety() {
+    var best: Int? = null
+    println(best ?: 0)                   // 0
+    val title: String? = findTitle(false)
+    println(title?.length)               // null
+    println(title?.length ?: 0)          // 0
+    best = 9
+    if (best != null) println(best + 1)  // 10（檢查過就能直接用）
+    println("12".toIntOrNull() ?: -1)    // 12
+    println("ab".toIntOrNull() ?: -1)    // -1
+}</code></pre></article><article class="concept c1"><header><span class="cnum">2</span><h3>預設與具名參數</h3></header><p>參數可以給預設值，呼叫時用名稱指定某一個參數。Compose 的元件全都這樣呼叫，例如 Text(text = "…", fontSize = 20.sp)，第 3 堂起天天用。</p><pre class="code"><code data-lang="kotlin">fun label(text: String, prefix: String = "Q", width: Int = 4): String =
+    prefix + text.padStart(width, '0')
+
+// label("7")                    → Q0007
+// label("12", prefix = "No.")   → No.0012
+// label(width = 2, text = "5")  → Q05（具名時順序可以換）</code></pre></article><article class="concept c2"><header><span class="cnum">3</span><h3>class 與 data class</h3></header><p>建構子直接寫在類別名稱後面。data class 自動幫你做好 toString、== 比內容、copy，存資料的類別都用它。</p><pre class="code"><code data-lang="kotlin">data class Option(val key: String, val text: String)
+
+val o1 = Option("a", "onCreate()")
+val o2 = Option("a", "onCreate()")
+println(o1)                          // Option(key=a, text=onCreate())
+println(o1 == o2)                    // true
+println(o1.copy(text = "onStart()")) // Option(key=a, text=onStart())
+
+class Counter(val total: Int) {
+    var current = 1
+        private set                  // 外面只能讀，不能改
+    val isLast: Boolean
+        get() = current == total     // 每次讀都重新計算
+    fun next() { if (current &lt; total) current++ }
+}
+// Counter(3) 呼叫兩次 next() 後：current = 3，isLast = true</code></pre></article><article class="concept c3"><header><span class="cnum">4</span><h3>enum class</h3></header><p>GyroQuiz 有四個畫面，用列舉表示目前在哪一頁，第 4 堂換頁就靠它。when 判斷列舉時把每一項都寫到，就不需要 else。</p><pre class="code"><code data-lang="kotlin">enum class Screen { HOME, QUIZ, RESULT, RECORDS }
+
+println(Screen.QUIZ)           // QUIZ
+println(Screen.entries.size)   // 4
+println(Screen.RESULT.ordinal) // 2（從 0 開始數）</code></pre></article><article class="concept c4"><header><span class="cnum">5</span><h3>List、Set、Map</h3></header><p>listOf 建好就不能改，要加東西用 mutableListOf。Set 不會重複，add 重複的值會回傳 false，題本的「答錯幾次都只算一題」用它最快。</p><pre class="code"><code data-lang="kotlin">val keys = listOf("a", "b", "c", "d")
+println(keys.size)           // 4
+println(keys[2])             // c
+println(keys.indexOf("c"))   // 2
+
+val picked = mutableListOf&lt;String&gt;()
+picked.add("0003")
+picked.add("0007")
+println(picked)              // [0003, 0007]
+
+val wrong = mutableSetOf&lt;String&gt;()
+println(wrong.add("0003"))   // true
+println(wrong.add("0003"))   // false（已經有了）
+println(wrong.size)          // 1
+
+val colors = mapOf("a" to "紅", "b" to "藍")
+println(colors["a"])         // 紅
+println(colors["z"] ?: "無") // 無（查不到是 null）</code></pre></article><article class="concept c5"><header><span class="cnum">6</span><h3>lambda 與集合函式</h3></header><p>C# 的 LINQ 在 Kotlin 是集合函式，大括號就是 lambda，只有一個參數時用 it 代表。shuffled().take(10) 就是題本要的「隨機 10 題不重複」。</p><pre class="code"><code data-lang="kotlin">val scores = listOf(8, 10, 6, 10, 3)
+println(scores.filter { it &gt;= 8 })    // [8, 10, 10]
+println(scores.map { it * 10 })       // [80, 100, 60, 100, 30]
+println(scores.count { it == 10 })    // 2
+println(scores.any { it &lt; 5 })        // true
+println(scores.sortedDescending())    // [10, 10, 8, 6, 3]
+println(scores.maxOrNull())           // 10（空清單時是 null）
+println(scores.joinToString(" / "))   // 8 / 10 / 6 / 10 / 3
+scores.forEachIndexed { i, s -&gt;
+    if (i &lt; 2) println("第 ${i + 1} 局：$s")
+}                                     // 第 1 局：8 和 第 2 局：10
+println((1..10).toList().shuffled().take(3))  // 例如 [2, 5, 1]，每次不同</code></pre></article></div>
+</section>
+
+<section id="drills">
+  <div class="sh"><h2>實作 10 題</h2><span class="pill" style="background:var(--coral-soft);color:var(--coral)">70 分鐘</span>
+  <p>每題都是 GyroQuiz 之後會直接用到的類別或函式。輸出要跟「預期結果」完全一致才算完成。</p></div>
+  <div class="rule">先把下方的<b>範例資料</b>貼進檔案。第 1 題做好 Question 類別後，範例資料才能編譯。難度格子越多越難，卡住就先跳下一題。</div>
+  <div class="exs"><article class="ex" data-ex="1">
+<div class="ex-top"><span class="exn">01</span><div class="ex-title"><h3>Question 類別</h3><span class="use">用在：Questions.json 的每一題</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">data class Question(qid: String, question: String,
+                    options: List&lt;String&gt;, answer: String)</code></pre>
+<p>欄位對應 JSON 的四個鍵。再加兩個唯讀屬性：answerIndex（呼叫第 1 堂的 answerIndex）與 answerText（正確選項的文字）。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>sampleQuestion</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">2
+onCreate()</pre></div></div>
+<label class="done"><input type="checkbox" id="ex1"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="2">
+<div class="ex-top"><span class="exn">02</span><div class="ex-title"><h3>隨機抽題</h3><span class="use">用在：每局隨機 10 題不重複</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun pickQuestions(all: List&lt;Question&gt;, count: Int = 10): List&lt;Question&gt;</code></pre>
+<p>一行寫完。用 qid 檢查有沒有重複。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>allQuestions（20 題）
+allQuestions, 3</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">10 題，不重複：true
+3</pre></div></div>
+<label class="done"><input type="checkbox" id="ex2"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="3">
+<div class="ex-top"><span class="exn">03</span><div class="ex-title"><h3>安全取得答案位置</h3><span class="use">用在：資料有缺漏時不閃退</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun safeAnswerIndex(key: String?): Int</code></pre>
+<p>key 可能是 null 或大寫。null 回傳 -1，大寫要先轉小寫。用 ?. 與 ?:，不准用 !!。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>"b"
+"D"
+null</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">1
+3
+-1</pre></div></div>
+<label class="done"><input type="checkbox" id="ex3"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="4">
+<div class="ex-top"><span class="exn">04</span><div class="ex-title"><h3>畫面名稱</h3><span class="use">用在：換頁與標題</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun screenTitle(screen: Screen): String</code></pre>
+<p>HOME、QUIZ、RESULT、RECORDS 依序是「首頁」「答題」「結算」「遊玩紀錄」。用 when，不寫 else。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>Screen.RECORDS</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">遊玩紀錄</pre></div></div>
+<label class="done"><input type="checkbox" id="ex4"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="5">
+<div class="ex-top"><span class="exn">05</span><div class="ex-title"><h3>錯誤題數</h3><span class="use">用在：結算頁「曾經答錯題數」</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun wrongCount(attempts: List&lt;Pair&lt;String, Boolean&gt;&gt;): Int</code></pre>
+<p>每次作答記成（qid, 是否答對）。同一題答錯幾次都只算一題。提示：for ((qid, ok) in attempts) 可以一次拆出兩個值。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>attempts
+listOf("0005" to true)</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">2
+0</pre></div></div>
+<label class="done"><input type="checkbox" id="ex5"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="6">
+<div class="ex-top"><span class="exn">06</span><div class="ex-title"><h3>紀錄一行文字</h3><span class="use">用在：遊玩紀錄列表</span></div><span class="lv" aria-label="難度 1 / 3"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">data class Record(correct: Int, wrong: Int, durationSec: Int, endMillis: Long)
+fun recordLine(r: Record): String</code></pre>
+<p>格式是「答對/錯誤 · 時長」，時長用第 1 堂的 formatDuration。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>records[0]</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">8/2 · 12m 11s</pre></div></div>
+<label class="done"><input type="checkbox" id="ex6"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="7">
+<div class="ex-top"><span class="exn">07</span><div class="ex-title"><h3>最新的排前面</h3><span class="use">用在：遊玩紀錄排序</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun latestFirst(records: List&lt;Record&gt;): List&lt;Record&gt;</code></pre>
+<p>依 endMillis 由大到小排。印出時只印 endMillis 方便檢查。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>latestFirst(records)
+  .map { it.endMillis }</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">[3000, 2000, 1000]</pre></div></div>
+<label class="done"><input type="checkbox" id="ex7"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="8">
+<div class="ex-top"><span class="exn">08</span><div class="ex-title"><h3>一局的進度</h3><span class="use">用在：答題頁換下一題</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<pre class="sig"><code data-lang="kotlin">class QuizProgress(val total: Int)</code></pre>
+<p>index 從 0 開始、外部只能讀；number 是題號（index + 1）；isLast 判斷是不是最後一題；next() 換下一題並回傳成功與否，最後一題時回傳 false。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>QuizProgress(3)
+next() 兩次
+再 next() 一次</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">1 false
+3 true
+false</pre></div></div>
+<label class="done"><input type="checkbox" id="ex8"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="9">
+<div class="ex-top"><span class="exn">09</span><div class="ex-title"><h3>平均答題時長</h3><span class="use">用在：遊玩紀錄頁的統計</span></div><span class="lv" aria-label="難度 2 / 3"><i class="on"></i><i class="on"></i><i class=""></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun averageDuration(records: List&lt;Record&gt;): String</code></pre>
+<p>平均秒數取整數後用 formatDuration。沒有紀錄時回傳 "--"。提示：map 出秒數後 .average()。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>records
+emptyList()</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">11m 19s
+--</pre></div></div>
+<label class="done"><input type="checkbox" id="ex9"> 輸出一致，完成</label>
+</article><article class="ex" data-ex="10">
+<div class="ex-top"><span class="exn">10</span><div class="ex-title"><h3>最佳紀錄</h3><span class="use">用在：首頁或紀錄頁的最佳成績</span></div><span class="lv" aria-label="難度 3 / 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+<pre class="sig"><code data-lang="kotlin">fun bestText(records: List&lt;Record&gt;): String</code></pre>
+<p>答對最多的最好，一樣多時時間短的較好。用 maxByOrNull 找出來，再用 ?.let 與 ?: 處理沒有紀錄的情況。</p>
+<div class="io"><div><span class="io-l">測試輸入</span><pre>records
+emptyList()</pre></div><div class="arrow" aria-hidden="true">→</div><div><span class="io-l">預期結果</span><pre class="out">最佳：10/0 · 6m 42s
+尚無紀錄</pre></div></div>
+<label class="done"><input type="checkbox" id="ex10"> 輸出一致，完成</label>
+</article></div>
+  <div class="data">
+    <p>範例資料。allQuestions 用 map 一次產生 20 題假題目；sampleQuestion 是 Questions.json 的第一題。</p>
+    <pre class="code"><code data-lang="kotlin">val sampleQuestion = Question(
+    "0001", "Android 應用程式的進入點通常在哪個方法中進行 UI 初始化？",
+    listOf("onStart()", "onResume()", "onCreate()", "onDestroy()"), "c"
+)
+val allQuestions = (1..20).map {
+    Question("%04d".format(it), "第 $it 題", listOf("A", "B", "C", "D"), "a")
+}
+val attempts = listOf(
+    "0001" to false, "0001" to false, "0001" to true,
+    "0002" to true, "0003" to false, "0003" to true
+)
+val records = listOf(
+    Record(8, 2, 731, 1000L),
+    Record(10, 0, 402, 3000L),
+    Record(6, 5, 905, 2000L)
+)</code></pre>
+  </div>
+  <p class="tip">第 10 題提示：比較「答對多、時間短」可以算一個分數，例如 correct * 100000 - durationSec，分數最大的就是最佳。</p>
+</section>
+
+<section id="check">
+  <div class="sh"><h2>自評檢核表</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">15 分鐘</span>
+  <p>下課前逐項勾選。沒勾到的項目，就是下堂課開頭默寫的重點。</p></div>
+  <ul class="checks"><li><label><input type="checkbox" id="ck0"><span>10 題輸出都與預期結果完全一致</span></label></li><li><label><input type="checkbox" id="ck1"><span>整個檔案沒有用到 !!</span></label></li><li><label><input type="checkbox" id="ck2"><span>Question 與 Record 用 data class，欄位都是 val</span></label></li><li><label><input type="checkbox" id="ck3"><span>第 2 題一行寫完，沒有自己寫迴圈抽題</span></label></li><li><label><input type="checkbox" id="ck4"><span>第 5 題用 Set，同一題答錯多次只算一題</span></label></li><li><label><input type="checkbox" id="ck5"><span>第 8 題的 index 在類別外面不能被修改</span></label></li><li><label><input type="checkbox" id="ck6"><span>第 9、10 題空清單時不會閃退</span></label></li><li><label><input type="checkbox" id="ck7"><span>不看對照表，能說出 ?:、data class、mutableListOf、filter { it … } 對應 C# 的什麼</span></label></li></ul>
+</section>
+
+<section id="card">
+  <div class="sh"><h2>骨架卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">下堂課開頭默寫</span>
+  <p>下面三段在 App 裡會一再出現。下堂課開頭 10 分鐘要不看講義寫出來。</p></div>
+  <div class="cards">
+    <article class="kcard"><h3>題目資料類別</h3><pre class="code"><code data-lang="kotlin">data class Question(
+    val qid: String,
+    val question: String,
+    val options: List&lt;String&gt;,
+    val answer: String
+)</code></pre></article>
+    <article class="kcard"><h3>抽題與錯題</h3><pre class="code"><code data-lang="kotlin">val quiz = all.shuffled().take(10)
+
+val wrongIds = mutableSetOf&lt;String&gt;()
+wrongIds.add(q.qid)   // 答錯時
+val wrong = wrongIds.size</code></pre></article>
+    <article class="kcard"><h3>找最大值並處理 null</h3><pre class="code"><code data-lang="kotlin">val best = records.maxByOrNull { it.correct }
+val text = best?.let { "${it.correct} 題" } ?: "尚無紀錄"</code></pre></article>
+  </div>
+</section>
+
+<section id="homework">
+  <div class="sh"><h2>回家練習</h2><span class="pill" style="background:var(--kotlin-soft);color:var(--kotlin)">3 題</span>
+  <p>寫在 <code class="ic">Homework02.kt</code>，可以直接使用課堂寫好的 Question、Record 和範例資料。</p></div>
+  <div class="hws"><article class="hw"><span class="hwn">作業 1</span><pre class="sig"><code data-lang="kotlin">fun perfectCount(records: List&lt;Record&gt;): Int</code></pre><p>算出滿分（答對 10 題）的局數，一行寫完。</p><p class="hio"><b>輸入</b> records<br><b>結果</b> <code>1</code></p></article><article class="hw"><span class="hwn">作業 2</span><pre class="sig"><code data-lang="kotlin">fun shuffleOptions(q: Question): Question</code></pre><p>打亂四個選項的順序，回傳新的 Question，answer 也要跟著改成新的代號。用 copy。</p><p class="hio"><b>輸入</b> sampleQuestion<br><b>結果</b> <code>options 順序每次不同，answerText 一定是 onCreate()</code></p></article><article class="hw"><span class="hwn">作業 3</span><pre class="sig"><code data-lang="kotlin">fun playsPerDay(dates: List&lt;String&gt;): Map&lt;String, Int&gt;</code></pre><p>統計每天玩了幾局。用 mutableMapOf，查不到時當作 0。</p><p class="hio"><b>輸入</b> "2026.06.26", "2026.06.26", "2026.06.27"<br><b>結果</b> <code>{2026.06.26=2, 2026.06.27=1}</code></p></article></div>
+</section>
+
+<footer>Android Compose 手機程式設計・第 2 堂 / 共 24 堂</footer>
+</div>
+
+<script>
+(function(){
+  // 簡易 Kotlin 語法上色
+  var KW=/^(fun|val|var|return|if|else|when|for|in|until|downTo|step|while|do|repeat|class|data|enum|object|true|false|null|is|as|import|package|override|private|set|get|const|it)$/;
+  var TY=/^(Int|Long|Float|Double|Boolean|String|Char|Unit|List|Map|Set|Pair|Any|Question|Record|Option|Counter|Screen|QuizProgress)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)')|(@?[A-Za-z_]\w*)|(\b\d+(?:\.\d+)?[fL]?\b)/g;
+  document.querySelectorAll('code[data-lang="kotlin"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;
+    re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){var w=t.replace('@','');if(KW.test(w))cls='k';else if(TY.test(w))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));el.innerHTML=out;
+  });
+
+  // 勾選狀態只存在自己的瀏覽器
+  var KEY='compose-l2-progress';
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  function refresh(){
+    var n=0;
+    document.querySelectorAll('.ex').forEach(function(card){
+      var cb=card.querySelector('input');var on=cb.checked;card.classList.toggle('is-done',on);if(on)n++;
+    });
+    prog.textContent='完成 '+n+' / 10';
+  }
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+
+</body></html>
