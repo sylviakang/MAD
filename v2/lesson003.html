@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 3 堂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --cs:#7F52FF; --cs-soft:#EEE8FF;
+  --cc:#2F8CEB; --cc-soft:#E0EEFD;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.3}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none}
+a{color:var(--cc)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+nav.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;align-items:center;padding-block:36px 8px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:700;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px}
+.eyebrow span{background:var(--sun-soft);color:var(--ink);border-radius:6px;padding:2px 8px;font-weight:500}
+.hero h1{font-size:clamp(32px,5.4vw,50px);margin-top:12px}
+.hero .lead{margin-top:12px;color:var(--muted);max-width:32em}
+.goal{margin-top:18px;background:var(--dart-soft);border-radius:16px;padding:14px 16px;border-left:6px solid var(--dart)}
+.goal b{color:var(--dart);font-size:13px;letter-spacing:.06em}
+.goal p{margin-top:2px;font-size:17px;font-weight:500}
+.tl{display:flex;margin-top:18px;border-radius:12px;overflow:hidden}
+.tl div{padding:8px 10px;color:#fff;min-width:0;line-height:1.3}
+.tl b{display:block;font-family:var(--f-display);font-weight:400;font-size:15px}
+.tl small{font-size:12px;opacity:.95}
+.tl .t1{background:var(--cc)} .tl .t2{background:var(--cs)} .tl .t3{background:var(--dart)} .tl .t4{background:var(--coral)}
+.showcase{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.cap{font-size:13px;color:var(--muted);text-align:center}
+.phone{width:min(250px,100%);border-radius:30px;background:#141822;padding:10px;box-shadow:0 18px 40px -18px rgba(20,30,60,.45)}
+.phone img{display:block;width:100%;border-radius:20px;background:#fff}
+.phone.sm{width:min(190px,100%);border-radius:24px;padding:7px}
+.phone.sm img{border-radius:16px}
+.term{width:100%;background:#0F1420;color:#E7ECF5;border-radius:14px;overflow:hidden;font-family:var(--f-mono);font-size:13.5px;box-shadow:0 18px 40px -22px rgba(20,30,60,.5);min-width:0}
+.term .tb{display:flex;gap:6px;align-items:center;padding:8px 12px;background:#1E2433;font-family:var(--f-body);font-size:12px;color:#A2ACC0}
+.term .tb i{width:10px;height:10px;border-radius:50%;background:#FF6A47}
+.term .tb i:nth-child(2){background:#FFB800}.term .tb i:nth-child(3){background:#2FD4C4}
+.term .tb span{margin-left:6px}
+.term pre{margin:0;padding:12px 14px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term .cmd{color:#7FD8FF}
+.term .err{color:#FF8A8A}
+section{margin-top:56px;scroll-margin-top:64px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sh h2{font-size:clamp(25px,4vw,32px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+.review{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:0;margin:0;list-style:none}
+.review li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 44px;position:relative}
+.review li::before{content:"✓";position:absolute;left:14px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--cc-soft);color:var(--cc);font-weight:700;display:grid;place-items:center;font-size:13px}
+.ic{background:var(--cc-soft);color:var(--cc);padding:1px 6px;border-radius:6px;font-size:.9em}
+kbd{font-family:var(--f-mono);font-size:.85em;background:var(--surface);border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:0 6px}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:14px 16px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}.tk-s{color:var(--c-str)}.tk-k{color:var(--c-kw)}.tk-n{color:var(--c-num)}.tk-t{color:var(--c-type)}
+.hl{color:inherit;background:rgba(255,184,0,.28);border-radius:4px;box-shadow:0 0 0 2px rgba(255,184,0,.28)}
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:11px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .h-c{background:var(--cc)} thead .h-cs{background:var(--cs)} thead .h-d{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px;vertical-align:top}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td code{font-size:13.5px;white-space:pre-wrap}
+td.c code{color:var(--cc)} td.cs code{color:var(--cs)} td.d code{color:var(--dart);font-weight:600}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+.steps{display:grid;gap:18px;counter-reset:s}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start;transition:border-color .2s}
+.step.is-done{border-color:var(--dart)}
+.step.wide{grid-template-columns:minmax(0,1fr)}
+.step-main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.step-top{display:flex;gap:12px;align-items:center}
+.sn{flex:none;width:40px;height:40px;border-radius:12px;background:var(--cc);color:#fff;font-family:var(--f-display);font-size:22px;display:grid;place-items:center}
+.step h3{font-size:21px;flex:1;min-width:0}
+.step .do{font-size:15.5px}
+.step .do ol,.step .do ul{margin:6px 0 0;padding-left:22px}
+.step-side{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.step-side .term{width:min(320px,100%)}
+details.stuck{background:var(--coral-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+details.stuck summary{cursor:pointer;font-weight:700;color:var(--coral)}
+details.stuck .stuck-in{margin-top:8px;display:grid;gap:8px}
+.errmsg{font-family:var(--f-mono);font-size:13px;background:var(--surface);border-radius:8px;padding:6px 10px;color:var(--pink);white-space:pre-wrap;word-break:break-word}
+.note{background:var(--sun-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+.note b{color:var(--ink)}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.quiz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.q{background:var(--surface);border-radius:16px;padding:16px;border-top:6px solid var(--pink);display:flex;flex-direction:column;gap:10px;min-width:0}
+.qn{font-family:var(--f-display);font-size:24px;color:var(--pink);line-height:1}
+.q p{font-size:15px}
+.q pre.code{font-size:12.5px}
+.ans{margin-top:auto;border:1px dashed var(--line);border-radius:10px;min-height:56px;padding:6px 10px;font-size:12.5px;color:var(--muted)}
+.bonus{background:linear-gradient(135deg,var(--sun-soft),var(--coral-soft));border-radius:20px;padding:18px;display:grid;gap:10px}
+.bonus h3{font-size:22px}
+.hws{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--cs);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--cs);color:#fff;border-radius:999px;padding:2px 10px}
+.hw h3{font-size:19px}
+.hw p,.hw li{font-size:15px}
+.hw ol,.hw ul{margin:0;padding-left:20px}
+.hw .pass{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;margin-top:auto}
+.hw .pass b{color:var(--dart)}
+.submit{margin-top:14px;font-size:15px;background:var(--cs-soft);border-radius:12px;padding:10px 14px}
+.cheat{background:var(--surface);border:3px solid var(--ink);border-radius:20px;padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+.cheat h3{grid-column:1/-1;font-size:22px}
+.cheat div{min-width:0}
+.cheat b{display:block;font-size:14px;color:var(--coral)}
+.cheat code{font-size:13px;color:var(--dart);font-weight:600;white-space:pre-wrap}
+.cheat p{font-size:14.5px}
+.pn{display:flex;justify-content:space-between;gap:12px;margin-top:48px;flex-wrap:wrap}
+.pn a{text-decoration:none;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--ink)}
+.pn a:hover{border-color:var(--ink)}
+.pn .off{visibility:hidden}
+footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
+@media (max-width:760px){
+  .hero,.quiz,.cheat{grid-template-columns:minmax(0,1fr)}
+  .step{grid-template-columns:minmax(0,1fr)}
+  .tl div{flex:1 1 50%!important}
+  .tl{flex-wrap:wrap}
+}
+@media print{nav.bar,.home,.pn,footer{display:none} body{background:#fff}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body data-lesson="003">
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="本堂導覽"><div class="in">
+<a href="#goal">今天的成果</a><a href="#review">複習</a><a href="#compare">對照表</a><a href="#steps">步驟</a><a href="#quiz">小測</a><a href="#hw">回家作業</a><a href="#cheat">速查卡</a>
+<span class="prog" id="prog">步驟 0 / 4</span></div></nav>
+<main class="wrap">
+<header class="hero" id="goal">
+  <div>
+    <p class="eyebrow"><b>第 3 堂</b><span>單元 1・第一個 App　3 / 3</span><span>60 分鐘</span></p>
+    <h1>幫 App 換上顏色</h1>
+    <p class="lead">上一堂的畫面黑白單調。今天學 TextStyle 和色碼，把字放大、上色、加粗，再換掉背景和標題列的顏色。做完就是單元 1 的作品。</p>
+    <div class="goal"><b>今天的成果</b><p>彩色版的 App：藍色標題列、淡黃色背景，中間兩行置中的粉紅色大字。</p></div>
+    <div class="tl"><div class="t1" style="flex:5"><b>複習</b><small>5 分鐘</small></div><div class="t2" style="flex:10"><b>對照</b><small>10 分鐘</small></div><div class="t3" style="flex:35"><b>步驟</b><small>35 分鐘</small></div><div class="t4" style="flex:10"><b>小測</b><small>10 分鐘</small></div></div>
+  </div>
+  <div class="showcase"><div class="phone"><img src="img/l03_s4.png" alt="單元 1 作品：彩色的自我介紹 App" loading="lazy"></div><p class="cap">單元 1 作品：彩色的自我介紹 App</p></div>
+</header>
+
+<section id="review">
+  <div class="sh"><h2>上一堂複習</h2><span class="pill" style="background:var(--cc-soft);color:var(--cc)">5 分鐘</span></div>
+  <ul class="review"><li>最小 App：<code class="ic">runApp(MaterialApp(home: Scaffold(…)))</code>。</li><li>Scaffold 有 <code class="ic">appBar</code> 和 <code class="ic">body</code> 兩個位置。</li><li><code class="ic">Center(child: …)</code> 把內容放到正中間。</li><li>改 main() 要按 Hot Restart；右括號前加逗號，Shift+Alt+F 排版。</li></ul>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>你已經會的，換成 Dart 這樣寫</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">對照表</span>
+  <p>Flutter 的顏色寫法跟 C# 很像，只是 Dart 把顏色和透明度寫成一個 8 位數的十六進位數字。十六進位你在 C 已經學過了：0xFF 就是 255。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">要做的事</th><th scope="col" class="h-c">C / C++</th><th scope="col" class="h-cs">C#</th><th scope="col" class="h-d">Dart / Flutter</th></tr></thead>
+    <tbody><tr><th scope="row">十六進位數字</th><td class="c"><code>0xFF  // 255</code></td><td class="cs"><code>0xFF  // 255</code></td><td class="d"><code>0xFF  // 255</code></td></tr><tr class="hot"><th scope="row">內建顏色<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>—</code></td><td class="cs"><code>Color.Red</code></td><td class="d"><code>Colors.red（多一個 s、小寫開頭）</code></td></tr><tr class="hot"><th scope="row">自訂顏色<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>—</code></td><td class="cs"><code>Color.FromArgb(255, 255, 0, 0)</code></td><td class="d"><code>Color(0xFFFF0000)</code></td></tr><tr><th scope="row">字的大小</th><td class="c"><code>—</code></td><td class="cs"><code>new Font(&quot;Arial&quot;, 32)</code></td><td class="d"><code>TextStyle(fontSize: 32)</code></td></tr><tr><th scope="row">粗體</th><td class="c"><code>—</code></td><td class="cs"><code>FontStyle.Bold</code></td><td class="d"><code>FontWeight.bold</code></td></tr><tr><th scope="row">列舉值</th><td class="c"><code>enum Align { LEFT, CENTER };</code></td><td class="cs"><code>HorizontalAlignment.Center</code></td><td class="d"><code>TextAlign.center</code></td></tr><tr><th scope="row">換行字元</th><td class="c"><code>&quot;\n&quot;</code></td><td class="cs"><code>&quot;\n&quot;</code></td><td class="d"><code>&#x27;\n&#x27;</code></td></tr></tbody></table></div>
+  <p class="legend"><span>★ 黃底</span>＝跟 C/C# 不一樣、最容易寫錯的地方。</p>
+</section>
+
+<section id="steps">
+  <div class="sh"><h2>跟著做：4 個小步驟</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">每步做完都要執行看看</span>
+  <p>每一步只改一個地方。黃色底的程式是這一步新加的，做完按 <kbd>Ctrl</kbd>+<kbd>S</kbd> 存檔，看看畫面有沒有變，再勾「做完了」。</p></div>
+  <div class="steps"><article class="step"><div class="step-main"><div class="step-top"><span class="sn">1</span><h3>把字放大</h3><label class="done"><input type="checkbox" id="s1"><span>做完了</span></label></div><div class="do"><p>在 Text 的文字後面加一個逗號，再加上 <code class="ic">style: TextStyle(fontSize: 32)</code>。fontSize 的單位是「邏輯像素」，數字越大字越大。</p></div><pre class="code"><code data-lang="dart">import &#x27;package:flutter/material.dart&#x27;;
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(&#x27;我的第一個 App&#x27;),
+        ),
+        body: Center(
+          child: Text(
+            &#x27;你好，我是小明&#x27;,
+            ⟦style: TextStyle(fontSize: 32),⟧
+          ),
+        ),
+      ),
+    ),
+  );
+}</code></pre><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>fontSize 寫成 '32'（有引號）就變成字串了，會出錯。數字不要加引號。</p><div class="errmsg">The argument type &#x27;String&#x27; can&#x27;t be assigned to the parameter type &#x27;double?&#x27;.</div></div></div></details></div><div class="step-side"><div class="phone sm"><img src="img/l03_s1.png" alt="字變大了" loading="lazy"></div><p class="cap">字變大了</p></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">2</span><h3>上色、加粗</h3><label class="done"><input type="checkbox" id="s2"><span>做完了</span></label></div><div class="do"><p>在 TextStyle 裡再加兩個參數：<code class="ic">color</code> 和 <code class="ic">fontWeight</code>。每個參數後面都加逗號，再按 Shift+Alt+F 排版。</p></div><pre class="code"><code data-lang="dart">import &#x27;package:flutter/material.dart&#x27;;
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(&#x27;我的第一個 App&#x27;),
+        ),
+        body: Center(
+          child: Text(
+            &#x27;你好，我是小明&#x27;,
+            style: TextStyle(
+              fontSize: 32,
+              ⟦color: Colors.pink,⟧
+              ⟦fontWeight: FontWeight.bold,⟧
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}</code></pre><p class="note"><b>想換別的顏色？</b>打 <code class="ic">Colors.</code> 之後停一下，VS Code 會列出所有內建顏色讓你選，例如 <code class="ic">Colors.teal</code>、<code class="ic">Colors.orange</code>。</p><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>Colors.Pink 大寫 P 會出錯。Flutter 的內建顏色都是小寫開頭。</p><div class="errmsg">The getter &#x27;Pink&#x27; isn&#x27;t defined for the type &#x27;Colors&#x27;.</div></div></div></details></div><div class="step-side"><div class="phone sm"><img src="img/l03_s2.png" alt="粉紅色、粗體" loading="lazy"></div><p class="cap">粉紅色、粗體</p></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">3</span><h3>用色碼換背景</h3><label class="done"><input type="checkbox" id="s3"><span>做完了</span></label></div><div class="do"><p>在 Scaffold 裡加 <code class="ic">backgroundColor: Color(0xFFFFF3D1)</code>。色碼怎麼讀：</p><ul><li><code class="ic">0x</code>：十六進位，跟 C 一樣</li><li><code class="ic">FF</code>：透明度，FF＝完全不透明</li><li><code class="ic">FFF3D1</code>：紅、綠、藍各兩位，就是網頁色碼 #FFF3D1</li></ul></div><pre class="code"><code data-lang="dart">import &#x27;package:flutter/material.dart&#x27;;
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: Scaffold(
+        ⟦backgroundColor: Color(0xFFFFF3D1),⟧
+        appBar: AppBar(
+          title: Text(&#x27;我的第一個 App&#x27;),
+        ),
+        body: Center(
+          child: Text(
+            &#x27;你好，我是小明&#x27;,
+            style: TextStyle(
+              fontSize: 32,
+              color: Colors.pink,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}</code></pre><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>只寫 6 位數（例如 0xFFF3D1）會被當成透明度 00，背景變成完全透明。VS Code 會用藍色底線提醒你。一定要寫滿 8 位，前面加 FF。</p><div class="errmsg">Instances of &#x27;Color&#x27; should be created using an 8-digit hexadecimal integer (such as &#x27;0xFFFFFFFF&#x27;)</div></div></div></details></div><div class="step-side"><div class="phone sm"><img src="img/l03_s3.png" alt="背景變成淡黃色" loading="lazy"></div><p class="cap">背景變成淡黃色</p></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">4</span><h3>標題列上色，兩行置中</h3><label class="done"><input type="checkbox" id="s4"><span>做完了</span></label></div><div class="do"><ol><li>AppBar 加上 <code class="ic">backgroundColor</code>（底色）和 <code class="ic">foregroundColor</code>（字的顏色）。</li><li>文字改成 <code class="ic">'你好！\n我是小明'</code>，用 \n 換行。</li><li>Text 加上 <code class="ic">textAlign: TextAlign.center</code>，讓兩行都置中。</li></ol></div><pre class="code"><code data-lang="dart">import &#x27;package:flutter/material.dart&#x27;;
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: Scaffold(
+        backgroundColor: Color(0xFFFFF3D1),
+        appBar: AppBar(
+          title: Text(&#x27;我的第一個 App&#x27;),
+          ⟦backgroundColor: Color(0xFF2F8CEB),⟧
+          ⟦foregroundColor: Colors.white,⟧
+        ),
+        body: Center(
+          child: Text(
+            ⟦&#x27;你好！\n我是小明&#x27;,⟧
+            ⟦textAlign: TextAlign.center,⟧
+            style: TextStyle(
+              fontSize: 32,
+              color: Colors.pink,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}</code></pre><p class="note"><b>單元 1 完成！</b>三堂課你做到了：建專案、執行、從空白寫出畫面、換字型大小和顏色。下一個單元開始，我們先回到 Dart 語法，把變數和運算練熟。</p><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>只有第二行置中、第一行沒有：textAlign 要加在 Text 上（跟 style 同一層），不是加在 TextStyle 裡。</p></div></div></details></div><div class="step-side"><div class="phone sm"><img src="img/l03_s4.png" alt="單元 1 作品" loading="lazy"></div><p class="cap">單元 1 作品</p></div></article></div>
+</section>
+
+<section id="quiz">
+  <div class="sh"><h2>小測 3 題</h2><span class="pill" style="background:var(--pink-soft);color:var(--pink)">10 分鐘・不看講義</span>
+  <p>先自己寫在答案欄，再跟老師對答案。</p></div>
+  <div class="quiz"><div class="q"><span class="qn">Q1</span><p><code class="ic">Color(0xFF00A396)</code> 裡的 <code class="ic">FF</code> 代表什麼？<code class="ic">00A396</code> 又代表什麼？</p><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q2</span><p>想讓字變粗，要在 TextStyle 裡寫哪個參數？值是什麼？</p><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q3</span><p>下面這行有兩個錯，分別是什麼？</p><pre class="code"><code data-lang="dart">Text(&#x27;Hi&#x27;, style: TextStyle(fontSize: &#x27;24&#x27;, color: Colors.Blue))</code></pre><div class="ans">我的答案：</div></div></div>
+  <div class="bonus" style="margin-top:16px"><h3>⭐ 加分挑戰</h3><p>用任何一個網頁取色器挑一個喜歡的顏色（會得到像 <code class="ic">#7F52FF</code> 這樣的色碼），換成 Dart 的寫法放到 AppBar。再在 TextStyle 加上 <code class="ic">letterSpacing: 4</code>，看看字和字之間有什麼變化。</p></div>
+</section>
+
+<section id="hw">
+  <div class="sh"><h2>回家作業</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">下一堂上課前繳交</span>
+  <p>作業用來確認你真的會了。每題都有「過關標準」，自己先檢查一次再交。</p></div>
+  <div class="hws"><div class="hw"><span class="hwn">作業 1</span><h3>單元作品：彩色名片 App</h3><p>新建專案 <code class="ic">hw003_座號</code>，做出一張名片：</p><ul><li>標題列：自己的名字，底色用<b>色碼</b></li><li>背景：用色碼，不能用 Colors.white</li><li>中間兩行置中：第一行名字、第二行「班級 座號」</li><li>字 36、粗體、自選顏色</li></ul><p class="pass"><b>過關標準</b>　至少用 2 個 8 位數色碼、兩行都置中、沒有紅線或藍線，交截圖和程式碼。</p></div><div class="hw"><span class="hwn">作業 2</span><h3>色碼換算</h3><p>把網頁色碼換成 Dart 寫法：</p><ol><li>#FF6A47</li><li>#00A396</li><li>#2F8CEB</li><li>#000000</li><li>#FFFFFF</li><li>挑戰：一半透明的紅色 #FF0000（透明度用 80）</li></ol><p class="pass"><b>過關標準</b>　6 題全對，每題都是 Color(0x…) 共 8 位數。</p></div><div class="hw"><span class="hwn">作業 3</span><h3>夜間模式</h3><p>把作業 1 另存一份改成夜間版：</p><ul><li>背景：Colors.black</li><li>文字：Colors.white</li><li>標題列底色：Color(0xFF333333)</li></ul><p>把日間版和夜間版的截圖並排交出來。</p><p class="pass"><b>過關標準</b>　兩張截圖除了顏色以外完全一樣。</p></div></div>
+  <p class="submit"><b>繳交方式</b>　作業 1、3 交截圖與程式碼，作業 2 交文字答案，依老師指定的方式繳交，檔名寫上座號。</p>
+</section>
+
+<section id="cheat">
+  <div class="sh"><h2>速查卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">可以印出來貼在桌上</span></div>
+  <div class="cheat"><h3>第 3 堂重點</h3><div><b>字的樣式</b><code>Text('Hi', style: TextStyle(…))</code></div><div><b>大小、顏色、粗體</b><code>fontSize: 32,
+color: Colors.pink,
+fontWeight: FontWeight.bold,</code></div><div><b>色碼</b><p><code>Color(0xFF + 網頁色碼)</code>，一定 8 位數</p></div><div><b>內建顏色</b><p><code>Colors.</code> 後面接小寫：red、blue、teal…</p></div><div><b>背景色</b><code>Scaffold(backgroundColor: …)</code></div><div><b>標題列顏色</b><code>AppBar(backgroundColor: …,
+       foregroundColor: …)</code></div><div><b>多行置中</b><code>textAlign: TextAlign.center</code></div><div><b>換行</b><code>'第一行\n第二行'</code></div></div>
+</section>
+
+<nav class="pn" aria-label="上一堂下一堂"><a href="lesson002.html">← 第 2 堂</a><a href="index.html">課程目錄</a><a href="lesson004.html">第 4 堂 →</a></nav>
+<footer>Flutter手機程式設計・第 3 堂 / 共 144 堂</footer>
+</main>
+<script>
+(function(){
+  var KW=/^(void|var|final|const|return|if|else|for|while|in|switch|case|class|this|required|late|get|set|true|false|null|import|new|break|default)$/;
+  var TY=/^(int|double|bool|String|List|Map|num|Color|Colors|Text|TextStyle|Center|Scaffold|AppBar|MaterialApp|FontWeight|TextAlign)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b0x[0-9A-Fa-f]+\b|\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){if(KW.test(t))cls='k';else if(TY.test(t))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));
+    // ⟦ ⟧ 標記本步新增的程式
+    out=out.replace(/⟦/g,'<mark class="hl">').replace(/⟧/g,'</mark>');
+    el.innerHTML=out;
+  });
+  var KEY='flutter-v2-'+document.body.dataset.lesson;
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var steps=document.querySelectorAll('.step');
+  function refresh(){
+    var n=0;
+    steps.forEach(function(s){var cb=s.querySelector('input');s.classList.toggle('is-done',cb.checked);if(cb.checked)n++;});
+    prog.textContent='步驟 '+n+' / '+steps.length;
+  }
+  document.querySelectorAll('.step input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>

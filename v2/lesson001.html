@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 1 堂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --cs:#7F52FF; --cs-soft:#EEE8FF;
+  --cc:#2F8CEB; --cc-soft:#E0EEFD;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.3}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none}
+a{color:var(--cc)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+nav.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;align-items:center;padding-block:36px 8px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:700;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px}
+.eyebrow span{background:var(--sun-soft);color:var(--ink);border-radius:6px;padding:2px 8px;font-weight:500}
+.hero h1{font-size:clamp(32px,5.4vw,50px);margin-top:12px}
+.hero .lead{margin-top:12px;color:var(--muted);max-width:32em}
+.goal{margin-top:18px;background:var(--dart-soft);border-radius:16px;padding:14px 16px;border-left:6px solid var(--dart)}
+.goal b{color:var(--dart);font-size:13px;letter-spacing:.06em}
+.goal p{margin-top:2px;font-size:17px;font-weight:500}
+.tl{display:flex;margin-top:18px;border-radius:12px;overflow:hidden}
+.tl div{padding:8px 10px;color:#fff;min-width:0;line-height:1.3}
+.tl b{display:block;font-family:var(--f-display);font-weight:400;font-size:15px}
+.tl small{font-size:12px;opacity:.95}
+.tl .t1{background:var(--cc)} .tl .t2{background:var(--cs)} .tl .t3{background:var(--dart)} .tl .t4{background:var(--coral)}
+.showcase{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.cap{font-size:13px;color:var(--muted);text-align:center}
+.phone{width:min(250px,100%);border-radius:30px;background:#141822;padding:10px;box-shadow:0 18px 40px -18px rgba(20,30,60,.45)}
+.phone img{display:block;width:100%;border-radius:20px;background:#fff}
+.phone.sm{width:min(190px,100%);border-radius:24px;padding:7px}
+.phone.sm img{border-radius:16px}
+.term{width:100%;background:#0F1420;color:#E7ECF5;border-radius:14px;overflow:hidden;font-family:var(--f-mono);font-size:13.5px;box-shadow:0 18px 40px -22px rgba(20,30,60,.5);min-width:0}
+.term .tb{display:flex;gap:6px;align-items:center;padding:8px 12px;background:#1E2433;font-family:var(--f-body);font-size:12px;color:#A2ACC0}
+.term .tb i{width:10px;height:10px;border-radius:50%;background:#FF6A47}
+.term .tb i:nth-child(2){background:#FFB800}.term .tb i:nth-child(3){background:#2FD4C4}
+.term .tb span{margin-left:6px}
+.term pre{margin:0;padding:12px 14px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term .cmd{color:#7FD8FF}
+.term .err{color:#FF8A8A}
+section{margin-top:56px;scroll-margin-top:64px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sh h2{font-size:clamp(25px,4vw,32px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+.review{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:0;margin:0;list-style:none}
+.review li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 44px;position:relative}
+.review li::before{content:"✓";position:absolute;left:14px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--cc-soft);color:var(--cc);font-weight:700;display:grid;place-items:center;font-size:13px}
+.ic{background:var(--cc-soft);color:var(--cc);padding:1px 6px;border-radius:6px;font-size:.9em}
+kbd{font-family:var(--f-mono);font-size:.85em;background:var(--surface);border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:0 6px}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:14px 16px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}.tk-s{color:var(--c-str)}.tk-k{color:var(--c-kw)}.tk-n{color:var(--c-num)}.tk-t{color:var(--c-type)}
+.hl{color:inherit;background:rgba(255,184,0,.28);border-radius:4px;box-shadow:0 0 0 2px rgba(255,184,0,.28)}
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:11px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .h-c{background:var(--cc)} thead .h-cs{background:var(--cs)} thead .h-d{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px;vertical-align:top}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td code{font-size:13.5px;white-space:pre-wrap}
+td.c code{color:var(--cc)} td.cs code{color:var(--cs)} td.d code{color:var(--dart);font-weight:600}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+.steps{display:grid;gap:18px;counter-reset:s}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start;transition:border-color .2s}
+.step.is-done{border-color:var(--dart)}
+.step.wide{grid-template-columns:minmax(0,1fr)}
+.step-main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.step-top{display:flex;gap:12px;align-items:center}
+.sn{flex:none;width:40px;height:40px;border-radius:12px;background:var(--cc);color:#fff;font-family:var(--f-display);font-size:22px;display:grid;place-items:center}
+.step h3{font-size:21px;flex:1;min-width:0}
+.step .do{font-size:15.5px}
+.step .do ol,.step .do ul{margin:6px 0 0;padding-left:22px}
+.step-side{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.step-side .term{width:min(320px,100%)}
+details.stuck{background:var(--coral-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+details.stuck summary{cursor:pointer;font-weight:700;color:var(--coral)}
+details.stuck .stuck-in{margin-top:8px;display:grid;gap:8px}
+.errmsg{font-family:var(--f-mono);font-size:13px;background:var(--surface);border-radius:8px;padding:6px 10px;color:var(--pink);white-space:pre-wrap;word-break:break-word}
+.note{background:var(--sun-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+.note b{color:var(--ink)}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.quiz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.q{background:var(--surface);border-radius:16px;padding:16px;border-top:6px solid var(--pink);display:flex;flex-direction:column;gap:10px;min-width:0}
+.qn{font-family:var(--f-display);font-size:24px;color:var(--pink);line-height:1}
+.q p{font-size:15px}
+.q pre.code{font-size:12.5px}
+.ans{margin-top:auto;border:1px dashed var(--line);border-radius:10px;min-height:56px;padding:6px 10px;font-size:12.5px;color:var(--muted)}
+.bonus{background:linear-gradient(135deg,var(--sun-soft),var(--coral-soft));border-radius:20px;padding:18px;display:grid;gap:10px}
+.bonus h3{font-size:22px}
+.hws{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--cs);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--cs);color:#fff;border-radius:999px;padding:2px 10px}
+.hw h3{font-size:19px}
+.hw p,.hw li{font-size:15px}
+.hw ol,.hw ul{margin:0;padding-left:20px}
+.hw .pass{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;margin-top:auto}
+.hw .pass b{color:var(--dart)}
+.submit{margin-top:14px;font-size:15px;background:var(--cs-soft);border-radius:12px;padding:10px 14px}
+.cheat{background:var(--surface);border:3px solid var(--ink);border-radius:20px;padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+.cheat h3{grid-column:1/-1;font-size:22px}
+.cheat div{min-width:0}
+.cheat b{display:block;font-size:14px;color:var(--coral)}
+.cheat code{font-size:13px;color:var(--dart);font-weight:600;white-space:pre-wrap}
+.cheat p{font-size:14.5px}
+.pn{display:flex;justify-content:space-between;gap:12px;margin-top:48px;flex-wrap:wrap}
+.pn a{text-decoration:none;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--ink)}
+.pn a:hover{border-color:var(--ink)}
+.pn .off{visibility:hidden}
+footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
+@media (max-width:760px){
+  .hero,.quiz,.cheat{grid-template-columns:minmax(0,1fr)}
+  .step{grid-template-columns:minmax(0,1fr)}
+  .tl div{flex:1 1 50%!important}
+  .tl{flex-wrap:wrap}
+}
+@media print{nav.bar,.home,.pn,footer{display:none} body{background:#fff}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body data-lesson="001">
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="本堂導覽"><div class="in">
+<a href="#goal">今天的成果</a><a href="#review">複習</a><a href="#compare">對照表</a><a href="#steps">步驟</a><a href="#quiz">小測</a><a href="#hw">回家作業</a><a href="#cheat">速查卡</a>
+<span class="prog" id="prog">步驟 0 / 4</span></div></nav>
+<main class="wrap">
+<header class="hero" id="goal">
+  <div>
+    <p class="eyebrow"><b>第 1 堂</b><span>單元 1・第一個 App　1 / 3</span><span>60 分鐘</span></p>
+    <h1>把 Flutter 跑起來</h1>
+    <p class="lead">今天不寫新程式，只做三件事：確認電腦裝好了、建立第一個專案、讓 App 在手機上跑起來。最後改一行字，親眼看到畫面馬上跟著變。</p>
+    <div class="goal"><b>今天的成果</b><p>手機（或模擬器）上跑出計數器 App，按鈕上面的英文改成「你按了幾次：」。</p></div>
+    <div class="tl"><div class="t1" style="flex:5"><b>複習</b><small>5 分鐘</small></div><div class="t2" style="flex:10"><b>對照</b><small>10 分鐘</small></div><div class="t3" style="flex:35"><b>步驟</b><small>35 分鐘</small></div><div class="t4" style="flex:10"><b>小測</b><small>10 分鐘</small></div></div>
+  </div>
+  <div class="showcase"><div class="phone"><img src="img/l01_result.png" alt="今天的成果：按 3 下 + 之後的畫面" loading="lazy"></div><p class="cap">今天的成果：按 3 下 + 之後的畫面</p></div>
+</header>
+
+<section id="review">
+  <div class="sh"><h2>開始之前：你已經會的</h2><span class="pill" style="background:var(--cc-soft);color:var(--cc)">5 分鐘</span></div>
+  <ul class="review"><li>寫過 C/C++ 的 <code class="ic">int main()</code>，知道程式從 main 開始跑。</li><li>知道程式要先「編譯」再「執行」。</li><li>用過 Visual Studio 按 <kbd>F5</kbd> 執行 C# 程式。</li><li>知道每一行敘述用 <code class="ic">;</code> 結束。今天這些觀念全部用得到。</li></ul>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>你已經會的，換成 Dart 這樣寫</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">對照表</span>
+  <p>Flutter 是用 Dart 語言寫手機 App 的工具。寫法和 C/C# 很像，最大的不同是程式跑在手機上，而且改完存檔就能看到結果。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">要做的事</th><th scope="col" class="h-c">C / C++</th><th scope="col" class="h-cs">C#</th><th scope="col" class="h-d">Dart / Flutter</th></tr></thead>
+    <tbody><tr><th scope="row">寫程式的軟體</th><td class="c"><code>Dev-C++ / Visual Studio</code></td><td class="cs"><code>Visual Studio</code></td><td class="d"><code>VS Code</code></td></tr><tr><th scope="row">程式從哪裡開始</th><td class="c"><code>int main() { … }</code></td><td class="cs"><code>static void Main() { … }</code></td><td class="d"><code>void main() { … }</code></td></tr><tr><th scope="row">執行</th><td class="c"><code>編譯後執行 .exe</code></td><td class="cs"><code>按 F5</code></td><td class="d"><code>按 F5</code></td></tr><tr class="hot"><th scope="row">程式跑在哪裡<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>自己的電腦</code></td><td class="cs"><code>自己的電腦</code></td><td class="d"><code>手機或模擬器</code></td></tr><tr class="hot"><th scope="row">改了程式想看結果<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>重新編譯、重新執行</code></td><td class="cs"><code>停止後重新執行</code></td><td class="d"><code>存檔就更新（Hot Reload）</code></td></tr><tr class="hot"><th scope="row">專案名稱<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>隨便取</code></td><td class="cs"><code>可以有大寫</code></td><td class="d"><code>只能用小寫英文、數字、底線</code></td></tr><tr><th scope="row">一行結束</th><td class="c"><code>;</code></td><td class="cs"><code>;</code></td><td class="d"><code>;</code></td></tr></tbody></table></div>
+  <p class="legend"><span>★ 黃底</span>＝跟 C/C# 不一樣、最容易寫錯的地方。</p>
+</section>
+
+<section id="steps">
+  <div class="sh"><h2>跟著做：4 個小步驟</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">每步做完都要執行看看</span>
+  <p>每一步只改一個地方。黃色底的程式是這一步新加的，做完按 <kbd>Ctrl</kbd>+<kbd>S</kbd> 存檔，看看畫面有沒有變，再勾「做完了」。</p></div>
+  <div class="steps"><article class="step"><div class="step-main"><div class="step-top"><span class="sn">1</span><h3>確認 Flutter 裝好了</h3><label class="done"><input type="checkbox" id="s1"><span>做完了</span></label></div><div class="do"><ol><li>打開 VS Code。</li><li>按 <kbd>Ctrl</kbd>+<kbd>`</kbd>（數字 1 左邊那個鍵）打開終端機。</li><li>輸入 <code class="ic">flutter doctor</code> 按 Enter，等它跑完。</li></ol></div><p class="note"><b>看什麼？</b>每一行前面的 <b>[✓]</b> 代表沒問題。只要 Flutter、Android toolchain、VS Code 三行是 [✓] 就可以繼續。</p><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>出現「flutter 不是內部或外部命令」：電腦找不到 Flutter。先把 VS Code 整個關掉再開一次，還是不行就請老師幫忙設定路徑。</p><div class="errmsg">&#x27;flutter&#x27; 不是內部或外部命令、可執行的程式或批次檔。</div></div><div><p>Android toolchain 那行是 [!] 或 [✗]：通常是授權還沒同意。輸入下面這行，一路按 y 再 Enter。</p><div class="errmsg">flutter doctor --android-licenses</div></div></div></details></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>終端機（示意）</span></div><pre><span class="cmd">$ flutter doctor</span>
+[✓] Flutter
+[✓] Android toolchain
+[✓] Android Studio
+[✓] VS Code
+[✓] Connected device
+
+• No issues found!</pre></div></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">2</span><h3>建立第一個專案</h3><label class="done"><input type="checkbox" id="s2"><span>做完了</span></label></div><div class="do"><ol><li>按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> 打開指令面板，輸入 <code class="ic">Flutter: New Project</code>。</li><li>選 <b>Application</b>，再選一個放專案的資料夾。</li><li>專案名稱輸入 <code class="ic">hello_app</code> 按 Enter，等右下角跑完。</li></ol></div><p class="note"><b>專案裡最重要的檔案</b>是 <code class="ic">lib/main.dart</code>，就像 C 的 main.cpp。之後所有程式都寫在 lib 資料夾裡，其他資料夾先不用管。</p><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>名稱有大寫、空白、中文或數字開頭，Flutter 會拒絕。改成全小寫、用底線連接，例如 my_first_app。</p><div class="errmsg">&quot;MyApp&quot; is not a valid Dart package name. Try &quot;myapp&quot; instead.</div></div></div></details></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>專案資料夾</span></div><pre>hello_app/
+├ android/
+├ lib/
+│  └ main.dart   ← 寫程式的地方
+├ test/
+└ pubspec.yaml</pre></div></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">3</span><h3>讓 App 跑起來</h3><label class="done"><input type="checkbox" id="s3"><span>做完了</span></label></div><div class="do"><ol><li>看 VS Code 右下角，點一下裝置名稱，選模擬器或用 USB 接上的手機。</li><li>打開 <code class="ic">lib/main.dart</code>。</li><li>按 <kbd>F5</kbd>。<b>第一次要等 1～3 分鐘</b>，這是正常的。</li><li>App 出現後按右下角的 <b>+</b>，數字會加 1。</li></ol></div><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>右下角顯示 No Device：模擬器還沒開，或手機沒開「USB 偵錯」。請老師協助開啟。</p><div class="errmsg">No supported devices connected.</div></div><div><p>等了很久一直在跑：第一次執行要下載與編譯 Android 的東西，等它跑完就好，第二次會快很多。</p></div></div></details></div><div class="step-side"><div class="phone sm"><img src="img/l01_original.png" alt="剛建立好的範本 App" loading="lazy"></div><p class="cap">剛建立好的範本 App</p></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">4</span><h3>改一行字，看看 Hot Reload</h3><label class="done"><input type="checkbox" id="s4"><span>做完了</span></label></div><div class="do"><ol><li>在 main.dart 按 <kbd>Ctrl</kbd>+<kbd>F</kbd> 找 <code class="ic">You have pushed</code>（約第 107 行）。</li><li>把引號裡的英文改成 <code class="ic">你按了幾次：</code>，引號不要刪掉。</li><li>按 <kbd>Ctrl</kbd>+<kbd>S</kbd> 存檔，看手機畫面。</li></ol></div><pre class="code"><code data-lang="dart">          children: [
+⟦            const Text(&#x27;你按了幾次：&#x27;),⟧
+            Text(
+              &#x27;$_counter&#x27;,</code></pre><p class="note"><b>發現了嗎？</b>畫面馬上換成中文，而且剛剛按的數字<b>沒有歸零</b>。這叫 <b>Hot Reload</b>（熱重載）。如果想讓 App 從頭開始，按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F5</kbd>（Hot Restart），數字就會回到 0。</p><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>存檔後畫面沒變：確認 App 是用 F5 啟動的，而且上方有出現除錯工具列。</p></div><div><p>出現紅色波浪線：可能不小心刪到引號或逗號。按 Ctrl+Z 還原再改一次。</p></div></div></details></div><div class="step-side"><div class="phone sm"><img src="img/l01_result.png" alt="存檔後：文字變了，數字還在" loading="lazy"></div><p class="cap">存檔後：文字變了，數字還在</p></div></article></div>
+</section>
+
+<section id="quiz">
+  <div class="sh"><h2>小測 3 題</h2><span class="pill" style="background:var(--pink-soft);color:var(--pink)">10 分鐘・不看講義</span>
+  <p>先自己寫在答案欄，再跟老師對答案。</p></div>
+  <div class="quiz"><div class="q"><span class="qn">Q1</span><p>Flutter 的程式要寫在專案裡哪個資料夾的哪個檔案？</p><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q2</span><p>下面哪些可以當專案名稱？（可複選）<br>(A) hello_app　(B) HelloApp　(C) 1st_app　(D) my app</p><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q3</span><p>改文字後按 Ctrl+S，畫面更新、數字也沒歸零，這個功能叫什麼？想讓數字歸零要按什麼？</p><div class="ans">我的答案：</div></div></div>
+  <div class="bonus" style="margin-top:16px"><h3>⭐ 加分挑戰</h3><p>找到 <code class="ic">seedColor: Colors.deepPurple</code>（約第 31 行），把 <code class="ic">deepPurple</code> 改成 <code class="ic">orange</code> 再存檔。畫面上哪些地方變色了？再試試 <code class="ic">green</code>。</p></div>
+</section>
+
+<section id="hw">
+  <div class="sh"><h2>回家作業</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">下一堂上課前繳交</span>
+  <p>作業用來確認你真的會了。每題都有「過關標準」，自己先檢查一次再交。</p></div>
+  <div class="hws"><div class="hw"><span class="hwn">作業 1</span><h3>我的第一個 App</h3><ol><li>自己再建一個專案，名稱用 <code class="ic">hw001_座號</code>，例如 <code class="ic">hw001_05</code>。</li><li>把 <code class="ic">'Flutter Demo Home Page'</code> 改成「<b>你的名字</b>的第一個 App」。</li><li>把 You have pushed… 那行改成中文。</li><li>按 + 五次後截圖。</li></ol><p class="pass"><b>過關標準</b>　標題有自己的名字、數字是 5、專案名稱全小寫。</p></div><div class="hw"><span class="hwn">作業 2</span><h3>環境紀錄</h3><p>在自己要用的電腦上執行 <code class="ic">flutter doctor</code>，截圖後回答：</p><ol><li>有幾行是 [✓]？</li><li>有沒有 [!] 或 [✗]？有的話把那一行抄下來。</li></ol><p class="pass"><b>過關標準</b>　截圖清楚，數量和抄寫正確。</p></div><div class="hw"><span class="hwn">作業 3</span><h3>在程式裡找東西</h3><p>打開新建專案的 main.dart，用 <kbd>Ctrl</kbd>+<kbd>F</kbd> 找出下面三個東西在第幾行：</p><ol><li><code class="ic">'Flutter Demo Home Page'</code></li><li><code class="ic">Colors.deepPurple</code></li><li><code class="ic">FloatingActionButton</code></li></ol><p class="pass"><b>過關標準</b>　三個行號都正確（以剛建立、還沒修改的專案為準）。</p></div></div>
+  <p class="submit"><b>繳交方式</b>　截圖和答案依老師指定的方式繳交（例如班級雲端資料夾），檔名寫上座號。</p>
+</section>
+
+<section id="cheat">
+  <div class="sh"><h2>速查卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">可以印出來貼在桌上</span></div>
+  <div class="cheat"><h3>第 1 堂重點</h3><div><b>打開終端機</b><code>Ctrl + `</code></div><div><b>指令面板</b><code>Ctrl + Shift + P</code></div><div><b>執行 App</b><code>F5</code>　停止：<code>Shift + F5</code></div><div><b>Hot Reload（數字保留）</b><code>Ctrl + S</code> 存檔</div><div><b>Hot Restart（從頭開始）</b><code>Ctrl + Shift + F5</code></div><div><b>檢查環境</b><code>flutter doctor</code></div><div><b>專案名稱規則</b><p>小寫英文、數字、底線，不能用數字開頭。</p></div><div><b>程式寫在哪</b><code>lib/main.dart</code></div></div>
+</section>
+
+<nav class="pn" aria-label="上一堂下一堂"><a class="off">←</a><a href="index.html">課程目錄</a><a href="lesson002.html">第 2 堂 →</a></nav>
+<footer>Flutter手機程式設計・第 1 堂 / 共 144 堂</footer>
+</main>
+<script>
+(function(){
+  var KW=/^(void|var|final|const|return|if|else|for|while|in|switch|case|class|this|required|late|get|set|true|false|null|import|new|break|default)$/;
+  var TY=/^(int|double|bool|String|List|Map|num|Color|Colors|Text|TextStyle|Center|Scaffold|AppBar|MaterialApp|FontWeight|TextAlign)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b0x[0-9A-Fa-f]+\b|\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){if(KW.test(t))cls='k';else if(TY.test(t))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));
+    // ⟦ ⟧ 標記本步新增的程式
+    out=out.replace(/⟦/g,'<mark class="hl">').replace(/⟧/g,'</mark>');
+    el.innerHTML=out;
+  });
+  var KEY='flutter-v2-'+document.body.dataset.lesson;
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var steps=document.querySelectorAll('.step');
+  function refresh(){
+    var n=0;
+    steps.forEach(function(s){var cb=s.querySelector('input');s.classList.toggle('is-done',cb.checked);if(cb.checked)n++;});
+    prog.textContent='步驟 '+n+' / '+steps.length;
+  }
+  document.querySelectorAll('.step input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
