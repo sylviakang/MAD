@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 10 堂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --cs:#7F52FF; --cs-soft:#EEE8FF;
+  --cc:#2F8CEB; --cc-soft:#E0EEFD;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.3}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none}
+a{color:var(--cc)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+nav.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;align-items:center;padding-block:36px 8px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:700;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px}
+.eyebrow span{background:var(--sun-soft);color:var(--ink);border-radius:6px;padding:2px 8px;font-weight:500}
+.hero h1{font-size:clamp(32px,5.4vw,50px);margin-top:12px}
+.hero .lead{margin-top:12px;color:var(--muted);max-width:32em}
+.goal{margin-top:18px;background:var(--dart-soft);border-radius:16px;padding:14px 16px;border-left:6px solid var(--dart)}
+.goal b{color:var(--dart);font-size:13px;letter-spacing:.06em}
+.goal p{margin-top:2px;font-size:17px;font-weight:500}
+.tl{display:flex;margin-top:18px;border-radius:12px;overflow:hidden}
+.tl div{padding:8px 10px;color:#fff;min-width:0;line-height:1.3}
+.tl b{display:block;font-family:var(--f-display);font-weight:400;font-size:15px}
+.tl small{font-size:12px;opacity:.95}
+.tl .t1{background:var(--cc)} .tl .t2{background:var(--cs)} .tl .t3{background:var(--dart)} .tl .t4{background:var(--coral)}
+.showcase{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.cap{font-size:13px;color:var(--muted);text-align:center}
+.phone{width:min(250px,100%);border-radius:30px;background:#141822;padding:10px;box-shadow:0 18px 40px -18px rgba(20,30,60,.45)}
+.phone img{display:block;width:100%;border-radius:20px;background:#fff}
+.phone.sm{width:min(190px,100%);border-radius:24px;padding:7px}
+.phone.sm img{border-radius:16px}
+.term{width:100%;background:#0F1420;color:#E7ECF5;border-radius:14px;overflow:hidden;font-family:var(--f-mono);font-size:13.5px;box-shadow:0 18px 40px -22px rgba(20,30,60,.5);min-width:0}
+.term .tb{display:flex;gap:6px;align-items:center;padding:8px 12px;background:#1E2433;font-family:var(--f-body);font-size:12px;color:#A2ACC0}
+.term .tb i{width:10px;height:10px;border-radius:50%;background:#FF6A47}
+.term .tb i:nth-child(2){background:#FFB800}.term .tb i:nth-child(3){background:#2FD4C4}
+.term .tb span{margin-left:6px}
+.term pre{margin:0;padding:12px 14px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term .cmd{color:#7FD8FF}
+.term .err{color:#FF8A8A}
+section{margin-top:56px;scroll-margin-top:64px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sh h2{font-size:clamp(25px,4vw,32px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+.review{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:0;margin:0;list-style:none}
+.review li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 44px;position:relative}
+.review li::before{content:"✓";position:absolute;left:14px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--cc-soft);color:var(--cc);font-weight:700;display:grid;place-items:center;font-size:13px}
+.ic{background:var(--cc-soft);color:var(--cc);padding:1px 6px;border-radius:6px;font-size:.9em}
+kbd{font-family:var(--f-mono);font-size:.85em;background:var(--surface);border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:0 6px}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:14px 16px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}.tk-s{color:var(--c-str)}.tk-k{color:var(--c-kw)}.tk-n{color:var(--c-num)}.tk-t{color:var(--c-type)}
+.hl{color:inherit;background:rgba(255,184,0,.28);border-radius:4px;box-shadow:0 0 0 2px rgba(255,184,0,.28)}
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:11px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .h-c{background:var(--cc)} thead .h-cs{background:var(--cs)} thead .h-d{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px;vertical-align:top}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td code{font-size:13.5px;white-space:pre-wrap}
+td.c code{color:var(--cc)} td.cs code{color:var(--cs)} td.d code{color:var(--dart);font-weight:600}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+.steps{display:grid;gap:18px;counter-reset:s}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start;transition:border-color .2s}
+.step.is-done{border-color:var(--dart)}
+.step.wide{grid-template-columns:minmax(0,1fr)}
+.step-main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.step-top{display:flex;gap:12px;align-items:center}
+.sn{flex:none;width:40px;height:40px;border-radius:12px;background:var(--cc);color:#fff;font-family:var(--f-display);font-size:22px;display:grid;place-items:center}
+.step h3{font-size:21px;flex:1;min-width:0}
+.step .do{font-size:15.5px}
+.step .do ol,.step .do ul{margin:6px 0 0;padding-left:22px}
+.step-side{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.step-side .term{width:min(320px,100%)}
+details.stuck{background:var(--coral-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+details.stuck summary{cursor:pointer;font-weight:700;color:var(--coral)}
+details.stuck .stuck-in{margin-top:8px;display:grid;gap:8px}
+.errmsg{font-family:var(--f-mono);font-size:13px;background:var(--surface);border-radius:8px;padding:6px 10px;color:var(--pink);white-space:pre-wrap;word-break:break-word}
+.note{background:var(--sun-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+.note b{color:var(--ink)}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.quiz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.q{background:var(--surface);border-radius:16px;padding:16px;border-top:6px solid var(--pink);display:flex;flex-direction:column;gap:10px;min-width:0}
+.qn{font-family:var(--f-display);font-size:24px;color:var(--pink);line-height:1}
+.q p{font-size:15px}
+.q pre.code{font-size:12.5px}
+.ans{margin-top:auto;border:1px dashed var(--line);border-radius:10px;min-height:56px;padding:6px 10px;font-size:12.5px;color:var(--muted)}
+.bonus{background:linear-gradient(135deg,var(--sun-soft),var(--coral-soft));border-radius:20px;padding:18px;display:grid;gap:10px}
+.bonus h3{font-size:22px}
+.hws{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--cs);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--cs);color:#fff;border-radius:999px;padding:2px 10px}
+.hw h3{font-size:19px}
+.hw p,.hw li{font-size:15px}
+.hw ol,.hw ul{margin:0;padding-left:20px}
+.hw .pass{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;margin-top:auto}
+.hw .pass b{color:var(--dart)}
+.submit{margin-top:14px;font-size:15px;background:var(--cs-soft);border-radius:12px;padding:10px 14px}
+.cheat{background:var(--surface);border:3px solid var(--ink);border-radius:20px;padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+.cheat h3{grid-column:1/-1;font-size:22px}
+.cheat div{min-width:0}
+.cheat b{display:block;font-size:14px;color:var(--coral)}
+.cheat code{font-size:13px;color:var(--dart);font-weight:600;white-space:pre-wrap}
+.cheat p{font-size:14.5px}
+.pn{display:flex;justify-content:space-between;gap:12px;margin-top:48px;flex-wrap:wrap}
+.pn a{text-decoration:none;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--ink)}
+.pn a:hover{border-color:var(--ink)}
+.pn .off{visibility:hidden}
+footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
+@media (max-width:760px){
+  .hero,.quiz,.cheat{grid-template-columns:minmax(0,1fr)}
+  .step{grid-template-columns:minmax(0,1fr)}
+  .tl div{flex:1 1 50%!important}
+  .tl{flex-wrap:wrap}
+}
+@media print{nav.bar,.home,.pn,footer{display:none} body{background:#fff}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.term.wide pre{white-space:pre;overflow-x:auto;word-break:normal;font-size:12.5px}
+.step.wide .step-side{align-items:stretch}
+.step.wide .step-side .term{width:100%}
+.hero.hero-wide{grid-template-columns:minmax(0,1fr)}
+.hero.hero-wide .showcase{align-items:stretch}
+</style></head>
+<body data-lesson="010">
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="本堂導覽"><div class="in">
+<a href="#goal">今天的成果</a><a href="#review">複習</a><a href="#compare">對照表</a><a href="#steps">步驟</a><a href="#quiz">小測</a><a href="#hw">回家作業</a><a href="#cheat">速查卡</a>
+<span class="prog" id="prog">步驟 0 / 4</span></div></nav>
+<main class="wrap">
+<header class="hero hero-wide" id="goal">
+  <div>
+    <p class="eyebrow"><b>第 10 堂</b><span>單元 4・for、while、函式　1 / 3</span><span>60 分鐘</span></p>
+    <h1>for 迴圈：印出九九乘法表</h1>
+    <p class="lead">for 迴圈的三段式寫法跟 C 一模一樣，只是計數變數習慣寫成 var i。今天從印 1 到 5 開始，一步一步加到兩層迴圈，最後印出排得整整齊齊的九九乘法表。</p>
+    <div class="goal"><b>今天的成果</b><p>用兩層 for 迴圈印出 9 行、每行 9 個算式、數字對齊的九九乘法表。</p></div>
+    <div class="tl"><div class="t1" style="flex:5"><b>複習</b><small>5 分鐘</small></div><div class="t2" style="flex:10"><b>對照</b><small>10 分鐘</small></div><div class="t3" style="flex:35"><b>步驟</b><small>35 分鐘</small></div><div class="t4" style="flex:10"><b>小測</b><small>10 分鐘</small></div></div>
+  </div>
+  <div class="showcase"><div class="term wide"><div class="tb"><i></i><i></i><i></i><span>今天的成果</span></div><pre><span class="cmd">$ dart run lesson010.dart</span>
+1x1= 1 1x2= 2 1x3= 3 1x4= 4 1x5= 5 1x6= 6 1x7= 7 1x8= 8 1x9= 9 
+2x1= 2 2x2= 4 2x3= 6 2x4= 8 2x5=10 2x6=12 2x7=14 2x8=16 2x9=18 
+3x1= 3 3x2= 6 3x3= 9 3x4=12 3x5=15 3x6=18 3x7=21 3x8=24 3x9=27 
+4x1= 4 4x2= 8 4x3=12 4x4=16 4x5=20 4x6=24 4x7=28 4x8=32 4x9=36 
+5x1= 5 5x2=10 5x3=15 5x4=20 5x5=25 5x6=30 5x7=35 5x8=40 5x9=45 
+6x1= 6 6x2=12 6x3=18 6x4=24 6x5=30 6x6=36 6x7=42 6x8=48 6x9=54 
+7x1= 7 7x2=14 7x3=21 7x4=28 7x5=35 7x6=42 7x7=49 7x8=56 7x9=63 
+8x1= 8 8x2=16 8x3=24 8x4=32 8x5=40 8x6=48 8x7=56 8x8=64 8x9=72 
+9x1= 9 9x2=18 9x3=27 9x4=36 9x5=45 9x6=54 9x7=63 9x8=72 9x9=81 </pre></div></div>
+</header>
+
+<section id="review">
+  <div class="sh"><h2>上一堂複習</h2><span class="pill" style="background:var(--cc-soft);color:var(--cc)">5 分鐘</span></div>
+  <ul class="review"><li>switch 每個 case 做完自動結束，不用 break。</li><li>switch 運算式：<code class="ic">值 =&gt; 結果,</code>，<code class="ic">_</code> 代表其他全部。</li><li><code class="ic">padLeft(2)</code> 讓數字靠右對齊。</li><li><code class="ic">&#x27;=&#x27; * 20</code> 可以把字串重複 20 次。</li></ul>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>你已經會的，換成 Dart 這樣寫</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">對照表</span>
+  <p>for 的三個部分（起始值；條件；每圈做完要做的事）完全一樣。差別在 Dart 沒有「印出但不換行」的 print，所以我們先把一行接成字串，再一次印出來。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">要做的事</th><th scope="col" class="h-c">C / C++</th><th scope="col" class="h-cs">C#</th><th scope="col" class="h-d">Dart / Flutter</th></tr></thead>
+    <tbody><tr><th scope="row">for 迴圈</th><td class="c"><code>for (int i = 1; i &lt;= 9; i++)</code></td><td class="cs"><code>for (int i = 1; i &lt;= 9; i++)</code></td><td class="d"><code>for (var i = 1; i &lt;= 9; i++)</code></td></tr><tr><th scope="row">每次加 2</th><td class="c"><code>i += 2</code></td><td class="cs"><code>i += 2</code></td><td class="d"><code>i += 2</code></td></tr><tr><th scope="row">兩層迴圈</th><td class="c"><code>for (...) {
+  for (...) { }
+}</code></td><td class="cs"><code>同 C</code></td><td class="d"><code>同 C</code></td></tr><tr class="hot"><th scope="row">印出不換行<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>printf(&quot;%d &quot;, i);</code></td><td class="cs"><code>Console.Write(i);</code></td><td class="d"><code>line += &#x27;$i &#x27;;  // 接成字串再 print</code></td></tr><tr class="hot"><th scope="row">重複一個字<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>用迴圈</code></td><td class="cs"><code>new string(&#x27;*&#x27;, 5)</code></td><td class="d"><code>&#x27;*&#x27; * 5</code></td></tr><tr><th scope="row">i 用完還能用嗎</th><td class="c"><code>C99 起不行</code></td><td class="cs"><code>不行</code></td><td class="d"><code>不行，i 只活在迴圈裡</code></td></tr></tbody></table></div>
+  <p class="legend"><span>★ 黃底</span>＝跟 C/C# 不一樣、最容易寫錯的地方。</p>
+</section>
+
+<section id="steps">
+  <div class="sh"><h2>跟著做：4 個小步驟</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">每步做完都要執行看看</span>
+  <p>每一步只改一個地方。黃色底的程式是這一步新加的，改完存檔，在終端機輸入 dart run lesson010.dart 執行，對照右邊的結果，再勾「做完了」。</p></div>
+  <div class="steps"><article class="step"><div class="step-main"><div class="step-top"><span class="sn">1</span><h3>for 迴圈：數到 5</h3><label class="done"><input type="checkbox" id="s1"><span>做完了</span></label></div><div class="do"><p>新增 <code class="ic">lesson010.dart</code>。寫法跟 C 一樣，只是把 <code class="ic">int i</code> 換成 <code class="ic">var i</code>（寫 int 也可以）。</p></div><pre class="code"><code data-lang="dart">void main() {
+  ⟦for (var i = 1; i &lt;= 5; i++) {⟧
+  ⟦  print(&#x27;第 $i 圈&#x27;);⟧
+  ⟦}⟧
+}</code></pre><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>忘了寫 var，Dart 不知道 i 是什麼：</p><div class="errmsg">Undefined name &#x27;i&#x27;.</div></div></div></details></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson010.dart</span>
+第 1 圈
+第 2 圈
+第 3 圈
+第 4 圈
+第 5 圈</pre></div></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">2</span><h3>一個數字的乘法表</h3><label class="done"><input type="checkbox" id="s2"><span>做完了</span></label></div><div class="do"><p>把迴圈改成 1 到 9，用插值印出「2 x i = 答案」。算式要放在 ${ } 裡。</p></div><pre class="code"><code data-lang="dart">void main() {
+  ⟦for (var i = 1; i &lt;= 9; i++) {⟧
+  ⟦  print(&#x27;2 x $i = ${2 * i}&#x27;);⟧
+  ⟦}⟧
+}</code></pre></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson010.dart</span>
+2 x 1 = 2
+2 x 2 = 4
+2 x 3 = 6
+2 x 4 = 8
+2 x 5 = 10
+2 x 6 = 12
+2 x 7 = 14
+2 x 8 = 16
+2 x 9 = 18</pre></div></div></article><article class="step wide"><div class="step-main"><div class="step-top"><span class="sn">3</span><h3>把一整行接起來再印</h3><label class="done"><input type="checkbox" id="s3"><span>做完了</span></label></div><div class="do"><ol><li>迴圈外面準備一個空字串 <code class="ic">var line = &#x27;&#x27;;</code>。</li><li>每一圈用 <code class="ic">+=</code> 把一個算式接上去。</li><li>迴圈結束後才 print，所以只會印一行。</li></ol></div><pre class="code"><code data-lang="dart">void main() {
+  ⟦var line = &#x27;&#x27;;⟧
+  for (var i = 1; i &lt;= 9; i++) {
+    ⟦line += &#x27;2x$i=${2 * i} &#x27;;⟧
+  }
+  ⟦print(line);⟧
+}</code></pre><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>把 print(line) 寫進迴圈裡面，會印出 9 行，而且一行比一行長。print 要放在迴圈的右大括號後面。</p></div></div></details></div><div class="step-side"><div class="term wide"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson010.dart</span>
+2x1=2 2x2=4 2x3=6 2x4=8 2x5=10 2x6=12 2x7=14 2x8=16 2x9=18 </pre></div></div></article><article class="step wide"><div class="step-main"><div class="step-top"><span class="sn">4</span><h3>兩層迴圈：九九乘法表</h3><label class="done"><input type="checkbox" id="s4"><span>做完了</span></label></div><div class="do"><ol><li>外層 a 從 1 到 9，負責「第幾行」。</li><li>每一行開始時把 line 清空。</li><li>內層 b 從 1 到 9，把 <code class="ic">a x b</code> 接上去，答案用 padLeft(2) 對齊。</li></ol></div><pre class="code"><code data-lang="dart">void main() {
+  ⟦for (var a = 1; a &lt;= 9; a++) {⟧
+    var line = &#x27;&#x27;;
+    for (var b = 1; b &lt;= 9; b++) {
+      ⟦final ans = (a * b).toString().padLeft(2);⟧
+      ⟦line += &#x27;${a}x$b=$ans &#x27;;⟧
+    }
+    print(line);
+  ⟦}⟧
+}</code></pre><p class="note"><b>為什麼寫 ${a}x？</b>如果寫成 <code class="ic">$ax</code>，Dart 會去找一個叫 ax 的變數。用大括號 <code class="ic">${a}</code> 把變數名字圍起來，就不會黏在一起。</p><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>寫成 $ax 時的錯誤：</p><div class="errmsg">Undefined name &#x27;ax&#x27;.</div></div></div></details></div><div class="step-side"><div class="term wide"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson010.dart</span>
+1x1= 1 1x2= 2 1x3= 3 1x4= 4 1x5= 5 1x6= 6 1x7= 7 1x8= 8 1x9= 9 
+2x1= 2 2x2= 4 2x3= 6 2x4= 8 2x5=10 2x6=12 2x7=14 2x8=16 2x9=18 
+3x1= 3 3x2= 6 3x3= 9 3x4=12 3x5=15 3x6=18 3x7=21 3x8=24 3x9=27 
+4x1= 4 4x2= 8 4x3=12 4x4=16 4x5=20 4x6=24 4x7=28 4x8=32 4x9=36 
+5x1= 5 5x2=10 5x3=15 5x4=20 5x5=25 5x6=30 5x7=35 5x8=40 5x9=45 
+6x1= 6 6x2=12 6x3=18 6x4=24 6x5=30 6x6=36 6x7=42 6x8=48 6x9=54 
+7x1= 7 7x2=14 7x3=21 7x4=28 7x5=35 7x6=42 7x7=49 7x8=56 7x9=63 
+8x1= 8 8x2=16 8x3=24 8x4=32 8x5=40 8x6=48 8x7=56 8x8=64 8x9=72 
+9x1= 9 9x2=18 9x3=27 9x4=36 9x5=45 9x6=54 9x7=63 9x8=72 9x9=81 </pre></div></div></article></div>
+</section>
+
+<section id="quiz">
+  <div class="sh"><h2>小測 3 題</h2><span class="pill" style="background:var(--pink-soft);color:var(--pink)">10 分鐘・不看講義</span>
+  <p>先自己寫在答案欄，再跟老師對答案。</p></div>
+  <div class="quiz"><div class="q"><span class="qn">Q1</span><p>會印出哪些數字？</p><pre class="code"><code data-lang="dart">for (var i = 0; i &lt; 10; i += 3) {
+  print(i);
+}</code></pre><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q2</span><p>裡面的 print 一共執行幾次？</p><pre class="code"><code data-lang="dart">for (var a = 1; a &lt;= 3; a++) {
+  for (var b = 1; b &lt;= 4; b++) {
+    print(a * b);
+  }
+}</code></pre><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q3</span><p>寫出輸出：</p><pre class="code"><code data-lang="dart">print(&#x27;ab&#x27; * 3);
+print(&#x27;-&#x27; * 0);</code></pre><div class="ans">我的答案：</div></div></div>
+  <div class="bonus" style="margin-top:16px"><h3>⭐ 加分挑戰</h3><p>只印出「半個」乘法表：第 a 行只印到 <code class="ic">a x a</code>，看起來像一個三角形。提示：內層迴圈的條件改成 <code class="ic">b &lt;= a</code>。</p></div>
+</section>
+
+<section id="hw">
+  <div class="sh"><h2>回家作業</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">下一堂上課前繳交</span>
+  <p>作業用來確認你真的會了。每題都有「過關標準」，自己先檢查一次再交。</p></div>
+  <div class="hws"><div class="hw"><span class="hwn">作業 1</span><h3>7 的倍數</h3><p>寫 <code class="ic">hw010_1.dart</code>，用 for 迴圈找出 1～50 裡所有 7 的倍數，接成一行印出，數字之間空一格。</p><p class="pass"><b>過關標準</b>　印出一行：7 14 21 28 35 42 49</p></div><div class="hw"><span class="hwn">作業 2</span><h3>一週步數表</h3><p>寫 <code class="ic">hw010_2.dart</code>。第 d 天的步數是 <code class="ic">5000 + d * 500</code>（d 從 1 到 7）。每天印一行「第 d 天：步數」，步數用 padLeft(5) 對齊；最後印出一週總步數。</p><p class="pass"><b>過關標準</b>　第 1 天 5500、第 7 天 8500，總步數 49000。</p></div><div class="hw"><span class="hwn">作業 3</span><h3>星星金字塔</h3><p>寫 <code class="ic">hw010_3.dart</code>，用一層 for 迴圈和字串乘法印出 5 層金字塔（第 i 層左邊有 5 − i 個空白，接著 2i − 1 個星號）：</p><pre class="code"><code>    *
+   ***
+  *****
+ *******
+*********</code></pre><p class="pass"><b>過關標準</b>　形狀完全一樣，程式裡只有一個 for。</p></div></div>
+  <p class="submit"><b>繳交方式</b>　程式檔（.dart）與執行結果截圖依老師指定的方式繳交，檔名寫上座號。</p>
+</section>
+
+<section id="cheat">
+  <div class="sh"><h2>速查卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">可以印出來貼在桌上</span></div>
+  <div class="cheat"><h3>第 10 堂重點</h3><div><b>for 迴圈</b><code>for (var i = 1; i &lt;= 9; i++) {
+}</code></div><div><b>兩層迴圈</b><p>外層跑一圈，內層從頭跑完一整輪</p></div><div><b>印出不換行</b><code>var line = &#x27;&#x27;;
+line += &#x27;...&#x27;;
+print(line);</code></div><div><b>字串重複</b><code>&#x27;*&#x27; * 5  // *****</code></div><div><b>變數黏住</b><p><code>${a}x</code> 不要寫 <code>$ax</code></p></div><div><b>迴圈變數</b><p>i 只在迴圈裡面有效，迴圈外面用不到</p></div></div>
+</section>
+
+<nav class="pn" aria-label="上一堂下一堂"><a href="lesson009.html">← 第 9 堂</a><a href="index.html">課程目錄</a><a href="lesson011.html">第 11 堂 →</a></nav>
+<footer>Flutter手機程式設計・第 10 堂 / 共 144 堂</footer>
+</main>
+<script>
+(function(){
+  var KW=/^(void|var|final|const|return|if|else|for|while|in|switch|case|class|this|required|late|get|set|true|false|null|import|new|break|default|do|continue|is)$/;
+  var TY=/^(int|double|bool|String|List|Map|num|Color|Colors|Text|TextStyle|Center|Scaffold|AppBar|MaterialApp|FontWeight|TextAlign)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b0x[0-9A-Fa-f]+\b|\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){if(KW.test(t))cls='k';else if(TY.test(t))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));
+    // ⟦ ⟧ 標記本步新增的程式
+    out=out.replace(/⟦/g,'<mark class="hl">').replace(/⟧/g,'</mark>');
+    el.innerHTML=out;
+  });
+  var KEY='flutter-v2-'+document.body.dataset.lesson;
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var steps=document.querySelectorAll('.step');
+  function refresh(){
+    var n=0;
+    steps.forEach(function(s){var cb=s.querySelector('input');s.classList.toggle('is-done',cb.checked);if(cb.checked)n++;});
+    prog.textContent='步驟 '+n+' / '+steps.length;
+  }
+  document.querySelectorAll('.step input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
