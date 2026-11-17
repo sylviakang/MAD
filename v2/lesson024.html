@@ -201,7 +201,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
 
 <section id="compare">
   <div class="sh"><h2>你已經會的，換成 Dart 這樣寫</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">對照表</span>
-  <p>Map 的 value 可以是任何型別，當然也可以是 List。型別寫起來比較長，從外往內讀就好：Map<String, List<int>> 是「key 是字串，value 是整數清單」。</p></div>
+  <p>Map 的 value 可以是任何型別，當然也可以是 List。型別寫起來比較長，從外往內讀就好：Map&lt;String, List&lt;int>> 是「key 是字串，value 是整數清單」。</p></div>
   <div class="tbl"><table>
     <thead><tr><th scope="col">要做的事</th><th scope="col" class="h-c">C / C++</th><th scope="col" class="h-cs">C#</th><th scope="col" class="h-d">Dart / Flutter</th></tr></thead>
     <tbody><tr class="hot"><th scope="row">型別<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>std::map&lt;string, vector&lt;int&gt;&gt;</code></td><td class="cs"><code>Dictionary&lt;string, List&lt;int&gt;&gt;</code></td><td class="d"><code>Map&lt;String, List&lt;int&gt;&gt;</code></td></tr><tr><th scope="row">取出某天的清單</th><td class="c"><code>m[&quot;11/10&quot;]</code></td><td class="cs"><code>m[&quot;11/10&quot;]</code></td><td class="d"><code>m[&#x27;11/10&#x27;]  // 可能是 null</code></td></tr><tr><th scope="row">那天的第 1 筆</th><td class="c"><code>m[&quot;11/10&quot;][0]</code></td><td class="cs"><code>m[&quot;11/10&quot;][0]</code></td><td class="d"><code>(m[&#x27;11/10&#x27;] ?? [])[0]</code></td></tr><tr class="hot"><th scope="row">加一筆<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>m[&quot;11/10&quot;].push_back(500);</code></td><td class="cs"><code>m[&quot;11/10&quot;].Add(500);</code></td><td class="d"><code>addRecord(m, d, 500);  // 自己寫函式</code></td></tr><tr><th scope="row">走訪</th><td class="c"><code>兩層迴圈</code></td><td class="cs"><code>兩層迴圈</code></td><td class="d"><code>entries + for-in 兩層</code></td></tr></tbody></table></div>
@@ -340,7 +340,7 @@ m[d] = list;</code></div><div><b>兩層走訪</b><code>for (final e in m.entries
 }</code></div><div><b>每天合計</b><code>sumOf(e.value)</code></div><div><b>?. 先認得</b><code>m[&#x27;11/10&#x27;]?.length  // null 就得到 null</code></div></div>
 </section>
 
-<nav class="pn" aria-label="上一堂下一堂"><a href="lesson023.html">← 第 23 堂</a><a href="index.html">課程目錄</a><a class="off">→</a></nav>
+<nav class="pn" aria-label="上一堂下一堂"><a href="lesson023.html">← 第 23 堂</a><a href="index.html">課程目錄</a><a href="lesson025.html">第 25 堂 →</a></nav>
 <footer>Flutter手機程式設計・第 24 堂 / 共 144 堂</footer>
 </main>
 <script>

@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 30 堂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --cs:#7F52FF; --cs-soft:#EEE8FF;
+  --cc:#2F8CEB; --cc-soft:#E0EEFD;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.3}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none}
+a{color:var(--cc)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+nav.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;align-items:center;padding-block:36px 8px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:700;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px}
+.eyebrow span{background:var(--sun-soft);color:var(--ink);border-radius:6px;padding:2px 8px;font-weight:500}
+.hero h1{font-size:clamp(32px,5.4vw,50px);margin-top:12px}
+.hero .lead{margin-top:12px;color:var(--muted);max-width:32em}
+.goal{margin-top:18px;background:var(--dart-soft);border-radius:16px;padding:14px 16px;border-left:6px solid var(--dart)}
+.goal b{color:var(--dart);font-size:13px;letter-spacing:.06em}
+.goal p{margin-top:2px;font-size:17px;font-weight:500}
+.tl{display:flex;margin-top:18px;border-radius:12px;overflow:hidden}
+.tl div{padding:8px 10px;color:#fff;min-width:0;line-height:1.3}
+.tl b{display:block;font-family:var(--f-display);font-weight:400;font-size:15px}
+.tl small{font-size:12px;opacity:.95}
+.tl .t1{background:var(--cc)} .tl .t2{background:var(--cs)} .tl .t3{background:var(--dart)} .tl .t4{background:var(--coral)}
+.showcase{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.cap{font-size:13px;color:var(--muted);text-align:center}
+.phone{width:min(250px,100%);border-radius:30px;background:#141822;padding:10px;box-shadow:0 18px 40px -18px rgba(20,30,60,.45)}
+.phone img{display:block;width:100%;border-radius:20px;background:#fff}
+.phone.sm{width:min(190px,100%);border-radius:24px;padding:7px}
+.phone.sm img{border-radius:16px}
+.term{width:100%;background:#0F1420;color:#E7ECF5;border-radius:14px;overflow:hidden;font-family:var(--f-mono);font-size:13.5px;box-shadow:0 18px 40px -22px rgba(20,30,60,.5);min-width:0}
+.term .tb{display:flex;gap:6px;align-items:center;padding:8px 12px;background:#1E2433;font-family:var(--f-body);font-size:12px;color:#A2ACC0}
+.term .tb i{width:10px;height:10px;border-radius:50%;background:#FF6A47}
+.term .tb i:nth-child(2){background:#FFB800}.term .tb i:nth-child(3){background:#2FD4C4}
+.term .tb span{margin-left:6px}
+.term pre{margin:0;padding:12px 14px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term .cmd{color:#7FD8FF}
+.term .err{color:#FF8A8A}
+section{margin-top:56px;scroll-margin-top:64px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sh h2{font-size:clamp(25px,4vw,32px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+.review{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:0;margin:0;list-style:none}
+.review li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 44px;position:relative}
+.review li::before{content:"✓";position:absolute;left:14px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--cc-soft);color:var(--cc);font-weight:700;display:grid;place-items:center;font-size:13px}
+.ic{background:var(--cc-soft);color:var(--cc);padding:1px 6px;border-radius:6px;font-size:.9em}
+kbd{font-family:var(--f-mono);font-size:.85em;background:var(--surface);border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:0 6px}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:14px 16px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}.tk-s{color:var(--c-str)}.tk-k{color:var(--c-kw)}.tk-n{color:var(--c-num)}.tk-t{color:var(--c-type)}
+.hl{color:inherit;background:rgba(255,184,0,.28);border-radius:4px;box-shadow:0 0 0 2px rgba(255,184,0,.28)}
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:11px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .h-c{background:var(--cc)} thead .h-cs{background:var(--cs)} thead .h-d{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px;vertical-align:top}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td code{font-size:13.5px;white-space:pre-wrap}
+td.c code{color:var(--cc)} td.cs code{color:var(--cs)} td.d code{color:var(--dart);font-weight:600}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+.steps{display:grid;gap:18px;counter-reset:s}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start;transition:border-color .2s}
+.step.is-done{border-color:var(--dart)}
+.step.wide{grid-template-columns:minmax(0,1fr)}
+.step-main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.step-top{display:flex;gap:12px;align-items:center}
+.sn{flex:none;width:40px;height:40px;border-radius:12px;background:var(--cc);color:#fff;font-family:var(--f-display);font-size:22px;display:grid;place-items:center}
+.step h3{font-size:21px;flex:1;min-width:0}
+.step .do{font-size:15.5px}
+.step .do ol,.step .do ul{margin:6px 0 0;padding-left:22px}
+.step-side{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.step-side .term{width:min(320px,100%)}
+details.stuck{background:var(--coral-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+details.stuck summary{cursor:pointer;font-weight:700;color:var(--coral)}
+details.stuck .stuck-in{margin-top:8px;display:grid;gap:8px}
+.errmsg{font-family:var(--f-mono);font-size:13px;background:var(--surface);border-radius:8px;padding:6px 10px;color:var(--pink);white-space:pre-wrap;word-break:break-word}
+.note{background:var(--sun-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+.note b{color:var(--ink)}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.quiz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.q{background:var(--surface);border-radius:16px;padding:16px;border-top:6px solid var(--pink);display:flex;flex-direction:column;gap:10px;min-width:0}
+.qn{font-family:var(--f-display);font-size:24px;color:var(--pink);line-height:1}
+.q p{font-size:15px}
+.q pre.code{font-size:12.5px}
+.ans{margin-top:auto;border:1px dashed var(--line);border-radius:10px;min-height:56px;padding:6px 10px;font-size:12.5px;color:var(--muted)}
+.bonus{background:linear-gradient(135deg,var(--sun-soft),var(--coral-soft));border-radius:20px;padding:18px;display:grid;gap:10px}
+.bonus h3{font-size:22px}
+.hws{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--cs);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--cs);color:#fff;border-radius:999px;padding:2px 10px}
+.hw h3{font-size:19px}
+.hw p,.hw li{font-size:15px}
+.hw ol,.hw ul{margin:0;padding-left:20px}
+.hw .pass{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;margin-top:auto}
+.hw .pass b{color:var(--dart)}
+.submit{margin-top:14px;font-size:15px;background:var(--cs-soft);border-radius:12px;padding:10px 14px}
+.cheat{background:var(--surface);border:3px solid var(--ink);border-radius:20px;padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+.cheat h3{grid-column:1/-1;font-size:22px}
+.cheat div{min-width:0}
+.cheat b{display:block;font-size:14px;color:var(--coral)}
+.cheat code{font-size:13px;color:var(--dart);font-weight:600;white-space:pre-wrap}
+.cheat p{font-size:14.5px}
+.pn{display:flex;justify-content:space-between;gap:12px;margin-top:48px;flex-wrap:wrap}
+.pn a{text-decoration:none;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--ink)}
+.pn a:hover{border-color:var(--ink)}
+.pn .off{visibility:hidden}
+footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
+@media (max-width:760px){
+  .hero,.quiz,.cheat{grid-template-columns:minmax(0,1fr)}
+  .step{grid-template-columns:minmax(0,1fr)}
+  .tl div{flex:1 1 50%!important}
+  .tl{flex-wrap:wrap}
+}
+@media print{nav.bar,.home,.pn,footer{display:none} body{background:#fff}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.term.wide pre{white-space:pre;overflow-x:auto;word-break:normal;font-size:12.5px}
+.step.wide .step-side{align-items:stretch}
+.step.wide .step-side .term{width:100%}
+.hero.hero-wide{grid-template-columns:minmax(0,1fr)}
+.hero.hero-wide .showcase{align-items:stretch}
+</style></head>
+<body data-lesson="030">
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="本堂導覽"><div class="in">
+<a href="#goal">今天的成果</a><a href="#review">複習</a><a href="#compare">對照表</a><a href="#steps">步驟</a><a href="#quiz">小測</a><a href="#hw">回家作業</a><a href="#cheat">速查卡</a>
+<span class="prog" id="prog">步驟 0 / 4</span></div></nav>
+<main class="wrap">
+<header class="hero" id="goal">
+  <div>
+    <p class="eyebrow"><b>第 30 堂</b><span>單元 10・class　3 / 3</span><span>60 分鐘</span></p>
+    <h1>List&lt;StepRecord>：第一階段總整理</h1>
+    <p class="lead">最後一堂把第一階段學的東西組在一起：用 class 表示一筆紀錄，用 List 放一整週，用迴圈和函式做統計，用排序找前三名。做完這一堂，Dart 的基礎就全部到位，下一堂開始畫手機畫面！</p>
+    <div class="goal"><b>今天的成果</b><p>做出一週紀錄列表：印出 7 天的表格，統計總步數、平均、達標天數，找出最佳的一天和前三名。</p></div>
+    <div class="tl"><div class="t1" style="flex:5"><b>複習</b><small>5 分鐘</small></div><div class="t2" style="flex:10"><b>對照</b><small>10 分鐘</small></div><div class="t3" style="flex:35"><b>步驟</b><small>35 分鐘</small></div><div class="t4" style="flex:10"><b>小測</b><small>10 分鐘</small></div></div>
+  </div>
+  <div class="showcase"><div class="term"><div class="tb"><i></i><i></i><i></i><span>今天的成果</span></div><pre><span class="cmd">$ dart run lesson030.dart</span>
+======= 一週紀錄 =======
+11/10   6500 步 
+11/11   8200 步 
+11/12   7300 步 
+11/13  10500 步 ✔
+11/14   9100 步 
+11/15  12000 步 ✔
+11/16   4300 步 
+11/17  11200 步 
+------------------------
+總步數：69100
+平均：8637.5
+達標：2 天
+最佳：11/15  12000 步
+------- 前三名 -------
+1. 11/15  12000 步
+2. 11/17  11200 步
+3. 11/13  10500 步</pre></div></div>
+</header>
+
+<section id="review">
+  <div class="sh"><h2>上一堂複習</h2><span class="pill" style="background:var(--cc-soft);color:var(--cc)">5 分鐘</span></div>
+  <ul class="review"><li>命名參數建構子：<code class="ic">StepRecord(date: ..., steps: ...)</code></li><li><code class="ic">this.goal = 10000</code> 預設值。</li><li>getter：<code class="ic">bool get reached =&gt; ...;</code>，使用時不用括號。</li><li>toString 讓 print 印出好看的樣子。</li></ul>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>你已經會的，換成 Dart 這樣寫</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">對照表</span>
+  <p>物件放進 List 的寫法跟整數一樣，只是型別變成 List&lt;StepRecord>。排序時比較函式要指定「比哪一個欄位」。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">要做的事</th><th scope="col" class="h-c">C / C++</th><th scope="col" class="h-cs">C#</th><th scope="col" class="h-d">Dart / Flutter</th></tr></thead>
+    <tbody><tr class="hot"><th scope="row">物件陣列<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>StepRecord arr[7];</code></td><td class="cs"><code>StepRecord[] arr = new StepRecord[7];</code></td><td class="d"><code>final list = &lt;StepRecord&gt;[ ... ];</code></td></tr><tr><th scope="row">走訪</th><td class="c"><code>for (auto&amp; r : arr)</code></td><td class="cs"><code>foreach (var r in arr)</code></td><td class="d"><code>for (final r in list)</code></td></tr><tr class="hot"><th scope="row">依欄位排序<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>sort(..., [](auto&amp; a, auto&amp; b){ return a.steps &gt; b.steps; })</code></td><td class="cs"><code>Array.Sort(arr, (a, b) =&gt; b.Steps - a.Steps)</code></td><td class="d"><code>list.sort((a, b) =&gt; b.steps - a.steps);</code></td></tr><tr><th scope="row">統計某欄位</th><td class="c"><code>迴圈累加 r.steps</code></td><td class="cs"><code>迴圈累加 r.Steps</code></td><td class="d"><code>迴圈累加 r.steps</code></td></tr></tbody></table></div>
+  <p class="legend"><span>★ 黃底</span>＝跟 C/C# 不一樣、最容易寫錯的地方。</p>
+</section>
+
+<section id="steps">
+  <div class="sh"><h2>跟著做：4 個小步驟</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">每步做完都要執行看看</span>
+  <p>每一步只改一個地方。黃色底的程式是這一步新加的，改完存檔，在終端機輸入 dart run lesson030.dart 執行，對照右邊的結果，再勾「做完了」。</p></div>
+  <div class="steps"><article class="step"><div class="step-main"><div class="step-top"><span class="sn">1</span><h3>一週的紀錄：List&lt;StepRecord></h3><label class="done"><input type="checkbox" id="s1"><span>做完了</span></label></div><div class="do"><p>新增 <code class="ic">lesson030.dart</code>，把上一堂完整的 StepRecord 貼在下面。List 裡放 7 個物件，型別是 <code class="ic">List&lt;StepRecord&gt;</code>。toString 寫好了，直接 print(r) 就是一行。</p></div><pre class="code"><code data-lang="dart">void main() {
+⟦  final records = [
+    StepRecord(date: &#x27;11/10&#x27;, steps: 6500),
+    StepRecord(date: &#x27;11/11&#x27;, steps: 8200),
+    StepRecord(date: &#x27;11/12&#x27;, steps: 7300),
+    StepRecord(date: &#x27;11/13&#x27;, steps: 10500),
+    StepRecord(date: &#x27;11/14&#x27;, steps: 9100),
+    StepRecord(date: &#x27;11/15&#x27;, steps: 12000),
+    StepRecord(date: &#x27;11/16&#x27;, steps: 4300),
+  ];⟧
+  ⟦for (final r in records) {⟧
+  ⟦  print(r);⟧
+  ⟦}⟧
+}
+
+class StepRecord {
+  final String date;
+  final int steps;
+  final int goal;
+
+  StepRecord({required this.date, required this.steps, this.goal = 10000});
+
+  bool get reached =&gt; steps &gt;= goal;
+  double get km =&gt; steps * 0.0007;
+  double get kcal =&gt; steps * 0.04;
+  int get percent =&gt; steps * 100 ~/ goal;
+
+  @override
+  String toString() =&gt; &#x27;$date ${steps.toString().padLeft(6)} 步&#x27;;
+}</code></pre></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson030.dart</span>
+11/10   6500 步
+11/11   8200 步
+11/12   7300 步
+11/13  10500 步
+11/14   9100 步
+11/15  12000 步
+11/16   4300 步</pre></div></div></article><article class="step wide"><div class="step-main"><div class="step-top"><span class="sn">2</span><h3>一週表格：用 getter 加欄位</h3><label class="done"><input type="checkbox" id="s2"><span>做完了</span></label></div><div class="do"><p>每一行除了 toString，再接上公里數和達標記號，用的都是上一堂寫好的 getter。</p></div><pre class="code"><code data-lang="dart">void main() {
+  final records = [
+    StepRecord(date: &#x27;11/10&#x27;, steps: 6500),
+    StepRecord(date: &#x27;11/11&#x27;, steps: 8200),
+    StepRecord(date: &#x27;11/12&#x27;, steps: 7300),
+    StepRecord(date: &#x27;11/13&#x27;, steps: 10500),
+    StepRecord(date: &#x27;11/14&#x27;, steps: 9100),
+    StepRecord(date: &#x27;11/15&#x27;, steps: 12000),
+    StepRecord(date: &#x27;11/16&#x27;, steps: 4300),
+  ];
+  ⟦print(&#x27;日期    步數     公里  達標&#x27;);⟧
+  for (final r in records) {
+    ⟦final km = r.km.toStringAsFixed(2).padLeft(5);⟧
+    ⟦final mark = r.reached ? &#x27;✔&#x27; : &#x27;&#x27;;⟧
+    print(&#x27;$r⟦ $km  $mark⟧&#x27;);
+  }
+}
+
+class StepRecord {
+  final String date;
+  final int steps;
+  final int goal;
+
+  StepRecord({required this.date, required this.steps, this.goal = 10000});
+
+  bool get reached =&gt; steps &gt;= goal;
+  double get km =&gt; steps * 0.0007;
+  double get kcal =&gt; steps * 0.04;
+  int get percent =&gt; steps * 100 ~/ goal;
+
+  @override
+  String toString() =&gt; &#x27;$date ${steps.toString().padLeft(6)} 步&#x27;;
+}</code></pre></div><div class="step-side"><div class="term wide"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson030.dart</span>
+日期    步數     公里  達標
+11/10   6500 步  4.55  
+11/11   8200 步  5.74  
+11/12   7300 步  5.11  
+11/13  10500 步  7.35  ✔
+11/14   9100 步  6.37  
+11/15  12000 步  8.40  ✔
+11/16   4300 步  3.01  </pre></div></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">3</span><h3>統計：總和、平均、達標天數、最佳</h3><label class="done"><input type="checkbox" id="s3"><span>做完了</span></label></div><div class="do"><p>寫一個 <code class="ic">printSummary</code> 函式，參數是 <code class="ic">List&lt;StepRecord&gt;</code>。累加用 <code class="ic">r.steps</code>；打擂台時記住整個物件，最後就能直接印出那一天。</p></div><pre class="code"><code data-lang="dart">void main() {
+  final records = [
+    StepRecord(date: &#x27;11/10&#x27;, steps: 6500),
+    StepRecord(date: &#x27;11/11&#x27;, steps: 8200),
+    StepRecord(date: &#x27;11/12&#x27;, steps: 7300),
+    StepRecord(date: &#x27;11/13&#x27;, steps: 10500),
+    StepRecord(date: &#x27;11/14&#x27;, steps: 9100),
+    StepRecord(date: &#x27;11/15&#x27;, steps: 12000),
+    StepRecord(date: &#x27;11/16&#x27;, steps: 4300),
+  ];
+  ⟦printSummary(records);⟧
+}
+
+⟦void printSummary(List&lt;StepRecord&gt; records) {⟧
+⟦  var total = 0;⟧
+⟦  var okDays = 0;⟧
+⟦  var best = records[0];⟧
+⟦  for (final r in records) {⟧
+⟦    total += r.steps;⟧
+⟦    if (r.reached) {⟧
+⟦      okDays++;⟧
+⟦    }⟧
+⟦    if (r.steps &gt; best.steps) {⟧
+⟦      best = r;⟧
+⟦    }⟧
+⟦  }⟧
+⟦  final avg = total / records.length;⟧
+⟦  print(&#x27;總步數：$total&#x27;);⟧
+⟦  print(&#x27;平均：${avg.toStringAsFixed(1)}&#x27;);⟧
+⟦  print(&#x27;達標：$okDays 天&#x27;);⟧
+⟦  print(&#x27;最佳：$best&#x27;);⟧
+⟦}⟧
+
+class StepRecord {
+  final String date;
+  final int steps;
+  final int goal;
+
+  StepRecord({required this.date, required this.steps, this.goal = 10000});
+
+  bool get reached =&gt; steps &gt;= goal;
+  double get km =&gt; steps * 0.0007;
+  double get kcal =&gt; steps * 0.04;
+  int get percent =&gt; steps * 100 ~/ goal;
+
+  @override
+  String toString() =&gt; &#x27;$date ${steps.toString().padLeft(6)} 步&#x27;;
+}</code></pre></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson030.dart</span>
+總步數：57900
+平均：8271.4
+達標：2 天
+最佳：11/15  12000 步</pre></div></div></article><article class="step wide"><div class="step-main"><div class="step-top"><span class="sn">4</span><h3>完成：第一階段總整理</h3><label class="done"><input type="checkbox" id="s4"><span>做完了</span></label></div><div class="do"><ol><li>印出一週表格和統計。</li><li>新增一筆 11/17 的紀錄（add）。</li><li>複製一份，用 <code class="ic">(a, b) =&gt; b.steps - a.steps</code> 依步數由大到小排序，印出前三名。</li></ol></div><pre class="code"><code data-lang="dart">void main() {
+  final records = [
+    StepRecord(date: &#x27;11/10&#x27;, steps: 6500),
+    StepRecord(date: &#x27;11/11&#x27;, steps: 8200),
+    StepRecord(date: &#x27;11/12&#x27;, steps: 7300),
+    StepRecord(date: &#x27;11/13&#x27;, steps: 10500),
+    StepRecord(date: &#x27;11/14&#x27;, steps: 9100),
+    StepRecord(date: &#x27;11/15&#x27;, steps: 12000),
+    StepRecord(date: &#x27;11/16&#x27;, steps: 4300),
+  ];
+  ⟦records.add(StepRecord(date: &#x27;11/17&#x27;, steps: 11200, goal: 12000));⟧
+
+  ⟦print(&#x27;======= 一週紀錄 =======&#x27;);⟧
+  ⟦for (final r in records) {⟧
+  ⟦  print(&#x27;$r ${r.reached ? &#x27;✔&#x27; : &#x27;&#x27;}&#x27;);⟧
+  ⟦}⟧
+  ⟦print(&#x27;------------------------&#x27;);⟧
+  ⟦printSummary(records);⟧
+
+  ⟦final top = [...records];⟧
+  ⟦top.sort((a, b) =&gt; b.steps - a.steps);⟧
+  ⟦print(&#x27;------- 前三名 -------&#x27;);⟧
+  ⟦for (var i = 0; i &lt; 3; i++) {⟧
+  ⟦  print(&#x27;${i + 1}. ${top[i]}&#x27;);⟧
+  ⟦}⟧
+}
+
+void printSummary(List&lt;StepRecord&gt; records) {
+  var total = 0;
+  var okDays = 0;
+  var best = records[0];
+  for (final r in records) {
+    total += r.steps;
+    if (r.reached) {
+      okDays++;
+    }
+    if (r.steps &gt; best.steps) {
+      best = r;
+    }
+  }
+  final avg = total / records.length;
+  print(&#x27;總步數：$total&#x27;);
+  print(&#x27;平均：${avg.toStringAsFixed(1)}&#x27;);
+  print(&#x27;達標：$okDays 天&#x27;);
+  print(&#x27;最佳：$best&#x27;);
+}
+
+class StepRecord {
+  final String date;
+  final int steps;
+  final int goal;
+
+  StepRecord({required this.date, required this.steps, this.goal = 10000});
+
+  bool get reached =&gt; steps &gt;= goal;
+  double get km =&gt; steps * 0.0007;
+  double get kcal =&gt; steps * 0.04;
+  int get percent =&gt; steps * 100 ~/ goal;
+
+  @override
+  String toString() =&gt; &#x27;$date ${steps.toString().padLeft(6)} 步&#x27;;
+}</code></pre><p class="note"><b>第一階段完成！</b>注意 11/17 走了 11200 步，但它的目標是 12000，所以沒有打勾。從下一堂開始進入第二階段：把這些資料畫成真正的手機畫面。</p></div><div class="step-side"><div class="term wide"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson030.dart</span>
+======= 一週紀錄 =======
+11/10   6500 步 
+11/11   8200 步 
+11/12   7300 步 
+11/13  10500 步 ✔
+11/14   9100 步 
+11/15  12000 步 ✔
+11/16   4300 步 
+11/17  11200 步 
+------------------------
+總步數：69100
+平均：8637.5
+達標：2 天
+最佳：11/15  12000 步
+------- 前三名 -------
+1. 11/15  12000 步
+2. 11/17  11200 步
+3. 11/13  10500 步</pre></div></div></article></div>
+</section>
+
+<section id="quiz">
+  <div class="sh"><h2>小測 3 題</h2><span class="pill" style="background:var(--pink-soft);color:var(--pink)">10 分鐘・不看講義</span>
+  <p>先自己寫在答案欄，再跟老師對答案。</p></div>
+  <div class="quiz"><div class="q"><span class="qn">Q1</span><p>寫出輸出：</p><pre class="code"><code data-lang="dart">final list = [
+  StepRecord(date: &#x27;a&#x27;, steps: 3000),
+  StepRecord(date: &#x27;b&#x27;, steps: 12000),
+];
+var n = 0;
+for (final r in list) {
+  if (r.reached) n++;
+}
+print(n);</code></pre><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q2</span><p>要依「日期」由小到大排序，比較函式要怎麼寫？（提示：字串有 compareTo）</p><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q3</span><p>打擂台時記住「整個物件」best，和只記住「最大步數」有什麼差別？</p><div class="ans">我的答案：</div></div></div>
+  <div class="bonus" style="margin-top:16px"><h3>⭐ 加分挑戰</h3><p>寫 <code class="ic">List&lt;StepRecord&gt; fromMap(Map&lt;String, int&gt; book)</code>：把第 20 堂的步數帳本（日期 → 步數）轉成 StepRecord 的 List。這樣之前用 Map 存的資料，都能用今天的統計函式。</p></div>
+</section>
+
+<section id="hw">
+  <div class="sh"><h2>回家作業</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">下一堂上課前繳交</span>
+  <p>作業用來確認你真的會了。每題都有「過關標準」，自己先檢查一次再交。</p></div>
+  <div class="hws"><div class="hw"><span class="hwn">作業 1</span><h3>全班成績單</h3><p>寫 <code class="ic">hw030_1.dart</code>，用第 29 堂的 Student（姓名、座號、成績、passed）。建立 5 位學生的 List，印出全班名單、平均分數、及格人數和最高分的學生。</p><p class="pass"><b>過關標準</b>　名單、平均、及格人數、最高分學生都正確，最高分的學生用 toString 印出。</p></div><div class="hw"><span class="hwn">作業 2</span><h3>訂單統計</h3><p>寫 <code class="ic">hw030_2.dart</code>，用第 29 堂的 Order 建立 5 筆訂單，依 total 由大到小排序後印出，再印出總營業額。</p><p class="pass"><b>過關標準</b>　排序正確、營業額等於所有 total 的和。</p></div><div class="hw"><span class="hwn">作業 3</span><h3>第一階段自我檢查</h3><p>不看講義，寫一個程式包含以下全部項目，每一項旁邊寫註解標出來：</p><ul><li>const、final、var 各一個</li><li>if / else if、switch 各一個</li><li>for、while 各一個</li><li>有命名參數的函式</li><li>List 和 Map 各一個</li><li>int? 和 ??</li><li>一個有 getter 的 class</li></ul><p class="pass"><b>過關標準</b>　每一項都有出現且有註解，程式執行沒有錯誤。</p></div></div>
+  <p class="submit"><b>繳交方式</b>　程式檔（.dart）與執行結果截圖依老師指定的方式繳交，檔名寫上座號。</p>
+</section>
+
+<section id="cheat">
+  <div class="sh"><h2>速查卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">可以印出來貼在桌上</span></div>
+  <div class="cheat"><h3>第 30 堂重點</h3><div><b>物件清單</b><code>final list = &lt;StepRecord&gt;[
+  StepRecord(date: ..., steps: ...),
+];</code></div><div><b>走訪</b><code>for (final r in list) {
+  print(r.steps);
+}</code></div><div><b>依欄位排序</b><code>list.sort((a, b) =&gt; b.steps - a.steps);</code></div><div><b>字串排序</b><code>list.sort((a, b) =&gt; a.date.compareTo(b.date));</code></div><div><b>擂台記物件</b><code>var best = list[0];
+if (r.steps &gt; best.steps) best = r;</code></div><div><b>第一階段</b><p>變數、判斷、迴圈、函式、List、Map、null、class 全部到齊！</p></div></div>
+</section>
+
+<nav class="pn" aria-label="上一堂下一堂"><a href="lesson029.html">← 第 29 堂</a><a href="index.html">課程目錄</a><a class="off">→</a></nav>
+<footer>Flutter手機程式設計・第 30 堂 / 共 144 堂</footer>
+</main>
+<script>
+(function(){
+  var KW=/^(void|var|final|const|return|if|else|for|while|in|switch|case|class|this|required|late|get|set|true|false|null|import|new|break|default|do|continue|is)$/;
+  var TY=/^(int|double|bool|String|List|Map|num|Color|Colors|Text|TextStyle|Center|Scaffold|AppBar|MaterialApp|FontWeight|TextAlign)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b0x[0-9A-Fa-f]+\b|\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){if(KW.test(t))cls='k';else if(TY.test(t))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));
+    // ⟦ ⟧ 標記本步新增的程式
+    out=out.replace(/⟦/g,'<mark class="hl">').replace(/⟧/g,'</mark>');
+    el.innerHTML=out;
+  });
+  var KEY='flutter-v2-'+document.body.dataset.lesson;
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var steps=document.querySelectorAll('.step');
+  function refresh(){
+    var n=0;
+    steps.forEach(function(s){var cb=s.querySelector('input');s.classList.toggle('is-done',cb.checked);if(cb.checked)n++;});
+    prog.textContent='步驟 '+n+' / '+steps.length;
+  }
+  document.querySelectorAll('.step input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>

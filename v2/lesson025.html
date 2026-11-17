@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 25 堂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --cs:#7F52FF; --cs-soft:#EEE8FF;
+  --cc:#2F8CEB; --cc-soft:#E0EEFD;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.3}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none}
+a{color:var(--cc)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+nav.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;align-items:center;padding-block:36px 8px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:700;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px}
+.eyebrow span{background:var(--sun-soft);color:var(--ink);border-radius:6px;padding:2px 8px;font-weight:500}
+.hero h1{font-size:clamp(32px,5.4vw,50px);margin-top:12px}
+.hero .lead{margin-top:12px;color:var(--muted);max-width:32em}
+.goal{margin-top:18px;background:var(--dart-soft);border-radius:16px;padding:14px 16px;border-left:6px solid var(--dart)}
+.goal b{color:var(--dart);font-size:13px;letter-spacing:.06em}
+.goal p{margin-top:2px;font-size:17px;font-weight:500}
+.tl{display:flex;margin-top:18px;border-radius:12px;overflow:hidden}
+.tl div{padding:8px 10px;color:#fff;min-width:0;line-height:1.3}
+.tl b{display:block;font-family:var(--f-display);font-weight:400;font-size:15px}
+.tl small{font-size:12px;opacity:.95}
+.tl .t1{background:var(--cc)} .tl .t2{background:var(--cs)} .tl .t3{background:var(--dart)} .tl .t4{background:var(--coral)}
+.showcase{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.cap{font-size:13px;color:var(--muted);text-align:center}
+.phone{width:min(250px,100%);border-radius:30px;background:#141822;padding:10px;box-shadow:0 18px 40px -18px rgba(20,30,60,.45)}
+.phone img{display:block;width:100%;border-radius:20px;background:#fff}
+.phone.sm{width:min(190px,100%);border-radius:24px;padding:7px}
+.phone.sm img{border-radius:16px}
+.term{width:100%;background:#0F1420;color:#E7ECF5;border-radius:14px;overflow:hidden;font-family:var(--f-mono);font-size:13.5px;box-shadow:0 18px 40px -22px rgba(20,30,60,.5);min-width:0}
+.term .tb{display:flex;gap:6px;align-items:center;padding:8px 12px;background:#1E2433;font-family:var(--f-body);font-size:12px;color:#A2ACC0}
+.term .tb i{width:10px;height:10px;border-radius:50%;background:#FF6A47}
+.term .tb i:nth-child(2){background:#FFB800}.term .tb i:nth-child(3){background:#2FD4C4}
+.term .tb span{margin-left:6px}
+.term pre{margin:0;padding:12px 14px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term .cmd{color:#7FD8FF}
+.term .err{color:#FF8A8A}
+section{margin-top:56px;scroll-margin-top:64px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sh h2{font-size:clamp(25px,4vw,32px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+.review{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:0;margin:0;list-style:none}
+.review li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 44px;position:relative}
+.review li::before{content:"✓";position:absolute;left:14px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--cc-soft);color:var(--cc);font-weight:700;display:grid;place-items:center;font-size:13px}
+.ic{background:var(--cc-soft);color:var(--cc);padding:1px 6px;border-radius:6px;font-size:.9em}
+kbd{font-family:var(--f-mono);font-size:.85em;background:var(--surface);border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:0 6px}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:14px 16px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}.tk-s{color:var(--c-str)}.tk-k{color:var(--c-kw)}.tk-n{color:var(--c-num)}.tk-t{color:var(--c-type)}
+.hl{color:inherit;background:rgba(255,184,0,.28);border-radius:4px;box-shadow:0 0 0 2px rgba(255,184,0,.28)}
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:11px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .h-c{background:var(--cc)} thead .h-cs{background:var(--cs)} thead .h-d{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px;vertical-align:top}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td code{font-size:13.5px;white-space:pre-wrap}
+td.c code{color:var(--cc)} td.cs code{color:var(--cs)} td.d code{color:var(--dart);font-weight:600}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+.steps{display:grid;gap:18px;counter-reset:s}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start;transition:border-color .2s}
+.step.is-done{border-color:var(--dart)}
+.step.wide{grid-template-columns:minmax(0,1fr)}
+.step-main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.step-top{display:flex;gap:12px;align-items:center}
+.sn{flex:none;width:40px;height:40px;border-radius:12px;background:var(--cc);color:#fff;font-family:var(--f-display);font-size:22px;display:grid;place-items:center}
+.step h3{font-size:21px;flex:1;min-width:0}
+.step .do{font-size:15.5px}
+.step .do ol,.step .do ul{margin:6px 0 0;padding-left:22px}
+.step-side{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.step-side .term{width:min(320px,100%)}
+details.stuck{background:var(--coral-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+details.stuck summary{cursor:pointer;font-weight:700;color:var(--coral)}
+details.stuck .stuck-in{margin-top:8px;display:grid;gap:8px}
+.errmsg{font-family:var(--f-mono);font-size:13px;background:var(--surface);border-radius:8px;padding:6px 10px;color:var(--pink);white-space:pre-wrap;word-break:break-word}
+.note{background:var(--sun-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+.note b{color:var(--ink)}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.quiz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.q{background:var(--surface);border-radius:16px;padding:16px;border-top:6px solid var(--pink);display:flex;flex-direction:column;gap:10px;min-width:0}
+.qn{font-family:var(--f-display);font-size:24px;color:var(--pink);line-height:1}
+.q p{font-size:15px}
+.q pre.code{font-size:12.5px}
+.ans{margin-top:auto;border:1px dashed var(--line);border-radius:10px;min-height:56px;padding:6px 10px;font-size:12.5px;color:var(--muted)}
+.bonus{background:linear-gradient(135deg,var(--sun-soft),var(--coral-soft));border-radius:20px;padding:18px;display:grid;gap:10px}
+.bonus h3{font-size:22px}
+.hws{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--cs);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--cs);color:#fff;border-radius:999px;padding:2px 10px}
+.hw h3{font-size:19px}
+.hw p,.hw li{font-size:15px}
+.hw ol,.hw ul{margin:0;padding-left:20px}
+.hw .pass{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;margin-top:auto}
+.hw .pass b{color:var(--dart)}
+.submit{margin-top:14px;font-size:15px;background:var(--cs-soft);border-radius:12px;padding:10px 14px}
+.cheat{background:var(--surface);border:3px solid var(--ink);border-radius:20px;padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+.cheat h3{grid-column:1/-1;font-size:22px}
+.cheat div{min-width:0}
+.cheat b{display:block;font-size:14px;color:var(--coral)}
+.cheat code{font-size:13px;color:var(--dart);font-weight:600;white-space:pre-wrap}
+.cheat p{font-size:14.5px}
+.pn{display:flex;justify-content:space-between;gap:12px;margin-top:48px;flex-wrap:wrap}
+.pn a{text-decoration:none;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--ink)}
+.pn a:hover{border-color:var(--ink)}
+.pn .off{visibility:hidden}
+footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
+@media (max-width:760px){
+  .hero,.quiz,.cheat{grid-template-columns:minmax(0,1fr)}
+  .step{grid-template-columns:minmax(0,1fr)}
+  .tl div{flex:1 1 50%!important}
+  .tl{flex-wrap:wrap}
+}
+@media print{nav.bar,.home,.pn,footer{display:none} body{background:#fff}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.term.wide pre{white-space:pre;overflow-x:auto;word-break:normal;font-size:12.5px}
+.step.wide .step-side{align-items:stretch}
+.step.wide .step-side .term{width:100%}
+.hero.hero-wide{grid-template-columns:minmax(0,1fr)}
+.hero.hero-wide .showcase{align-items:stretch}
+</style></head>
+<body data-lesson="025">
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="本堂導覽"><div class="in">
+<a href="#goal">今天的成果</a><a href="#review">複習</a><a href="#compare">對照表</a><a href="#steps">步驟</a><a href="#quiz">小測</a><a href="#hw">回家作業</a><a href="#cheat">速查卡</a>
+<span class="prog" id="prog">步驟 0 / 4</span></div></nav>
+<main class="wrap">
+<header class="hero" id="goal">
+  <div>
+    <p class="eyebrow"><b>第 25 堂</b><span>單元 9・null safety　1 / 3</span><span>60 分鐘</span></p>
+    <h1>null：「沒有值」也是一種值</h1>
+    <p class="lead">上一個單元查 Map 時遇過 null，也先背了 ?? 0 的寫法。今天正式認識它：在 Dart 裡，一般的 int 永遠不會是 null；只有型別後面加了問號的 int? 才可以是 null。這個規定讓很多 C 裡常見的當機在寫程式時就被抓出來。</p>
+    <div class="goal"><b>今天的成果</b><p>寫一個會回傳 int? 的查詢函式，用 if 判斷有沒有查到，查到才計算，查不到就印出提示。</p></div>
+    <div class="tl"><div class="t1" style="flex:5"><b>複習</b><small>5 分鐘</small></div><div class="t2" style="flex:10"><b>對照</b><small>10 分鐘</small></div><div class="t3" style="flex:35"><b>步驟</b><small>35 分鐘</small></div><div class="t4" style="flex:10"><b>小測</b><small>10 分鐘</small></div></div>
+  </div>
+  <div class="showcase"><div class="term"><div class="tb"><i></i><i></i><i></i><span>今天的成果</span></div><pre><span class="cmd">$ dart run lesson025.dart</span>
+11/10：6500 步
+11/15：查無紀錄，不列入計算
+11/12：7300 步
+查到的合計：13800 步</pre></div></div>
+</header>
+
+<section id="review">
+  <div class="sh"><h2>上一堂複習</h2><span class="pill" style="background:var(--cc-soft);color:var(--cc)">5 分鐘</span></div>
+  <ul class="review"><li>Map 查不到 key 會得到 <code class="ic">null</code>。</li><li><code class="ic">m[k] ?? 0</code>：是 null 就用 0。</li><li><code class="ic">Map&lt;String, List&lt;int&gt;&gt;</code>：Map 裡放 List。</li><li>先記住的寫法：<code class="ic">??</code>、<code class="ic">!</code>、<code class="ic">?.</code>，今天開始一個一個講清楚。</li></ul>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>你已經會的，換成 Dart 這樣寫</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">對照表</span>
+  <p>C 的指標可以是 NULL，忘了檢查就當掉。Dart 把「可能沒有值」寫進型別裡：int 一定有值，int? 才可能是 null，而且 Dart 會逼你先檢查才能用。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">要做的事</th><th scope="col" class="h-c">C / C++</th><th scope="col" class="h-cs">C#</th><th scope="col" class="h-d">Dart / Flutter</th></tr></thead>
+    <tbody><tr><th scope="row">沒有值</th><td class="c"><code>NULL（指標）</code></td><td class="cs"><code>null</code></td><td class="d"><code>null</code></td></tr><tr class="hot"><th scope="row">可能沒有值的整數<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>int *p = NULL;</code></td><td class="cs"><code>int? n = null;</code></td><td class="d"><code>int? n;</code></td></tr><tr class="hot"><th scope="row">一般 int 能是 null 嗎<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>（int 不能）</code></td><td class="cs"><code>不能</code></td><td class="d"><code>不能，寫了就報錯</code></td></tr><tr><th scope="row">用之前檢查</th><td class="c"><code>if (p != NULL)</code></td><td class="cs"><code>if (n != null)</code></td><td class="d"><code>if (n != null)</code></td></tr><tr class="hot"><th scope="row">忘了檢查<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>執行時當掉</code></td><td class="cs"><code>執行時例外</code></td><td class="d"><code>寫程式時就報錯</code></td></tr><tr class="hot"><th scope="row">檢查後<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>還是指標</code></td><td class="cs"><code>n.Value</code></td><td class="d"><code>自動變成 int，可以直接算</code></td></tr></tbody></table></div>
+  <p class="legend"><span>★ 黃底</span>＝跟 C/C# 不一樣、最容易寫錯的地方。</p>
+</section>
+
+<section id="steps">
+  <div class="sh"><h2>跟著做：4 個小步驟</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">每步做完都要執行看看</span>
+  <p>每一步只改一個地方。黃色底的程式是這一步新加的，改完存檔，在終端機輸入 dart run lesson025.dart 執行，對照右邊的結果，再勾「做完了」。</p></div>
+  <div class="steps"><article class="step"><div class="step-main"><div class="step-top"><span class="sn">1</span><h3>int? ：可以是 null 的整數</h3><label class="done"><input type="checkbox" id="s1"><span>做完了</span></label></div><div class="do"><p>新增 <code class="ic">lesson025.dart</code>。型別後面加 <code class="ic">?</code>，這個變數就可以是 null。沒有給值的 int? 一開始就是 null。</p></div><pre class="code"><code data-lang="dart">void main() {
+  ⟦int? best;⟧
+  ⟦print(&#x27;最佳紀錄：$best&#x27;);⟧
+  ⟦best = 12000;⟧
+  ⟦print(&#x27;最佳紀錄：$best&#x27;);⟧
+  ⟦String? nickname;⟧
+  ⟦print(&#x27;暱稱：$nickname&#x27;);⟧
+}</code></pre><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>一般的 int（沒有問號）不能放 null：</p><div class="errmsg">A value of type &#x27;Null&#x27; can&#x27;t be assigned to a variable of type &#x27;int&#x27;.</div></div></div></details></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson025.dart</span>
+最佳紀錄：null
+最佳紀錄：12000
+暱稱：null</pre></div></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">2</span><h3>int? 不能直接計算</h3><label class="done"><input type="checkbox" id="s2"><span>做完了</span></label></div><div class="do"><p>int? 可能是 null，null 不能加減乘除，所以 Dart 不讓你直接拿它來算。試著把下面這段打進去，看分析器怎麼說。</p></div><pre class="code"><code data-lang="dart">void main() {
+  ⟦show(6500);⟧
+}
+
+⟦void show(int? today) {⟧
+⟦  print(today);⟧
+⟦  // print(today + 500);  // 拿掉 // 會出錯⟧
+⟦}⟧</code></pre><p class="note"><b>咦，傳進來的明明是 6500？</b>Dart 看的是「型別」：參數 today 是 int?，別人也可以呼叫 show(null)。所以只要是 int?，Dart 就要求你先檢查。下一步就來檢查。</p><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>拿掉 // 之後的錯誤：</p><div class="errmsg">The operator &#x27;+&#x27; can&#x27;t be unconditionally invoked because the receiver can be &#x27;null&#x27;.</div></div></div></details></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson025.dart</span>
+6500</pre></div></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">3</span><h3>用 if 檢查：檢查完就變成 int</h3><label class="done"><input type="checkbox" id="s3"><span>做完了</span></label></div><div class="do"><p>寫 <code class="ic">if (today != null)</code> 之後，在大括號裡 Dart 知道 today 一定不是 null，它就自動變成一般的 int，可以直接計算。這叫做「型別提升」。</p></div><pre class="code"><code data-lang="dart">void main() {
+  ⟦show(6500);⟧
+  ⟦show(null);⟧
+}
+
+⟦void show(int? today) {⟧
+⟦  if (today != null) {⟧
+⟦    print(&#x27;今天 $today 步，再走 500 步就是 ${today + 500}&#x27;);⟧
+⟦  } else {⟧
+⟦    print(&#x27;今天還沒有紀錄&#x27;);⟧
+⟦  }⟧
+⟦}⟧</code></pre></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson025.dart</span>
+今天 6500 步，再走 500 步就是 7000
+今天還沒有紀錄</pre></div></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">4</span><h3>完成：回傳 int? 的查詢函式</h3><label class="done"><input type="checkbox" id="s4"><span>做完了</span></label></div><div class="do"><ol><li>函式 <code class="ic">findSteps</code> 查得到就回傳步數，查不到回傳 null，所以回傳型別是 <code class="ic">int?</code>。</li><li>呼叫的人拿到結果，先檢查再用。</li><li>只把有查到的加進總和。</li></ol></div><pre class="code"><code data-lang="dart">void main() {
+  final book = {&#x27;11/10&#x27;: 6500, &#x27;11/11&#x27;: 8200, &#x27;11/12&#x27;: 7300};
+  ⟦final ask = [&#x27;11/10&#x27;, &#x27;11/15&#x27;, &#x27;11/12&#x27;];⟧
+  ⟦var total = 0;⟧
+  ⟦for (final d in ask) {⟧
+  ⟦  final s = findSteps(book, d);⟧
+  ⟦  if (s != null) {⟧
+  ⟦    total += s;⟧
+  ⟦    print(&#x27;$d：$s 步&#x27;);⟧
+  ⟦  } else {⟧
+  ⟦    print(&#x27;$d：查無紀錄，不列入計算&#x27;);⟧
+  ⟦  }⟧
+  ⟦}⟧
+  ⟦print(&#x27;查到的合計：$total 步&#x27;);⟧
+}
+
+⟦int? findSteps(Map&lt;String, int&gt; book, String date) {⟧
+⟦  return book[date];⟧
+⟦}⟧</code></pre><p class="note"><b>回傳型別寫 int 會怎樣？</b>book[date] 是 int?，不能當 int 回傳，Dart 會報錯。「可能沒有結果」的函式，回傳型別就加問號，讓呼叫的人知道要檢查。</p></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson025.dart</span>
+11/10：6500 步
+11/15：查無紀錄，不列入計算
+11/12：7300 步
+查到的合計：13800 步</pre></div></div></article></div>
+</section>
+
+<section id="quiz">
+  <div class="sh"><h2>小測 3 題</h2><span class="pill" style="background:var(--pink-soft);color:var(--pink)">10 分鐘・不看講義</span>
+  <p>先自己寫在答案欄，再跟老師對答案。</p></div>
+  <div class="quiz"><div class="q"><span class="qn">Q1</span><p>哪幾行會出錯？</p><pre class="code"><code data-lang="dart">int a = 5;      // A
+int b = null;   // B
+int? c = null;  // C
+int? d = 7;     // D</code></pre><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q2</span><p>寫出輸出：</p><pre class="code"><code data-lang="dart">String? s;
+print(s);
+s = &#x27;Hi&#x27;;
+print(s);</code></pre><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q3</span><p>n 的型別是 int?，為什麼 if (n != null) 裡面可以寫 n * 2，外面卻不行？</p><div class="ans">我的答案：</div></div></div>
+  <div class="bonus" style="margin-top:16px"><h3>⭐ 加分挑戰</h3><p>寫 <code class="ic">int? firstOver(List&lt;int&gt; list, int limit)</code>：回傳 list 裡第一個大於 limit 的數，都沒有就回傳 null。用一週步數 <code class="ic">[6500, 8200, 7300, 10500]</code> 測試 limit = 10000 和 limit = 20000。</p></div>
+</section>
+
+<section id="hw">
+  <div class="sh"><h2>回家作業</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">下一堂上課前繳交</span>
+  <p>作業用來確認你真的會了。每題都有「過關標準」，自己先檢查一次再交。</p></div>
+  <div class="hws"><div class="hw"><span class="hwn">作業 1</span><h3>找座號</h3><p>寫 <code class="ic">hw025_1.dart</code>，<code class="ic">String? nameOf(Map&lt;int, String&gt; cls, int no)</code> 回傳座號對應的名字（查不到是 null）。在 main 裡用 if 判斷，查到印「n 號是 xxx」，查不到印「沒有 n 號」。</p><p class="pass"><b>過關標準</b>　用一個查得到、一個查不到的座號測試，兩種訊息都正確。</p></div><div class="hw"><span class="hwn">作業 2</span><h3>第一個不及格</h3><p>寫 <code class="ic">hw025_2.dart</code>，<code class="ic">int? firstFail(List&lt;int&gt; scores)</code> 回傳第一個不及格（&lt; 60）分數的索引，都及格回傳 null。用 <code class="ic">[88, 72, 45, 59]</code> 和 <code class="ic">[90, 80]</code> 測試。</p><p class="pass"><b>過關標準</b>　第一組印出索引 2，第二組印出「全部及格」。</p></div><div class="hw"><span class="hwn">作業 3</span><h3>哪裡會出錯</h3><p>先判斷每一段會不會被分析器擋下來、為什麼，再實際打進去驗證：</p><pre class="code"><code data-lang="dart">// (1)
+void a() {
+  int x = 5;
+  x = null;
+}
+// (2)
+void b(int? y) {
+  print(y + 1);
+}
+// (3)
+void c(int? z) {
+  if (z != null) {
+    print(z + 1);
+  }
+}</code></pre><p class="pass"><b>過關標準</b>　(1)(2) 會出錯、(3) 可以，並寫出原因。</p></div></div>
+  <p class="submit"><b>繳交方式</b>　程式檔（.dart）與執行結果截圖依老師指定的方式繳交，檔名寫上座號。</p>
+</section>
+
+<section id="cheat">
+  <div class="sh"><h2>速查卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">可以印出來貼在桌上</span></div>
+  <div class="cheat"><h3>第 25 堂重點</h3><div><b>可以是 null</b><code>int? n;   String? s;</code></div><div><b>一般型別</b><p>int、String 永遠不會是 null</p></div><div><b>先檢查再用</b><code>if (n != null) {
+  print(n + 1);
+}</code></div><div><b>型別提升</b><p>檢查過不是 null，大括號裡就當一般 int 用</p></div><div><b>可能沒結果的函式</b><code>int? find(...) { }</code></div><div><b>null 印出來</b><code>print(n);  // null</code></div></div>
+</section>
+
+<nav class="pn" aria-label="上一堂下一堂"><a href="lesson024.html">← 第 24 堂</a><a href="index.html">課程目錄</a><a href="lesson026.html">第 26 堂 →</a></nav>
+<footer>Flutter手機程式設計・第 25 堂 / 共 144 堂</footer>
+</main>
+<script>
+(function(){
+  var KW=/^(void|var|final|const|return|if|else|for|while|in|switch|case|class|this|required|late|get|set|true|false|null|import|new|break|default|do|continue|is)$/;
+  var TY=/^(int|double|bool|String|List|Map|num|Color|Colors|Text|TextStyle|Center|Scaffold|AppBar|MaterialApp|FontWeight|TextAlign)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b0x[0-9A-Fa-f]+\b|\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){if(KW.test(t))cls='k';else if(TY.test(t))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));
+    // ⟦ ⟧ 標記本步新增的程式
+    out=out.replace(/⟦/g,'<mark class="hl">').replace(/⟧/g,'</mark>');
+    el.innerHTML=out;
+  });
+  var KEY='flutter-v2-'+document.body.dataset.lesson;
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var steps=document.querySelectorAll('.step');
+  function refresh(){
+    var n=0;
+    steps.forEach(function(s){var cb=s.querySelector('input');s.classList.toggle('is-done',cb.checked);if(cb.checked)n++;});
+    prog.textContent='步驟 '+n+' / '+steps.length;
+  }
+  document.querySelectorAll('.step input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
