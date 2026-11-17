@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 17 堂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --cs:#7F52FF; --cs-soft:#EEE8FF;
+  --cc:#2F8CEB; --cc-soft:#E0EEFD;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.3}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none}
+a{color:var(--cc)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+nav.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;align-items:center;padding-block:36px 8px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:700;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px}
+.eyebrow span{background:var(--sun-soft);color:var(--ink);border-radius:6px;padding:2px 8px;font-weight:500}
+.hero h1{font-size:clamp(32px,5.4vw,50px);margin-top:12px}
+.hero .lead{margin-top:12px;color:var(--muted);max-width:32em}
+.goal{margin-top:18px;background:var(--dart-soft);border-radius:16px;padding:14px 16px;border-left:6px solid var(--dart)}
+.goal b{color:var(--dart);font-size:13px;letter-spacing:.06em}
+.goal p{margin-top:2px;font-size:17px;font-weight:500}
+.tl{display:flex;margin-top:18px;border-radius:12px;overflow:hidden}
+.tl div{padding:8px 10px;color:#fff;min-width:0;line-height:1.3}
+.tl b{display:block;font-family:var(--f-display);font-weight:400;font-size:15px}
+.tl small{font-size:12px;opacity:.95}
+.tl .t1{background:var(--cc)} .tl .t2{background:var(--cs)} .tl .t3{background:var(--dart)} .tl .t4{background:var(--coral)}
+.showcase{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.cap{font-size:13px;color:var(--muted);text-align:center}
+.phone{width:min(250px,100%);border-radius:30px;background:#141822;padding:10px;box-shadow:0 18px 40px -18px rgba(20,30,60,.45)}
+.phone img{display:block;width:100%;border-radius:20px;background:#fff}
+.phone.sm{width:min(190px,100%);border-radius:24px;padding:7px}
+.phone.sm img{border-radius:16px}
+.term{width:100%;background:#0F1420;color:#E7ECF5;border-radius:14px;overflow:hidden;font-family:var(--f-mono);font-size:13.5px;box-shadow:0 18px 40px -22px rgba(20,30,60,.5);min-width:0}
+.term .tb{display:flex;gap:6px;align-items:center;padding:8px 12px;background:#1E2433;font-family:var(--f-body);font-size:12px;color:#A2ACC0}
+.term .tb i{width:10px;height:10px;border-radius:50%;background:#FF6A47}
+.term .tb i:nth-child(2){background:#FFB800}.term .tb i:nth-child(3){background:#2FD4C4}
+.term .tb span{margin-left:6px}
+.term pre{margin:0;padding:12px 14px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term .cmd{color:#7FD8FF}
+.term .err{color:#FF8A8A}
+section{margin-top:56px;scroll-margin-top:64px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sh h2{font-size:clamp(25px,4vw,32px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+.review{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:0;margin:0;list-style:none}
+.review li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 44px;position:relative}
+.review li::before{content:"✓";position:absolute;left:14px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--cc-soft);color:var(--cc);font-weight:700;display:grid;place-items:center;font-size:13px}
+.ic{background:var(--cc-soft);color:var(--cc);padding:1px 6px;border-radius:6px;font-size:.9em}
+kbd{font-family:var(--f-mono);font-size:.85em;background:var(--surface);border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:0 6px}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:14px 16px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}.tk-s{color:var(--c-str)}.tk-k{color:var(--c-kw)}.tk-n{color:var(--c-num)}.tk-t{color:var(--c-type)}
+.hl{color:inherit;background:rgba(255,184,0,.28);border-radius:4px;box-shadow:0 0 0 2px rgba(255,184,0,.28)}
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:11px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .h-c{background:var(--cc)} thead .h-cs{background:var(--cs)} thead .h-d{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px;vertical-align:top}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td code{font-size:13.5px;white-space:pre-wrap}
+td.c code{color:var(--cc)} td.cs code{color:var(--cs)} td.d code{color:var(--dart);font-weight:600}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+.steps{display:grid;gap:18px;counter-reset:s}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start;transition:border-color .2s}
+.step.is-done{border-color:var(--dart)}
+.step.wide{grid-template-columns:minmax(0,1fr)}
+.step-main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.step-top{display:flex;gap:12px;align-items:center}
+.sn{flex:none;width:40px;height:40px;border-radius:12px;background:var(--cc);color:#fff;font-family:var(--f-display);font-size:22px;display:grid;place-items:center}
+.step h3{font-size:21px;flex:1;min-width:0}
+.step .do{font-size:15.5px}
+.step .do ol,.step .do ul{margin:6px 0 0;padding-left:22px}
+.step-side{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.step-side .term{width:min(320px,100%)}
+details.stuck{background:var(--coral-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+details.stuck summary{cursor:pointer;font-weight:700;color:var(--coral)}
+details.stuck .stuck-in{margin-top:8px;display:grid;gap:8px}
+.errmsg{font-family:var(--f-mono);font-size:13px;background:var(--surface);border-radius:8px;padding:6px 10px;color:var(--pink);white-space:pre-wrap;word-break:break-word}
+.note{background:var(--sun-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+.note b{color:var(--ink)}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.quiz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.q{background:var(--surface);border-radius:16px;padding:16px;border-top:6px solid var(--pink);display:flex;flex-direction:column;gap:10px;min-width:0}
+.qn{font-family:var(--f-display);font-size:24px;color:var(--pink);line-height:1}
+.q p{font-size:15px}
+.q pre.code{font-size:12.5px}
+.ans{margin-top:auto;border:1px dashed var(--line);border-radius:10px;min-height:56px;padding:6px 10px;font-size:12.5px;color:var(--muted)}
+.bonus{background:linear-gradient(135deg,var(--sun-soft),var(--coral-soft));border-radius:20px;padding:18px;display:grid;gap:10px}
+.bonus h3{font-size:22px}
+.hws{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--cs);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--cs);color:#fff;border-radius:999px;padding:2px 10px}
+.hw h3{font-size:19px}
+.hw p,.hw li{font-size:15px}
+.hw ol,.hw ul{margin:0;padding-left:20px}
+.hw .pass{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;margin-top:auto}
+.hw .pass b{color:var(--dart)}
+.submit{margin-top:14px;font-size:15px;background:var(--cs-soft);border-radius:12px;padding:10px 14px}
+.cheat{background:var(--surface);border:3px solid var(--ink);border-radius:20px;padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+.cheat h3{grid-column:1/-1;font-size:22px}
+.cheat div{min-width:0}
+.cheat b{display:block;font-size:14px;color:var(--coral)}
+.cheat code{font-size:13px;color:var(--dart);font-weight:600;white-space:pre-wrap}
+.cheat p{font-size:14.5px}
+.pn{display:flex;justify-content:space-between;gap:12px;margin-top:48px;flex-wrap:wrap}
+.pn a{text-decoration:none;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--ink)}
+.pn a:hover{border-color:var(--ink)}
+.pn .off{visibility:hidden}
+footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
+@media (max-width:760px){
+  .hero,.quiz,.cheat{grid-template-columns:minmax(0,1fr)}
+  .step{grid-template-columns:minmax(0,1fr)}
+  .tl div{flex:1 1 50%!important}
+  .tl{flex-wrap:wrap}
+}
+@media print{nav.bar,.home,.pn,footer{display:none} body{background:#fff}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.term.wide pre{white-space:pre;overflow-x:auto;word-break:normal;font-size:12.5px}
+.step.wide .step-side{align-items:stretch}
+.step.wide .step-side .term{width:100%}
+.hero.hero-wide{grid-template-columns:minmax(0,1fr)}
+.hero.hero-wide .showcase{align-items:stretch}
+</style></head>
+<body data-lesson="017">
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="本堂導覽"><div class="in">
+<a href="#goal">今天的成果</a><a href="#review">複習</a><a href="#compare">對照表</a><a href="#steps">步驟</a><a href="#quiz">小測</a><a href="#hw">回家作業</a><a href="#cheat">速查卡</a>
+<span class="prog" id="prog">步驟 0 / 4</span></div></nav>
+<main class="wrap">
+<header class="hero" id="goal">
+  <div>
+    <p class="eyebrow"><b>第 17 堂</b><span>單元 6・List（二）　2 / 3</span><span>60 分鐘</span></p>
+    <h1>最大值與最小值：找出最佳的一天</h1>
+    <p class="lead">哪一天走最多？哪一天最偷懶？今天學「打擂台」找最大值和最小值，而且不只找出數字，還要記住是哪一天。最後再學 indexOf 和 contains，快速查詢 List 裡有沒有某個值。</p>
+    <div class="goal"><b>今天的成果</b><p>找出一週中步數最多和最少的是星期幾，並查詢某個步數有沒有出現過。</p></div>
+    <div class="tl"><div class="t1" style="flex:5"><b>複習</b><small>5 分鐘</small></div><div class="t2" style="flex:10"><b>對照</b><small>10 分鐘</small></div><div class="t3" style="flex:35"><b>步驟</b><small>35 分鐘</small></div><div class="t4" style="flex:10"><b>小測</b><small>10 分鐘</small></div></div>
+  </div>
+  <div class="showcase"><div class="term"><div class="tb"><i></i><i></i><i></i><span>今天的成果</span></div><pre><span class="cmd">$ dart run lesson017.dart</span>
+最佳：星期六，12000 步
+最差：星期日，4300 步
+相差：7700 步
+剛好 10000 步的日子：沒有</pre></div></div>
+</header>
+
+<section id="review">
+  <div class="sh"><h2>上一堂複習</h2><span class="pill" style="background:var(--cc-soft);color:var(--cc)">5 分鐘</span></div>
+  <ul class="review"><li><code class="ic">sumOf</code>：for-in 累加後回傳。</li><li>平均要先檢查 <code class="ic">isEmpty</code>。</li><li>計數：符合條件就 <code class="ic">count++</code>。</li><li>命名參數讓呼叫的地方更好讀。</li></ul>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>你已經會的，換成 Dart 這樣寫</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">對照表</span>
+  <p>找最大值的「打擂台」寫法三種語言都一樣。Dart 多了 indexOf 和 contains，不用自己寫迴圈找。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">要做的事</th><th scope="col" class="h-c">C / C++</th><th scope="col" class="h-cs">C#</th><th scope="col" class="h-d">Dart / Flutter</th></tr></thead>
+    <tbody><tr><th scope="row">找最大值</th><td class="c"><code>max = s[0]; 迴圈比較</code></td><td class="cs"><code>max = s[0]; 迴圈比較</code></td><td class="d"><code>var max = s[0]; 迴圈比較</code></td></tr><tr><th scope="row">記住位置</th><td class="c"><code>記索引 i</code></td><td class="cs"><code>記索引 i</code></td><td class="d"><code>記索引 i</code></td></tr><tr class="hot"><th scope="row">擂台起點<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>從 s[0] 開始最安全</code></td><td class="cs"><code>同 C</code></td><td class="d"><code>同 C，不要從 0 開始</code></td></tr><tr class="hot"><th scope="row">找某個值在哪<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>自己寫迴圈</code></td><td class="cs"><code>Array.IndexOf(s, x)</code></td><td class="d"><code>s.indexOf(x)  // 找不到是 -1</code></td></tr><tr class="hot"><th scope="row">有沒有這個值<span class="star" title="最容易寫錯">★</span></th><td class="c"><code>自己寫迴圈</code></td><td class="cs"><code>Array.IndexOf(s, x) &gt;= 0</code></td><td class="d"><code>s.contains(x)</code></td></tr></tbody></table></div>
+  <p class="legend"><span>★ 黃底</span>＝跟 C/C# 不一樣、最容易寫錯的地方。</p>
+</section>
+
+<section id="steps">
+  <div class="sh"><h2>跟著做：4 個小步驟</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">每步做完都要執行看看</span>
+  <p>每一步只改一個地方。黃色底的程式是這一步新加的，改完存檔，在終端機輸入 dart run lesson017.dart 執行，對照右邊的結果，再勾「做完了」。</p></div>
+  <div class="steps"><article class="step"><div class="step-main"><div class="step-top"><span class="sn">1</span><h3>打擂台：找最大值</h3><label class="done"><input type="checkbox" id="s1"><span>做完了</span></label></div><div class="do"><p>新增 <code class="ic">lesson017.dart</code>。先讓第一天當擂主，後面每一天上台挑戰，比擂主大就換人當擂主。</p></div><pre class="code"><code data-lang="dart">void main() {
+  final steps = [6500, 8200, 7300, 10500, 9100, 12000, 4300];
+  ⟦var max = steps[0];⟧
+  ⟦for (final x in steps) {⟧
+  ⟦  if (x &gt; max) {⟧
+  ⟦    max = x;⟧
+  ⟦  }⟧
+  ⟦}⟧
+  ⟦print(&#x27;最多：$max 步&#x27;);⟧
+}</code></pre><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>擂主從 0 開始，遇到全是負數的資料就錯了。例如找最低氣溫 [-3, -8, -1] 的最大值，會得到 0：</p><div class="errmsg">最大：0</div></div></div></details></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson017.dart</span>
+最多：12000 步</pre></div></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">2</span><h3>記住是哪一天：記索引</h3><label class="done"><input type="checkbox" id="s2"><span>做完了</span></label></div><div class="do"><p>只知道 12000 還不夠，要知道是星期幾。改成記「擂主的索引」best，比較時用 steps[best]。這裡要用有索引的 for。</p></div><pre class="code"><code data-lang="dart">void main() {
+  final steps = [6500, 8200, 7300, 10500, 9100, 12000, 4300];
+  final days = [&#x27;一&#x27;, &#x27;二&#x27;, &#x27;三&#x27;, &#x27;四&#x27;, &#x27;五&#x27;, &#x27;六&#x27;, &#x27;日&#x27;];
+  ⟦var best = 0;⟧
+  ⟦for (var i = 1; i &lt; steps.length; i++) {⟧
+  ⟦  if (steps[i] &gt; steps[best]) {⟧
+  ⟦    best = i;⟧
+  ⟦  }⟧
+  ⟦}⟧
+  ⟦print(&#x27;最佳：星期${days[best]}，${steps[best]} 步&#x27;);⟧
+}</code></pre><p class="note"><b>為什麼 i 從 1 開始？</b>索引 0 已經是擂主了，不用跟自己比。從 0 開始也不會錯，只是多比一次。</p></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson017.dart</span>
+最佳：星期六，12000 步</pre></div></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">3</span><h3>indexOf 和 contains</h3><label class="done"><input type="checkbox" id="s3"><span>做完了</span></label></div><div class="do"><ul><li><code class="ic">s.indexOf(10500)</code>：回傳 10500 第一次出現的索引；找不到回傳 <b>-1</b>。</li><li><code class="ic">s.contains(8000)</code>：有沒有 8000，回傳 true 或 false。</li></ul></div><pre class="code"><code data-lang="dart">void main() {
+  final steps = [6500, 8200, 7300, 10500, 9100, 12000, 4300];
+  final days = [&#x27;一&#x27;, &#x27;二&#x27;, &#x27;三&#x27;, &#x27;四&#x27;, &#x27;五&#x27;, &#x27;六&#x27;, &#x27;日&#x27;];
+  ⟦final i = steps.indexOf(10500);⟧
+  ⟦print(&#x27;10500 步是星期${days[i]}&#x27;);⟧
+  ⟦print(&#x27;有沒有剛好 8000 步？${steps.contains(8000)}&#x27;);⟧
+  ⟦print(&#x27;找 9999 的索引：${steps.indexOf(9999)}&#x27;);⟧
+}</code></pre><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>indexOf 找不到時是 -1，拿 -1 當索引會當掉。用之前要先檢查 i != -1：</p><div class="errmsg">RangeError (length): Invalid value: Not in inclusive range 0..1: -1</div></div></div></details></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson017.dart</span>
+10500 步是星期四
+有沒有剛好 8000 步？false
+找 9999 的索引：-1</pre></div></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">4</span><h3>完成：最佳與最差的一天</h3><label class="done"><input type="checkbox" id="s4"><span>做完了</span></label></div><div class="do"><ol><li>把找最大、最小的索引寫成 <code class="ic">maxIndex</code>、<code class="ic">minIndex</code> 兩個函式。</li><li>印出最佳和最差的一天，以及相差幾步。</li><li>用 contains 檢查這週有沒有哪天剛好 10000 步。</li></ol></div><pre class="code"><code data-lang="dart">void main() {
+  final steps = [6500, 8200, 7300, 10500, 9100, 12000, 4300];
+  final days = [&#x27;一&#x27;, &#x27;二&#x27;, &#x27;三&#x27;, &#x27;四&#x27;, &#x27;五&#x27;, &#x27;六&#x27;, &#x27;日&#x27;];
+  ⟦final hi = maxIndex(steps);⟧
+  ⟦final lo = minIndex(steps);⟧
+  ⟦print(&#x27;最佳：星期${days[hi]}，${steps[hi]} 步&#x27;);⟧
+  ⟦print(&#x27;最差：星期${days[lo]}，${steps[lo]} 步&#x27;);⟧
+  ⟦print(&#x27;相差：${steps[hi] - steps[lo]} 步&#x27;);⟧
+  ⟦final exact = steps.contains(10000) ? &#x27;有&#x27; : &#x27;沒有&#x27;;⟧
+  ⟦print(&#x27;剛好 10000 步的日子：$exact&#x27;);⟧
+}
+
+⟦int maxIndex(List&lt;int&gt; list) {
+  var best = 0;
+  for (var i = 1; i &lt; list.length; i++) {
+    if (list[i] &gt; list[best]) {
+      best = i;
+    }
+  }
+  return best;
+}⟧
+
+⟦int minIndex(List&lt;int&gt; list) {
+  var worst = 0;
+  for (var i = 1; i &lt; list.length; i++) {
+    if (list[i] &lt; list[worst]) {
+      worst = i;
+    }
+  }
+  return worst;
+}⟧</code></pre></div><div class="step-side"><div class="term"><div class="tb"><i></i><i></i><i></i><span>執行結果</span></div><pre><span class="cmd">$ dart run lesson017.dart</span>
+最佳：星期六，12000 步
+最差：星期日，4300 步
+相差：7700 步
+剛好 10000 步的日子：沒有</pre></div></div></article></div>
+</section>
+
+<section id="quiz">
+  <div class="sh"><h2>小測 3 題</h2><span class="pill" style="background:var(--pink-soft);color:var(--pink)">10 分鐘・不看講義</span>
+  <p>先自己寫在答案欄，再跟老師對答案。</p></div>
+  <div class="quiz"><div class="q"><span class="qn">Q1</span><p>寫出輸出：</p><pre class="code"><code data-lang="dart">final s = [7, 2, 9, 2];
+print(s.indexOf(2));
+print(s.indexOf(5));
+print(s.contains(9));</code></pre><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q2</span><p>這段程式想找最小值，哪裡錯了？</p><pre class="code"><code data-lang="dart">final s = [7, 2, 9];
+var min = 0;
+for (final x in s) {
+  if (x &lt; min) {
+    min = x;
+  }
+}</code></pre><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q3</span><p>maxIndex 裡如果把 > 改成 >=，有兩天一樣多時，會選前面那天還是後面那天？</p><div class="ans">我的答案：</div></div></div>
+  <div class="bonus" style="margin-top:16px"><h3>⭐ 加分挑戰</h3><p>找出「第二多」的那一天。提示：先用 maxIndex 找出第一名的索引，再打一次擂台，這次跳過那個索引。一週資料的答案是星期四 10500 步。</p></div>
+</section>
+
+<section id="hw">
+  <div class="sh"><h2>回家作業</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">下一堂上課前繳交</span>
+  <p>作業用來確認你真的會了。每題都有「過關標準」，自己先檢查一次再交。</p></div>
+  <div class="hws"><div class="hw"><span class="hwn">作業 1</span><h3>最高分與最低分</h3><p>寫 <code class="ic">hw017_1.dart</code>，科目 <code class="ic">[&#x27;國文&#x27;, &#x27;英文&#x27;, &#x27;數學&#x27;, &#x27;自然&#x27;, &#x27;社會&#x27;]</code>、成績 <code class="ic">[88, 72, 95, 60, 81]</code>。印出最高分和最低分的科目。</p><p class="pass"><b>過關標準</b>　最高：數學 95，最低：自然 60。</p></div><div class="hw"><span class="hwn">作業 2</span><h3>最冷的一天</h3><p>寫 <code class="ic">hw017_2.dart</code>，寒流一週的最低氣溫 <code class="ic">[-2, 3, -5, 1, 0, -1, 4]</code>。用打擂台找出最冷是第幾天、幾度。注意擂主從哪裡開始。</p><p class="pass"><b>過關標準</b>　第 3 天，-5 度。</p></div><div class="hw"><span class="hwn">作業 3</span><h3>座號查詢</h3><p>寫 <code class="ic">hw017_3.dart</code>，有交作業的座號 <code class="ic">[3, 7, 12, 15, 21]</code>。寫 <code class="ic">String check(List&lt;int&gt; list, int no)</code>：有交回傳「第 n 個交」，沒交回傳「沒交」。用 12 和 8 測試。</p><p class="pass"><b>過關標準</b>　12 印出「第 3 個交」，8 印出「沒交」。</p></div></div>
+  <p class="submit"><b>繳交方式</b>　程式檔（.dart）與執行結果截圖依老師指定的方式繳交，檔名寫上座號。</p>
+</section>
+
+<section id="cheat">
+  <div class="sh"><h2>速查卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">可以印出來貼在桌上</span></div>
+  <div class="cheat"><h3>第 17 堂重點</h3><div><b>打擂台</b><code>var max = s[0];
+for (final x in s) {
+  if (x &gt; max) max = x;
+}</code></div><div><b>記索引</b><code>if (s[i] &gt; s[best]) best = i;</code></div><div><b>找位置</b><code>s.indexOf(x)  // 找不到 -1</code></div><div><b>有沒有</b><code>s.contains(x)  // true/false</code></div><div><b>擂主起點</b><p>從 s[0] 開始，不要從 0 開始</p></div><div><b>-1 不能當索引</b><p>indexOf 的結果要先檢查 != -1</p></div></div>
+</section>
+
+<nav class="pn" aria-label="上一堂下一堂"><a href="lesson016.html">← 第 16 堂</a><a href="index.html">課程目錄</a><a href="lesson018.html">第 18 堂 →</a></nav>
+<footer>Flutter手機程式設計・第 17 堂 / 共 144 堂</footer>
+</main>
+<script>
+(function(){
+  var KW=/^(void|var|final|const|return|if|else|for|while|in|switch|case|class|this|required|late|get|set|true|false|null|import|new|break|default|do|continue|is)$/;
+  var TY=/^(int|double|bool|String|List|Map|num|Color|Colors|Text|TextStyle|Center|Scaffold|AppBar|MaterialApp|FontWeight|TextAlign)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b0x[0-9A-Fa-f]+\b|\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){if(KW.test(t))cls='k';else if(TY.test(t))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));
+    // ⟦ ⟧ 標記本步新增的程式
+    out=out.replace(/⟦/g,'<mark class="hl">').replace(/⟧/g,'</mark>');
+    el.innerHTML=out;
+  });
+  var KEY='flutter-v2-'+document.body.dataset.lesson;
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var steps=document.querySelectorAll('.step');
+  function refresh(){
+    var n=0;
+    steps.forEach(function(s){var cb=s.querySelector('input');s.classList.toggle('is-done',cb.checked);if(cb.checked)n++;});
+    prog.textContent='步驟 '+n+' / '+steps.length;
+  }
+  document.querySelectorAll('.step input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
