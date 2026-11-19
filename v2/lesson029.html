@@ -332,7 +332,7 @@ print(r.reached());  // B</code></pre><div class="ans">我的答案：</div></di
 <script>
 (function(){
   var KW=/^(void|var|final|const|return|if|else|for|while|in|switch|case|class|this|required|late|get|set|true|false|null|import|new|break|default|do|continue|is)$/;
-  var TY=/^(int|double|bool|String|List|Map|num|Color|Colors|Text|TextStyle|Center|Scaffold|AppBar|MaterialApp|FontWeight|TextAlign)$/;
+  var TY=/^(int|double|bool|String|List|Map|num|Color|Colors|Text|TextStyle|Center|Scaffold|AppBar|MaterialApp|FontWeight|TextAlign|Widget|StatelessWidget|BuildContext|Container|Column|Row|BoxDecoration|BorderRadius|Border|BoxShadow|Offset|EdgeInsets|Alignment|MainAxisAlignment|CrossAxisAlignment|MainAxisSize|LinearGradient|Radius|Icon|Icons|SizedBox|StepRecord|StatItem|NameCard|MyApp|HomePage)$/;
   function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
   var re=/(\/\/[^\n]*)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b0x[0-9A-Fa-f]+\b|\b\d+(?:\.\d+)?\b)/g;
   document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
