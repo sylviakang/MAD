@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flutter手機程式設計 第 40 堂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#F4F7FB; --surface:#FFFFFF; --ink:#1B2233; --muted:#5A6478; --line:#DCE3EE;
+  --dart:#00A396; --dart-soft:#DDF5F2;
+  --cs:#7F52FF; --cs-soft:#EEE8FF;
+  --cc:#2F8CEB; --cc-soft:#E0EEFD;
+  --coral:#FF6A47; --coral-soft:#FFE6DF;
+  --sun:#FFB800; --sun-soft:#FFF3D1;
+  --pink:#E8458B; --pink-soft:#FCE3EE;
+  --code-bg:#1E2433; --code-ink:#E7ECF5; --c-com:#8A96AD; --c-str:#9BE38F; --c-kw:#FF9EC4; --c-num:#FFD36B; --c-type:#7FD8FF;
+  --f-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#11151E; --surface:#1A2030; --ink:#EDF1F8; --muted:#A2ACC0; --line:#2C3447;
+  --dart:#2FD4C4; --dart-soft:#123A38; --cs:#A98BFF; --cs-soft:#2A2248; --cc:#5EA9F5; --cc-soft:#16304D;
+  --coral:#FF8466; --coral-soft:#3D221C; --sun:#FFC940; --sun-soft:#3A3014; --pink:#FF6FA8; --pink-soft:#3D1C2B;
+  --code-bg:#0B0E15; color-scheme:dark;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.75;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;padding-block:8px 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.3}
+p{margin:0}
+code,pre{font-family:var(--f-mono);font-variant-ligatures:none}
+a{color:var(--cc)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+.home{display:inline-block;margin:10px 0 0;font-size:14px;font-weight:700;color:var(--dart);text-decoration:none}
+nav.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px))}
+nav.bar .in{max-width:1040px;margin:0 auto;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+nav.bar a:hover{border-color:var(--ink)}
+nav.bar .prog{margin-left:auto;flex:none;font-size:14px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums;padding-left:8px}
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;align-items:center;padding-block:36px 8px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;font-weight:700;color:var(--coral)}
+.eyebrow b{background:var(--coral);color:#fff;border-radius:6px;padding:2px 8px}
+.eyebrow span{background:var(--sun-soft);color:var(--ink);border-radius:6px;padding:2px 8px;font-weight:500}
+.hero h1{font-size:clamp(32px,5.4vw,50px);margin-top:12px}
+.hero .lead{margin-top:12px;color:var(--muted);max-width:32em}
+.goal{margin-top:18px;background:var(--dart-soft);border-radius:16px;padding:14px 16px;border-left:6px solid var(--dart)}
+.goal b{color:var(--dart);font-size:13px;letter-spacing:.06em}
+.goal p{margin-top:2px;font-size:17px;font-weight:500}
+.tl{display:flex;margin-top:18px;border-radius:12px;overflow:hidden}
+.tl div{padding:8px 10px;color:#fff;min-width:0;line-height:1.3}
+.tl b{display:block;font-family:var(--f-display);font-weight:400;font-size:15px}
+.tl small{font-size:12px;opacity:.95}
+.tl .t1{background:var(--cc)} .tl .t2{background:var(--cs)} .tl .t3{background:var(--dart)} .tl .t4{background:var(--coral)}
+.showcase{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.cap{font-size:13px;color:var(--muted);text-align:center}
+.phone{width:min(250px,100%);border-radius:30px;background:#141822;padding:10px;box-shadow:0 18px 40px -18px rgba(20,30,60,.45)}
+.phone img{display:block;width:100%;border-radius:20px;background:#fff}
+.phone.sm{width:min(190px,100%);border-radius:24px;padding:7px}
+.phone.sm img{border-radius:16px}
+.term{width:100%;background:#0F1420;color:#E7ECF5;border-radius:14px;overflow:hidden;font-family:var(--f-mono);font-size:13.5px;box-shadow:0 18px 40px -22px rgba(20,30,60,.5);min-width:0}
+.term .tb{display:flex;gap:6px;align-items:center;padding:8px 12px;background:#1E2433;font-family:var(--f-body);font-size:12px;color:#A2ACC0}
+.term .tb i{width:10px;height:10px;border-radius:50%;background:#FF6A47}
+.term .tb i:nth-child(2){background:#FFB800}.term .tb i:nth-child(3){background:#2FD4C4}
+.term .tb span{margin-left:6px}
+.term pre{margin:0;padding:12px 14px;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.term .cmd{color:#7FD8FF}
+.term .err{color:#FF8A8A}
+section{margin-top:56px;scroll-margin-top:64px}
+.sh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sh h2{font-size:clamp(25px,4vw,32px)}
+.sh .pill{font-size:13px;font-weight:700;border-radius:999px;padding:3px 12px}
+.sh p{flex-basis:100%;color:var(--muted)}
+.review{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:0;margin:0;list-style:none}
+.review li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 44px;position:relative}
+.review li::before{content:"✓";position:absolute;left:14px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--cc-soft);color:var(--cc);font-weight:700;display:grid;place-items:center;font-size:13px}
+.ic{background:var(--cc-soft);color:var(--cc);padding:1px 6px;border-radius:6px;font-size:.9em}
+kbd{font-family:var(--f-mono);font-size:.85em;background:var(--surface);border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:0 6px}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:14px;padding:14px 16px;margin:0;overflow-x:auto;font-size:13.5px;line-height:1.65;tab-size:2}
+.tk-c{color:var(--c-com);font-style:italic}.tk-s{color:var(--c-str)}.tk-k{color:var(--c-kw)}.tk-n{color:var(--c-num)}.tk-t{color:var(--c-type)}
+.hl{color:inherit;background:rgba(255,184,0,.28);border-radius:4px;box-shadow:0 0 0 2px rgba(255,184,0,.28)}
+.tbl{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:14.5px}
+thead th{font-family:var(--f-display);font-weight:400;font-size:17px;text-align:left;padding:11px 14px;color:#fff}
+thead th:first-child{background:var(--ink);color:var(--bg)}
+thead .h-c{background:var(--cc)} thead .h-cs{background:var(--cs)} thead .h-d{background:var(--dart)}
+tbody th{text-align:left;font-weight:500;padding:9px 14px;white-space:nowrap}
+tbody td{padding:9px 14px;vertical-align:top}
+tbody tr+tr th,tbody tr+tr td{border-top:1px solid var(--line)}
+td code{font-size:13.5px;white-space:pre-wrap}
+td.c code{color:var(--cc)} td.cs code{color:var(--cs)} td.d code{color:var(--dart);font-weight:600}
+tr.hot{background:var(--sun-soft)}
+.star{color:var(--sun);margin-left:6px}
+.legend{margin-top:10px;font-size:14px;color:var(--muted)}
+.legend span{background:var(--sun-soft);padding:1px 8px;border-radius:6px;color:var(--ink)}
+.steps{display:grid;gap:18px;counter-reset:s}
+.step{background:var(--surface);border:2px solid var(--line);border-radius:20px;padding:18px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start;transition:border-color .2s}
+.step.is-done{border-color:var(--dart)}
+.step.wide{grid-template-columns:minmax(0,1fr)}
+.step-main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.step-top{display:flex;gap:12px;align-items:center}
+.sn{flex:none;width:40px;height:40px;border-radius:12px;background:var(--cc);color:#fff;font-family:var(--f-display);font-size:22px;display:grid;place-items:center}
+.step h3{font-size:21px;flex:1;min-width:0}
+.step .do{font-size:15.5px}
+.step .do ol,.step .do ul{margin:6px 0 0;padding-left:22px}
+.step-side{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.step-side .term{width:min(320px,100%)}
+details.stuck{background:var(--coral-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+details.stuck summary{cursor:pointer;font-weight:700;color:var(--coral)}
+details.stuck .stuck-in{margin-top:8px;display:grid;gap:8px}
+.errmsg{font-family:var(--f-mono);font-size:13px;background:var(--surface);border-radius:8px;padding:6px 10px;color:var(--pink);white-space:pre-wrap;word-break:break-word}
+.note{background:var(--sun-soft);border-radius:12px;padding:10px 14px;font-size:15px}
+.note b{color:var(--ink)}
+.done{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:500;cursor:pointer}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--dart);flex:none}
+.quiz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.q{background:var(--surface);border-radius:16px;padding:16px;border-top:6px solid var(--pink);display:flex;flex-direction:column;gap:10px;min-width:0}
+.qn{font-family:var(--f-display);font-size:24px;color:var(--pink);line-height:1}
+.q p{font-size:15px}
+.q pre.code{font-size:12.5px}
+.ans{margin-top:auto;border:1px dashed var(--line);border-radius:10px;min-height:56px;padding:6px 10px;font-size:12.5px;color:var(--muted)}
+.bonus{background:linear-gradient(135deg,var(--sun-soft),var(--coral-soft));border-radius:20px;padding:18px;display:grid;gap:10px}
+.bonus h3{font-size:22px}
+.hws{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.hw{background:var(--surface);border-radius:16px;padding:16px;border:2px dashed var(--cs);display:flex;flex-direction:column;gap:10px;min-width:0}
+.hwn{align-self:flex-start;font-size:12.5px;font-weight:700;background:var(--cs);color:#fff;border-radius:999px;padding:2px 10px}
+.hw h3{font-size:19px}
+.hw p,.hw li{font-size:15px}
+.hw ol,.hw ul{margin:0;padding-left:20px}
+.hw .pass{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;margin-top:auto}
+.hw .pass b{color:var(--dart)}
+.submit{margin-top:14px;font-size:15px;background:var(--cs-soft);border-radius:12px;padding:10px 14px}
+.cheat{background:var(--surface);border:3px solid var(--ink);border-radius:20px;padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+.cheat h3{grid-column:1/-1;font-size:22px}
+.cheat div{min-width:0}
+.cheat b{display:block;font-size:14px;color:var(--coral)}
+.cheat code{font-size:13px;color:var(--dart);font-weight:600;white-space:pre-wrap}
+.cheat p{font-size:14.5px}
+.pn{display:flex;justify-content:space-between;gap:12px;margin-top:48px;flex-wrap:wrap}
+.pn a{text-decoration:none;font-weight:700;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--ink)}
+.pn a:hover{border-color:var(--ink)}
+.pn .off{visibility:hidden}
+footer{margin-top:40px;font-size:13px;color:var(--muted);text-align:center}
+@media (max-width:760px){
+  .hero,.quiz,.cheat{grid-template-columns:minmax(0,1fr)}
+  .step{grid-template-columns:minmax(0,1fr)}
+  .tl div{flex:1 1 50%!important}
+  .tl{flex-wrap:wrap}
+}
+@media print{nav.bar,.home,.pn,footer{display:none} body{background:#fff}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.term.wide pre{white-space:pre;overflow-x:auto;word-break:normal;font-size:12.5px}
+.step.wide .step-side{align-items:stretch}
+.step.wide .step-side .term{width:100%}
+.hero.hero-wide{grid-template-columns:minmax(0,1fr)}
+.hero.hero-wide .showcase{align-items:stretch}
+</style></head>
+<body data-lesson="040">
+<a class="home" href="index.html">← 課程目錄</a>
+<nav class="bar" aria-label="本堂導覽"><div class="in">
+<a href="#goal">今天的成果</a><a href="#review">複習</a><a href="#compare">對照表</a><a href="#steps">步驟</a><a href="#quiz">小測</a><a href="#hw">回家作業</a><a href="#cheat">速查卡</a>
+<span class="prog" id="prog">步驟 0 / 4</span></div></nav>
+<main class="wrap">
+<header class="hero" id="goal">
+  <div>
+    <p class="eyebrow"><b>第 40 堂</b><span>單元 14・Icon 與圖片　1 / 3</span><span>60 分鐘</span></p>
+    <h1>Icon：Flutter 內建的圖示</h1>
+    <p class="lead">Flutter 內建上千個 Material 圖示，不用自己畫、不用下載，寫 Icons.名稱 就能用。今天學會找圖示、調大小和顏色，並做出 App 設定頁最常見的「圖示選單」。</p>
+    <div class="goal"><b>今天的成果</b><p>用 Icon 做出三行「圖示＋數字」，再寫一個 MenuRow Widget，排出四個項目的設定選單。</p></div>
+    <div class="tl"><div class="t1" style="flex:5"><b>複習</b><small>5 分鐘</small></div><div class="t2" style="flex:10"><b>對照</b><small>10 分鐘</small></div><div class="t3" style="flex:35"><b>步驟</b><small>35 分鐘</small></div><div class="t4" style="flex:10"><b>小測</b><small>10 分鐘</small></div></div>
+  </div>
+  <div class="showcase"><div class="phone"><img src="img/l40_s4.png" alt="設定選單" loading="lazy"></div><p class="cap">設定選單</p></div>
+</header>
+
+<section id="review">
+  <div class="sh"><h2>上一堂複習</h2><span class="pill" style="background:var(--cc-soft);color:var(--cc)">5 分鐘</span></div>
+  <ul class="review"><li><code class="ic">Expanded</code>、<code class="ic">Spacer()</code>、<code class="ic">ClipRRect</code></li><li><code class="ic">BoxShape.circle</code> 圓形。</li><li><code class="ic">Stack</code>＋<code class="ic">Positioned</code> 疊在指定位置。</li><li>自己的 Widget 用欄位傳資料。</li></ul>
+</section>
+
+<section id="compare">
+  <div class="sh"><h2>你已經會的，換成 Dart 這樣寫</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">對照表</span>
+  <p>Icon 其實是「字型裡的一個字」，所以它有 size 和 color，跟 Text 很像。Icons.xxx 的型別叫 IconData，寫自己的 Widget 時要用到。</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th scope="col">要做的事</th><th scope="col" class="h-c">C / C++</th><th scope="col" class="h-cs">C#</th><th scope="col" class="h-d">Dart / Flutter</th></tr></thead>
+    <tbody><tr><th scope="row">顯示圖示</th><td class="c"><code></code></td><td class="cs"><code></code></td><td class="d"><code>Icon(Icons.directions_walk)</code></td></tr><tr><th scope="row">大小、顏色</th><td class="c"><code></code></td><td class="cs"><code></code></td><td class="d"><code>Icon(Icons.home, size: 48, color: Colors.teal)</code></td></tr><tr class="hot"><th scope="row">圖示的型別<span class="star" title="最容易寫錯">★</span></th><td class="c"><code></code></td><td class="cs"><code></code></td><td class="d"><code>final IconData icon;</code></td></tr><tr><th scope="row">找圖示名稱</th><td class="c"><code></code></td><td class="cs"><code></code></td><td class="d"><code>fonts.google.com/icons</code></td></tr></tbody></table></div>
+  <p class="legend"><span>★ 黃底</span>＝跟 C/C# 不一樣、最容易寫錯的地方。</p>
+</section>
+
+<section id="steps">
+  <div class="sh"><h2>跟著做：4 個小步驟</h2><span class="pill" style="background:var(--dart-soft);color:var(--dart)">每步做完都要執行看看</span>
+  <p>每一步只改一個地方。黃色底的程式是這一步新加的，改完按 <kbd>Ctrl</kbd>+<kbd>S</kbd> 存檔，App 會自動更新（Hot Reload），對照右邊的手機畫面，再勾「做完了」。</p></div>
+  <div class="steps"><article class="step"><div class="step-main"><div class="step-top"><span class="sn">1</span><h3>第一個圖示</h3><label class="done"><input type="checkbox" id="s1"><span>做完了</span></label></div><div class="do"><p>建立專案 <code class="ic">lesson040</code>。<code class="ic">Icon(Icons.directions_walk)</code> 是一個走路的人。預設大小 24、黑色，在手機上很小。</p><p>想找其他圖示，到 <a href="https://fonts.google.com/icons" target="_blank" rel="noopener">fonts.google.com/icons</a> 搜尋英文（例如 run、fire、heart），名稱裡的空白換成底線。</p></div><pre class="code"><code data-lang="dart">import &#x27;package:flutter/material.dart&#x27;;
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: HomePage());
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFF4F7FB),
+      appBar: AppBar(title: Text(&#x27;Icon&#x27;)),
+      body: Center(
+        ⟦child: Icon(Icons.directions_walk),⟧
+      ),
+    );
+  }
+}</code></pre><details class="stuck"><summary>卡住了？看這裡</summary><div class="stuck-in"><div><p>圖示名稱打錯（沒有 Icons.walk 這個圖示）：</p><div class="errmsg">The getter &#x27;walk&#x27; isn&#x27;t defined for the type &#x27;Icons&#x27;.</div></div><div><p>Icon 裡寫字串，型別不對：</p><div class="errmsg">The argument type &#x27;String&#x27; can&#x27;t be assigned to the parameter type &#x27;IconData?&#x27;.</div></div></div></details></div><div class="step-side"><div class="phone sm"><img src="img/l40_s1.png" alt="小小的走路圖示" loading="lazy"></div><p class="cap">小小的走路圖示</p></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">2</span><h3>size 和 color</h3><label class="done"><input type="checkbox" id="s2"><span>做完了</span></label></div><div class="do"><p><code class="ic">size</code> 是邊長，<code class="ic">color</code> 是顏色，和 Text 的 style 很像，但直接寫在 Icon 裡。</p></div><pre class="code"><code data-lang="dart">import &#x27;package:flutter/material.dart&#x27;;
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: HomePage());
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFF4F7FB),
+      appBar: AppBar(title: Text(&#x27;Icon&#x27;)),
+      body: Center(
+        child: Icon(Icons.directions_walk⟦, size: 120, color: Color(0xFF00A396)⟧),
+      ),
+    );
+  }
+}</code></pre></div><div class="step-side"><div class="phone sm"><img src="img/l40_s2.png" alt="放大、變綠色" loading="lazy"></div><p class="cap">放大、變綠色</p></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">3</span><h3>圖示＋文字</h3><label class="done"><input type="checkbox" id="s3"><span>做完了</span></label></div><div class="do"><p>圖示最常跟文字一起出現：Row 裡放 Icon、SizedBox、Text。三行用 Column 排起來，每一行換一個圖示和顏色。</p></div><pre class="code"><code data-lang="dart">import &#x27;package:flutter/material.dart&#x27;;
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: HomePage());
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFF4F7FB),
+      appBar: AppBar(title: Text(&#x27;今日&#x27;)),
+      body: Padding(
+        ⟦padding: EdgeInsets.all(24),⟧
+        ⟦child: Column(⟧
+          ⟦crossAxisAlignment: CrossAxisAlignment.start,⟧
+          ⟦children: [⟧
+          ⟦Row(⟧
+            ⟦children: [⟧
+              ⟦Icon(Icons.directions_walk, color: Color(0xFF00A396), size: 32),⟧
+              ⟦SizedBox(width: 12),⟧
+              ⟦Text(&#x27;8234 步&#x27;, style: TextStyle(fontSize: 22)),⟧
+            ⟦],⟧
+          ⟦),⟧
+          ⟦Row(⟧
+            ⟦children: [⟧
+              ⟦Icon(Icons.local_fire_department, color: Color(0xFFFF8A3D), size: 32),⟧
+              ⟦SizedBox(width: 12),⟧
+              ⟦Text(&#x27;329 大卡&#x27;, style: TextStyle(fontSize: 22)),⟧
+            ⟦],⟧
+          ⟦),⟧
+          ⟦Row(⟧
+            ⟦children: [⟧
+              ⟦Icon(Icons.place, color: Color(0xFF2F8CEB), size: 32),⟧
+              ⟦SizedBox(width: 12),⟧
+              ⟦Text(&#x27;5.8 公里&#x27;, style: TextStyle(fontSize: 22)),⟧
+            ⟦],⟧
+          ⟦),⟧
+          ⟦],⟧
+        ⟦),⟧
+      ),
+    );
+  }
+}</code></pre></div><div class="step-side"><div class="phone sm"><img src="img/l40_s3.png" alt="三行圖示＋數字" loading="lazy"></div><p class="cap">三行圖示＋數字</p></div></article><article class="step"><div class="step-main"><div class="step-top"><span class="sn">4</span><h3>完成：圖示選單 MenuRow</h3><label class="done"><input type="checkbox" id="s4"><span>做完了</span></label></div><div class="do"><ol><li>寫 <code class="ic">MenuRow</code>：欄位 <code class="ic">icon</code> 的型別是 <code class="ic">IconData</code>，另外有 label 和 color。</li><li>左邊是彩色圓形裡放白色圖示，中間是 Expanded 的文字，最右邊一個灰色的 <code class="ic">Icons.chevron_right</code>（&gt; 符號）。</li><li>HomePage 排出四個項目。</li></ol></div><pre class="code"><code data-lang="dart">import &#x27;package:flutter/material.dart&#x27;;
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: HomePage());
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFF4F7FB),
+      appBar: AppBar(title: Text(&#x27;設定&#x27;)),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        ⟦child: Column(⟧
+          ⟦children: [⟧
+            ⟦MenuRow(icon: Icons.flag, label: &#x27;我的目標&#x27;, color: Color(0xFF00A396)),⟧
+            ⟦MenuRow(icon: Icons.history, label: &#x27;運動紀錄&#x27;, color: Color(0xFF2F8CEB)),⟧
+            ⟦MenuRow(icon: Icons.notifications, label: &#x27;提醒設定&#x27;, color: Color(0xFFFF8A3D)),⟧
+            ⟦MenuRow(icon: Icons.info_outline, label: &#x27;關於 MoveGo&#x27;, color: Color(0xFF8E44AD)),⟧
+          ⟦],⟧
+        ⟦),⟧
+      ),
+    );
+  }
+}
+
+⟦class MenuRow extends StatelessWidget {⟧
+  ⟦final IconData icon;⟧
+  ⟦final String label;⟧
+  ⟦final Color color;⟧
+
+  ⟦const MenuRow({⟧
+    ⟦super.key,⟧
+    ⟦required this.icon,⟧
+    ⟦required this.label,⟧
+    ⟦required this.color,⟧
+  ⟦});⟧
+
+  ⟦@override⟧
+  ⟦Widget build(BuildContext context) {⟧
+    ⟦return Container(⟧
+      ⟦margin: EdgeInsets.only(bottom: 10),⟧
+      ⟦padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),⟧
+      ⟦decoration: BoxDecoration(⟧
+        ⟦color: Colors.white,⟧
+        ⟦borderRadius: BorderRadius.circular(16),⟧
+      ⟦),⟧
+      ⟦child: Row(⟧
+        ⟦children: [⟧
+          ⟦Container(⟧
+            ⟦width: 40,⟧
+            ⟦height: 40,⟧
+            ⟦decoration: BoxDecoration(color: color, shape: BoxShape.circle),⟧
+            ⟦child: Icon(icon, color: Colors.white, size: 22),⟧
+          ⟦),⟧
+          ⟦SizedBox(width: 16),⟧
+          ⟦Expanded(child: Text(label, style: TextStyle(fontSize: 18))),⟧
+          ⟦Icon(Icons.chevron_right, color: Colors.grey),⟧
+        ⟦],⟧
+      ⟦),⟧
+    ⟦);⟧
+  ⟦}⟧
+⟦}⟧</code></pre><p class="note">右邊的 &gt; 現在還不能按。單元 15 學會 StatefulWidget 和按鈕之後，就能讓它真的有反應。</p></div><div class="step-side"><div class="phone sm"><img src="img/l40_s4.png" alt="設定選單" loading="lazy"></div><p class="cap">設定選單</p></div></article></div>
+</section>
+
+<section id="quiz">
+  <div class="sh"><h2>小測 3 題</h2><span class="pill" style="background:var(--pink-soft);color:var(--pink)">10 分鐘・不看講義</span>
+  <p>先自己寫在答案欄，再跟老師對答案。</p></div>
+  <div class="quiz"><div class="q"><span class="qn">Q1</span><p>Icon 預設的大小是多少？要變大要設定哪一個屬性？</p><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q2</span><p>寫 MenuRow 時，欄位 icon 的型別是什麼？</p><div class="ans">我的答案：</div></div><div class="q"><span class="qn">Q3</span><p>下面哪一行會出錯？</p><pre class="code"><code data-lang="dart">Icon(Icons.home, size: 48)
+Icon(Icons.home, style: TextStyle(fontSize: 48))</code></pre><div class="ans">我的答案：</div></div></div>
+  <div class="bonus" style="margin-top:16px"><h3>⭐ 加分挑戰</h3><p>幫 MenuRow 加一個選用欄位 <code class="ic">String? badge</code>（第 25 堂的 null）。有值時在 &gt; 前面顯示一個紅色小標籤，例如「3」；是 null 時不顯示。提示：在 build 裡用 if 決定要不要加進 Row 的 children。</p></div>
+</section>
+
+<section id="hw">
+  <div class="sh"><h2>回家作業</h2><span class="pill" style="background:var(--cs-soft);color:var(--cs)">下一堂上課前繳交</span>
+  <p>作業用來確認你真的會了。每題都有「過關標準」，自己先檢查一次再交。</p></div>
+  <div class="hws"><div class="hw"><span class="hwn">作業 1</span><h3>天氣列</h3><p>建立 <code class="ic">hw040</code>，做一列三天的天氣：每一天是 Column（星期、圖示、溫度），圖示分別用 <code class="ic">Icons.wb_sunny</code>、<code class="ic">Icons.cloud</code>、<code class="ic">Icons.umbrella</code>，顏色自己選。</p><p class="pass"><b>過關標準</b>　三天平均分散、圖示大小一致、顏色有區別。交截圖。</p></div><div class="hw"><span class="hwn">作業 2</span><h3>找十個圖示</h3><p>到 fonts.google.com/icons 找 10 個和運動或健康有關的圖示，用 Column 排出「圖示＋名稱」清單（例如 Icons.pool 游泳）。</p><p class="pass"><b>過關標準</b>　10 個圖示都能正確顯示，名稱寫對。交截圖。</p></div><div class="hw"><span class="hwn">作業 3</span><h3>我的設定頁</h3><p>用 MenuRow 做一個你自己 App 的設定頁，至少 5 個項目，每個項目的圖示和顏色都不一樣。</p><p class="pass"><b>過關標準</b>　MenuRow 的 icon 型別是 IconData，至少 5 列。交程式與截圖。</p></div></div>
+  <p class="submit"><b>繳交方式</b>　程式檔（main.dart）與手機截圖依老師指定的方式繳交，檔名寫上座號。</p>
+</section>
+
+<section id="cheat">
+  <div class="sh"><h2>速查卡</h2><span class="pill" style="background:var(--sun-soft);color:var(--ink)">可以印出來貼在桌上</span></div>
+  <div class="cheat"><h3>第 40 堂重點</h3><div><b>圖示</b><code>Icon(Icons.directions_walk,
+  size: 48,
+  color: Color(0xFF00A396))</code></div><div><b>型別</b><code>final IconData icon;</code></div><div><b>圖示＋字</b><code>Row(children: [
+  Icon(...),
+  SizedBox(width: 12),
+  Text(...),
+])</code></div><div><b>常用</b><p>directions_walk、directions_run、local_fire_department、place、favorite、home、settings、chevron_right</p></div></div>
+</section>
+
+<nav class="pn" aria-label="上一堂下一堂"><a href="lesson039.html">← 第 39 堂</a><a href="index.html">課程目錄</a><a href="lesson041.html">第 41 堂 →</a></nav>
+<footer>Flutter手機程式設計・第 40 堂 / 共 144 堂</footer>
+</main>
+<script>
+(function(){
+  var KW=/^(void|var|final|const|return|if|else|for|while|in|switch|case|class|this|required|late|get|set|true|false|null|import|new|break|default|do|continue|is)$/;
+  var TY=/^(int|double|bool|String|List|Map|num|Color|Colors|Text|TextStyle|Center|Scaffold|AppBar|MaterialApp|FontWeight|TextAlign|Widget|StatelessWidget|BuildContext|Container|Column|Row|BoxDecoration|BorderRadius|Border|BoxShadow|Offset|EdgeInsets|Alignment|MainAxisAlignment|CrossAxisAlignment|MainAxisSize|LinearGradient|Radius|Icon|Icons|SizedBox|StepRecord|StatItem|NameCard|MyApp|HomePage|Expanded|Padding|BoxShape|IconData|Greeting|HeaderCard|ClipRRect|Spacer|Stack|Positioned|Image|CircleAvatar|AssetImage|BoxFit|Clip|Shadow|TextOverflow|RecordRow|MenuRow|ContactRow)$/;
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  var re=/(\/\/[^\n]*)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(@?[A-Za-z_]\w*)|(\b0x[0-9A-Fa-f]+\b|\b\d+(?:\.\d+)?\b)/g;
+  document.querySelectorAll('code[data-lang="dart"]').forEach(function(el){
+    var src=el.textContent,out='',last=0,m;re.lastIndex=0;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      var t=m[0],cls='';
+      if(m[1])cls='c';else if(m[2])cls='s';else if(m[4])cls='n';
+      else if(m[3]){if(KW.test(t))cls='k';else if(TY.test(t))cls='t';}
+      out+=cls?'<span class="tk-'+cls+'">'+esc(t)+'</span>':esc(t);
+      last=re.lastIndex;
+    }
+    out+=esc(src.slice(last));
+    // ⟦ ⟧ 標記本步新增的程式
+    out=out.replace(/⟦/g,'<mark class="hl">').replace(/⟧/g,'</mark>');
+    el.innerHTML=out;
+  });
+  var KEY='flutter-v2-'+document.body.dataset.lesson;
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){state={};}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  var prog=document.getElementById('prog');
+  var steps=document.querySelectorAll('.step');
+  function refresh(){
+    var n=0;
+    steps.forEach(function(s){var cb=s.querySelector('input');s.classList.toggle('is-done',cb.checked);if(cb.checked)n++;});
+    prog.textContent='步驟 '+n+' / '+steps.length;
+  }
+  document.querySelectorAll('.step input[type=checkbox]').forEach(function(cb){
+    if(state[cb.id])cb.checked=true;
+    cb.addEventListener('change',function(){state[cb.id]=cb.checked;save();refresh();});
+  });
+  refresh();
+})();
+</script>
+</body></html>
